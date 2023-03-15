@@ -1,0 +1,64 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=5
+
+[application]
+
+config/name="DataStructureMajorProject"
+run/main_scene="res://Topography/Topography.tscn"
+config/features=PackedStringArray("4.0", "C#", "GL Compatibility")
+config/icon="res://icon.svg"
+
+[dotnet]
+
+project/assembly_name="DataStructureMajorProject"
+
+[rendering]
+
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
+
+[shader_globals]
+
+Seed={
+"type": "int",
+"value": 0
+}
+Frequency={
+"type": "float",
+"value": 0.01
+}
+Amplitude={
+"type": "float",
+"value": 0.6
+}
+Octaves={
+"type": "int",
+"value": 3
+}
+PingPongStrength={
+"type": "float",
+"value": 2.0
+}
+WeightedStrength={
+"type": "float",
+"value": 0.0
+}
+Lacunarity={
+"type": "float",
+"value": 2.0
+}
+Gain={
+"type": "float",
+"value": 0.5
+}
+LevelCnt={
+"type": "int",
+"value": 8
+}
