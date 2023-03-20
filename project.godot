@@ -40,7 +40,7 @@ Amplitude={
 }
 Octaves={
 "type": "int",
-"value": 3
+"value": 0
 }
 PingPongStrength={
 "type": "float",
@@ -60,5 +60,9 @@ Gain={
 }
 LevelCnt={
 "type": "int",
-"value": 8
+"value": 1
+}
+BottomNumber={
+"type": "float",
+"value": 2.0
 }

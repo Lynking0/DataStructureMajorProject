@@ -8,6 +8,7 @@ global uniform float PingPongStrength;
 global uniform float WeightedStrength;
 global uniform float Lacunarity;
 global uniform float Gain;
+global uniform float BottomNumber;
 global uniform int LevelCnt;
 
 const int primeX = 501125321;
@@ -120,9 +121,14 @@ void fragment() {
 		amp *= Gain;
 	}
 	
-	float result = log2(clamp(sum, -1.0, 1.0) + 2.0) * 0.7;
-	if (LevelCnt > 0)
+	float result = 
+		(pow(BottomNumber, -sum) - 1.0 / BottomNumber)
+		/ (BottomNumber - 1.0 / BottomNumber);
+	if (LevelCnt > 0) 
 		result = discretize(result);
-	COLOR = vec4(result , result, result, 1.0);
+	COLOR = vec4(
+		linearInterpolation(205.0, 255.0, result) / 256.0, 
+		linearInterpolation(218.0, 123.0, result) / 256.0, 
+		linearInterpolation(134.0, 0.0, result) / 256.0, 
+	1.0);
 }
-

@@ -82,7 +82,7 @@ namespace Topography
         /// </summary>
         private static double TransformResult(double result)
         {
-            return 1 - (Mathf.Log(Mathf.Clamp(result, -1, 1) + 2)) / Mathf.Log(2);
+            return (Mathf.Pow(BottomNumber, -result) - 1.0 / BottomNumber) / (BottomNumber - 1.0 / BottomNumber);
         }
 
         /// <summary>
@@ -90,10 +90,10 @@ namespace Topography
         /// </summary>
         private static double TransformResult(double result, ref double gradX, ref double gradY)
         {
-            double multiplier = -1 / (Mathf.Log(2) * (result + 2));
+            double multiplier = -Mathf.Pow(BottomNumber, -result) * Mathf.Log(BottomNumber) / (BottomNumber - 1.0 / BottomNumber);
             gradX *= multiplier;
             gradY *= multiplier;
-            return 1 - (Mathf.Log(Mathf.Clamp(result, -1, 1) + 2)) / Mathf.Log(2);
+            return (Mathf.Pow(BottomNumber, -result) - 1.0 / BottomNumber) / (BottomNumber - 1.0 / BottomNumber);
         }
     }
 }

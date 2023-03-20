@@ -39,6 +39,10 @@ namespace Topography
         ///   当Gain<1，相当于octave每高一级，要叠加的噪声值影响变小。（默认为0.5）
         /// </summary>
         public static double Gain = 0.5;
+        /// <summary>
+        ///   算出噪声值后取对数时的底数。（默认为2）
+        /// </summary>
+        public static double BottomNumber = 2;
 
         /// <summary>
         ///   分形噪声
