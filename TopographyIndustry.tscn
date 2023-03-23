@@ -1,0 +1,12 @@
+[gd_scene load_steps=3 format=3 uid="uid://bet7jtcddlu62"]
+
+[ext_resource type="PackedScene" uid="uid://ctsucjmtkxiyf" path="res://Topography/Topography.tscn" id="1_5ib8a"]
+[ext_resource type="Script" path="res://Render/Render.cs" id="2_07t4p"]
+
+[node name="TopographyIndustry" type="Node2D"]
+
+[node name="Node2D2" parent="." instance=ExtResource("1_5ib8a")]
+
+[node name="Node2D" type="Node2D" parent="."]
+script = ExtResource("2_07t4p")
+_font = null
