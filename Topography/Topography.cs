@@ -1,5 +1,7 @@
 using Godot;
 using System;
+using GraphInformation;
+using GraphInformation.DoubleVector2Extensions;
 
 namespace Topography
 {
@@ -7,11 +9,11 @@ namespace Topography
     {
         public override void _Ready()
         {
-            FractalNoiseGenerator.Seed = 0x2ac46fe9;
-            FractalNoiseGenerator.Frequency = 1 / 100.0;
+            FractalNoiseGenerator.Seed = -0x1a41c0e9;
+            FractalNoiseGenerator.Frequency = 1 / 120.0;
             FractalNoiseGenerator.Amplitude = 1 / 2.5;
             FractalNoiseGenerator.Octaves = 8;
-            FractalNoiseGenerator.PingPongStrength = 2.0;
+            FractalNoiseGenerator.PingPongStrength = 2;
             FractalNoiseGenerator.WeightedStrength = 0;
             FractalNoiseGenerator.Lacunarity = 2.2;
             FractalNoiseGenerator.Gain = 0.56;
@@ -26,6 +28,9 @@ namespace Topography
             RenderingServer.GlobalShaderParameterSet("Gain", FractalNoiseGenerator.Gain);
             RenderingServer.GlobalShaderParameterSet("BottomNumber", FractalNoiseGenerator.BottomNumber);
             RenderingServer.GlobalShaderParameterSet("LevelCnt", 0);
+
+            Graph.Instance.PossionDiskSample();
+            GD.Print(Graph.Instance.vertices.Count);
         }
 
         public override void _Input(InputEvent @event)
@@ -41,14 +46,6 @@ namespace Topography
                 }
             }
         }
-
-        // public override void _Draw()
-        // {
-        //     for (int i = 0; i <= 1000; ++i) {
-        //         float curNoiseVal = (float)FractalNoiseGenerator.GetFractalNoise(i, 400);
-        //         base.DrawRect(new Rect2(new Vector2(i, (1 - curNoiseVal) * 250), new Vector2(1, 1)), new Color(1, 1, 1));
-        //     }
-        // }
 
         // private FractalNoiseGenerator noise;
         // public int HorCellNum = 1000;

@@ -4,7 +4,6 @@
     <Nullable>enable</Nullable>
     <TargetFramework>net6.0</TargetFramework>
     <EnableDynamicLoading>true</EnableDynamicLoading>
-    <DefineConstants>DEBUG</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <Content Include="Topography\Topography.cs" />

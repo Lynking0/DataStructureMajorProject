@@ -40,7 +40,7 @@ namespace Topography
         /// </summary>
         public static double Gain = 0.5;
         /// <summary>
-        ///   算出噪声值后取对数时的底数。（默认为2）
+        ///   算出噪声值后取指数时的底数。（默认为2）
         /// </summary>
         public static double BottomNumber = 2;
 
