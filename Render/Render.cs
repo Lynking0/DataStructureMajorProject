@@ -1,8 +1,6 @@
 using Godot;
-using System;
 using GraphInformation;
 using GraphInformation.DoubleVector2Extensions;
-using Shared.Extensions.ICollectionExtensions;
 
 namespace Render
 {
@@ -14,6 +12,7 @@ namespace Render
         // Called when the node enters the scene tree for the first time.
         public override void _Ready()
         {
+            GD.Print(_font);
         }
 
         // Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -32,7 +31,7 @@ namespace Render
                     Vector2D v = vertex.Gradient.OrthogonalD().NormalizedD() * 15;
                     DrawLine((Vector2)(vertex.Position - v), (Vector2)(vertex.Position + v), new Color(0.25f, 0.25f, 0.25f, 1), 1);
 
-                    // DrawChar(_font, (Vector2)vertex.Position, "A");
+                    DrawChar(_font, (Vector2)vertex.Position, "$");
                 }
             }
         }
