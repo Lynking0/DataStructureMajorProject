@@ -1,7 +1,8 @@
-[gd_scene load_steps=3 format=3 uid="uid://bet7jtcddlu62"]
+[gd_scene load_steps=4 format=3 uid="uid://biv3btum01f55"]
 
 [ext_resource type="PackedScene" uid="uid://ctsucjmtkxiyf" path="res://Topography/Topography.tscn" id="1_5ib8a"]
 [ext_resource type="Script" path="res://Render/Render.cs" id="2_07t4p"]
+[ext_resource type="FontFile" uid="uid://ckv016gy42co0" path="res://Render/PingFang-SC-Regular.ttf" id="3_qo3rx"]
 
 [node name="TopographyIndustry" type="Node2D"]
 
@@ -9,4 +10,4 @@
 
 [node name="Node2D" type="Node2D" parent="."]
 script = ExtResource("2_07t4p")
-_font = null
+_font = ExtResource("3_qo3rx")
