@@ -1,14 +1,23 @@
-
-
+using System.Collections.Generic;
 
 namespace Industry
 {
-
-    public struct Item
+    // public enum ItemType
+    // {
+    //     A,
+    //     B,
+    //     C,
+    //     AB,
+    //     BC,
+    //     AC,
+    //     ABC
+    // }
+    using ItemType = System.String;
+    public partial class Item
     {
-        public readonly int Number;
-        public readonly string Type;
-        public Item(int number, string type)
+        public uint Number;
+        public ItemType Type;
+        public Item(uint number, ItemType type)
         {
             Number = number;
             Type = type;
@@ -17,8 +26,18 @@ namespace Industry
 
     public class Recipe
     {
-        public readonly int Cost;
-        public readonly Item[] Input;
-        public readonly Item[] Output;
+        public readonly uint Time;
+        public readonly string Group;
+        private readonly List<Item> _input;
+        public readonly List<Item> _output;
+        public IReadOnlyCollection<Item> Input => _input;
+        public IReadOnlyCollection<Item> Output => _output;
+        public Recipe(in uint time, in string group, in List<Item> intput, in List<Item> output)
+        {
+            Time = time;
+            Group = group;
+            _output = output;
+            _input = intput;
+        }
     }
 }

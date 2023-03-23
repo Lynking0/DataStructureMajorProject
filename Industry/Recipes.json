@@ -1,0 +1,2971 @@
+[
+    {
+        "output": [
+            {
+                "type": "宇宙矩阵",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "蓝矩阵",
+                "number": 1
+            },
+            {
+                "type": "红矩阵",
+                "number": 1
+            },
+            {
+                "type": "黄矩阵",
+                "number": 1
+            },
+            {
+                "type": "紫矩阵",
+                "number": 1
+            },
+            {
+                "type": "绿矩阵",
+                "number": 1
+            },
+            {
+                "type": "反物质",
+                "number": 1
+            }
+        ],
+        "group": "产品",
+        "time": 15
+    },
+    {
+        "output": [
+            {
+                "type": "铁矿",
+                "number": 1
+            }
+        ],
+        "input": [],
+        "time": 1
+    },
+    {
+        "output": [
+            {
+                "type": "铜矿",
+                "number": 1
+            }
+        ],
+        "input": [],
+        "time": 1
+    },
+    {
+        "output": [
+            {
+                "type": "煤矿",
+                "number": 1
+            }
+        ],
+        "input": [],
+        "time": 1
+    },
+    {
+        "output": [
+            {
+                "type": "石矿",
+                "number": 1
+            }
+        ],
+        "input": [],
+        "time": 1
+    },
+    {
+        "output": [
+            {
+                "type": "钛石",
+                "number": 1
+            }
+        ],
+        "input": [],
+        "time": 1
+    },
+    {
+        "output": [
+            {
+                "type": "原油",
+                "number": 1
+            }
+        ],
+        "input": [],
+        "time": 1
+    },
+    {
+        "output": [
+            {
+                "type": "水",
+                "number": 1
+            }
+        ],
+        "input": [],
+        "time": 1
+    },
+    {
+        "output": [
+            {
+                "type": "硅石",
+                "number": 1
+            }
+        ],
+        "input": [],
+        "time": 1
+    },
+    {
+        "output": [
+            {
+                "type": "蓄电池满",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "蓄电池",
+                "number": 1
+            }
+        ],
+        "time": 1
+    },
+    {
+        "output": [
+            {
+                "type": "蓝矩阵",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "磁线圈",
+                "number": 1
+            },
+            {
+                "type": "电路板",
+                "number": 1
+            }
+        ],
+        "group": "产品",
+        "time": 3
+    },
+    {
+        "output": [
+            {
+                "type": "红矩阵",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "高级石墨",
+                "number": 2
+            },
+            {
+                "type": "氢",
+                "number": 2
+            }
+        ],
+        "group": "产品",
+        "time": 6
+    },
+    {
+        "output": [
+            {
+                "type": "黄矩阵",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "金刚石",
+                "number": 1
+            },
+            {
+                "type": "钛晶石",
+                "number": 1
+            }
+        ],
+        "group": "产品",
+        "time": 8
+    },
+    {
+        "output": [
+            {
+                "type": "紫矩阵",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "处理器",
+                "number": 2
+            },
+            {
+                "type": "粒子带宽",
+                "number": 1
+            }
+        ],
+        "group": "产品",
+        "time": 10
+    },
+    {
+        "output": [
+            {
+                "type": "绿矩阵",
+                "number": 2
+            }
+        ],
+        "input": [
+            {
+                "type": "量子芯片",
+                "number": 1
+            },
+            {
+                "type": "引力透镜",
+                "number": 1
+            }
+        ],
+        "group": "产品",
+        "time": 24
+    },
+    {
+        "output": [
+            {
+                "type": "空间翘曲器",
+                "number": 8
+            }
+        ],
+        "input": [
+            {
+                "type": "绿矩阵",
+                "number": 1
+            }
+        ],
+        "group": "消耗品",
+        "time": 10
+    },
+    {
+        "output": [
+            {
+                "type": "空间翘曲器",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "引力透镜",
+                "number": 1
+            }
+        ],
+        "group": "消耗品",
+        "time": 10
+    },
+    {
+        "output": [
+            {
+                "type": "氘核燃料棒",
+                "number": 2
+            }
+        ],
+        "input": [
+            {
+                "type": "钛合金",
+                "number": 1
+            },
+            {
+                "type": "重氢",
+                "number": 20
+            },
+            {
+                "type": "超级磁场环",
+                "number": 1
+            }
+        ],
+        "group": "消耗品",
+        "time": 12
+    },
+    {
+        "output": [
+            {
+                "type": "引力透镜",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "金刚石",
+                "number": 4
+            },
+            {
+                "type": "奇异物质",
+                "number": 1
+            }
+        ],
+        "group": "消耗品",
+        "time": 6
+    },
+    {
+        "output": [
+            {
+                "type": "硅石",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "石矿",
+                "number": 10
+            }
+        ],
+        "time": 10
+    },
+    {
+        "output": [
+            {
+                "type": "铁块",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "铁矿",
+                "number": 1
+            }
+        ],
+        "group": "组件",
+        "time": 1
+    },
+    {
+        "output": [
+            {
+                "type": "钢材",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "铁块",
+                "number": 3
+            }
+        ],
+        "group": "组件",
+        "time": 3
+    },
+    {
+        "output": [
+            {
+                "type": "钛块",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "钛石",
+                "number": 2
+            }
+        ],
+        "group": "组件",
+        "time": 2
+    },
+    {
+        "output": [
+            {
+                "type": "铜块",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "铜矿",
+                "number": 1
+            }
+        ],
+        "group": "组件",
+        "time": 1
+    },
+    {
+        "output": [
+            {
+                "type": "磁铁",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "铁矿",
+                "number": 1
+            }
+        ],
+        "group": "组件",
+        "time": 1.5
+    },
+    {
+        "output": [
+            {
+                "type": "磁线圈",
+                "number": 2
+            }
+        ],
+        "input": [
+            {
+                "type": "磁铁",
+                "number": 2
+            },
+            {
+                "type": "铜块",
+                "number": 1
+            }
+        ],
+        "group": "组件",
+        "time": 1
+    },
+    {
+        "output": [
+            {
+                "type": "电路板",
+                "number": 2
+            }
+        ],
+        "input": [
+            {
+                "type": "铁块",
+                "number": 2
+            },
+            {
+                "type": "铜块",
+                "number": 1
+            }
+        ],
+        "group": "组件",
+        "time": 1
+    },
+    {
+        "output": [
+            {
+                "type": "齿轮",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "铁块",
+                "number": 1
+            }
+        ],
+        "group": "组件",
+        "time": 1
+    },
+    {
+        "output": [
+            {
+                "type": "高级石墨",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "煤矿",
+                "number": 2
+            }
+        ],
+        "group": "组件",
+        "time": 2
+    },
+    {
+        "output": [
+            {
+                "type": "重氢",
+                "number": 1
+            }
+        ],
+        "input": [],
+        "group": "组件",
+        "time": 1
+    },
+    {
+        "output": [
+            {
+                "type": "氢",
+                "number": 1
+            }
+        ],
+        "input": [],
+        "group": "组件",
+        "time": 1
+    },
+    {
+        "output": [
+            {
+                "type": "氢",
+                "number": 1
+            }
+        ],
+        "input": [],
+        "group": "组件",
+        "time": 1
+    },
+    {
+        "output": [
+            {
+                "type": "氢",
+                "number": 1
+            },
+            {
+                "type": "精炼油",
+                "number": 2
+            }
+        ],
+        "input": [
+            {
+                "type": "原油",
+                "number": 2
+            }
+        ],
+        "group": "组件",
+        "time": 4
+    },
+    {
+        "output": [
+            {
+                "type": "精炼油",
+                "number": 3
+            }
+        ],
+        "input": [
+            {
+                "type": "精炼油",
+                "number": 2
+            },
+            {
+                "type": "氢",
+                "number": 1
+            },
+            {
+                "type": "煤矿",
+                "number": 1
+            }
+        ],
+        "group": "组件",
+        "time": 4
+    },
+    {
+        "output": [
+            {
+                "type": "氢",
+                "number": 1
+            },
+            {
+                "type": "石墨烯",
+                "number": 2
+            }
+        ],
+        "input": [
+            {
+                "type": "可燃冰",
+                "number": 2
+            }
+        ],
+        "group": "组件",
+        "time": 2
+    },
+    {
+        "output": [
+            {
+                "type": "可燃冰",
+                "number": 1
+            }
+        ],
+        "input": [],
+        "group": "组件",
+        "time": 1
+    },
+    {
+        "output": [
+            {
+                "type": "可燃冰",
+                "number": 1
+            }
+        ],
+        "input": [],
+        "group": "组件",
+        "time": 1
+    },
+    {
+        "output": [
+            {
+                "type": "刺笋结晶",
+                "number": 1
+            }
+        ],
+        "input": [],
+        "group": "组件",
+        "time": 1
+    },
+    {
+        "output": [
+            {
+                "type": "玻璃",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "石矿",
+                "number": 2
+            }
+        ],
+        "group": "组件",
+        "time": 2
+    },
+    {
+        "output": [
+            {
+                "type": "棱镜",
+                "number": 2
+            }
+        ],
+        "input": [
+            {
+                "type": "玻璃",
+                "number": 3
+            }
+        ],
+        "group": "组件",
+        "time": 2
+    },
+    {
+        "output": [
+            {
+                "type": "高纯硅块",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "硅石",
+                "number": 2
+            }
+        ],
+        "group": "组件",
+        "time": 2
+    },
+    {
+        "output": [
+            {
+                "type": "微晶元件",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "高纯硅块",
+                "number": 2
+            },
+            {
+                "type": "铜块",
+                "number": 1
+            }
+        ],
+        "group": "组件",
+        "time": 2
+    },
+    {
+        "output": [
+            {
+                "type": "处理器",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "电路板",
+                "number": 2
+            },
+            {
+                "type": "微晶元件",
+                "number": 2
+            }
+        ],
+        "group": "组件",
+        "time": 3
+    },
+    {
+        "output": [
+            {
+                "type": "金刚石",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "高级石墨",
+                "number": 1
+            }
+        ],
+        "group": "组件",
+        "time": 2
+    },
+    {
+        "output": [
+            {
+                "type": "塑料",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "精炼油",
+                "number": 2
+            },
+            {
+                "type": "高级石墨",
+                "number": 1
+            }
+        ],
+        "group": "组件",
+        "time": 3
+    },
+    {
+        "output": [
+            {
+                "type": "有机晶体",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "塑料",
+                "number": 2
+            },
+            {
+                "type": "精炼油",
+                "number": 1
+            },
+            {
+                "type": "水",
+                "number": 1
+            }
+        ],
+        "group": "组件",
+        "time": 6
+    },
+    {
+        "output": [
+            {
+                "type": "有机晶体",
+                "number": 1
+            }
+        ],
+        "input": [],
+        "group": "组件",
+        "time": 1
+    },
+    {
+        "output": [
+            {
+                "type": "钛晶石",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "有机晶体",
+                "number": 1
+            },
+            {
+                "type": "钛块",
+                "number": 3
+            }
+        ],
+        "group": "组件",
+        "time": 4
+    },
+    {
+        "output": [
+            {
+                "type": "晶格硅",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "高纯硅块",
+                "number": 1
+            }
+        ],
+        "group": "组件",
+        "time": 2
+    },
+    {
+        "output": [
+            {
+                "type": "石材",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "石矿",
+                "number": 1
+            }
+        ],
+        "group": "组件",
+        "time": 1
+    },
+    {
+        "output": [
+            {
+                "type": "电动机",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "铁块",
+                "number": 2
+            },
+            {
+                "type": "齿轮",
+                "number": 1
+            },
+            {
+                "type": "磁线圈",
+                "number": 1
+            }
+        ],
+        "group": "组件",
+        "time": 2
+    },
+    {
+        "output": [
+            {
+                "type": "电磁涡轮",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "电动机",
+                "number": 2
+            },
+            {
+                "type": "磁线圈",
+                "number": 2
+            }
+        ],
+        "group": "组件",
+        "time": 2
+    },
+    {
+        "output": [
+            {
+                "type": "硫酸",
+                "number": 4
+            }
+        ],
+        "input": [
+            {
+                "type": "精炼油",
+                "number": 6
+            },
+            {
+                "type": "石矿",
+                "number": 8
+            },
+            {
+                "type": "水",
+                "number": 4
+            }
+        ],
+        "group": "组件",
+        "time": 6
+    },
+    {
+        "output": [
+            {
+                "type": "石墨烯",
+                "number": 2
+            }
+        ],
+        "input": [
+            {
+                "type": "硫酸",
+                "number": 1
+            },
+            {
+                "type": "高级石墨",
+                "number": 3
+            }
+        ],
+        "group": "组件",
+        "time": 3
+    },
+    {
+        "output": [
+            {
+                "type": "碳纳米管",
+                "number": 2
+            }
+        ],
+        "input": [
+            {
+                "type": "石墨烯",
+                "number": 3
+            },
+            {
+                "type": "钛块",
+                "number": 1
+            }
+        ],
+        "group": "组件",
+        "time": 4
+    },
+    {
+        "output": [
+            {
+                "type": "碳纳米管",
+                "number": 2
+            }
+        ],
+        "input": [
+            {
+                "type": "刺笋结晶",
+                "number": 6
+            }
+        ],
+        "group": "组件",
+        "time": 4
+    },
+    {
+        "output": [
+            {
+                "type": "粒子带宽",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "碳纳米管",
+                "number": 2
+            },
+            {
+                "type": "晶格硅",
+                "number": 2
+            },
+            {
+                "type": "塑料",
+                "number": 1
+            }
+        ],
+        "group": "组件",
+        "time": 8
+    },
+    {
+        "output": [
+            {
+                "type": "钛化玻璃",
+                "number": 2
+            }
+        ],
+        "input": [
+            {
+                "type": "玻璃",
+                "number": 2
+            },
+            {
+                "type": "钛块",
+                "number": 2
+            },
+            {
+                "type": "水",
+                "number": 2
+            }
+        ],
+        "group": "组件",
+        "time": 5
+    },
+    {
+        "output": [
+            {
+                "type": "卡西米尔晶片",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "钛晶石",
+                "number": 1
+            },
+            {
+                "type": "石墨烯",
+                "number": 2
+            },
+            {
+                "type": "氢",
+                "number": 12
+            }
+        ],
+        "group": "组件",
+        "time": 4
+    },
+    {
+        "output": [
+            {
+                "type": "位面过滤器",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "卡西米尔晶片",
+                "number": 1
+            },
+            {
+                "type": "钛化玻璃",
+                "number": 2
+            }
+        ],
+        "group": "组件",
+        "time": 12
+    },
+    {
+        "output": [
+            {
+                "type": "量子芯片",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "处理器",
+                "number": 2
+            },
+            {
+                "type": "位面过滤器",
+                "number": 2
+            }
+        ],
+        "group": "组件",
+        "time": 6
+    },
+    {
+        "output": [
+            {
+                "type": "粒子容器",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "电磁涡轮",
+                "number": 2
+            },
+            {
+                "type": "铜块",
+                "number": 2
+            },
+            {
+                "type": "石墨烯",
+                "number": 2
+            }
+        ],
+        "group": "组件",
+        "time": 4
+    },
+    {
+        "output": [
+            {
+                "type": "重氢",
+                "number": 5
+            }
+        ],
+        "input": [
+            {
+                "type": "氢",
+                "number": 10
+            }
+        ],
+        "group": "组件",
+        "time": 2.5
+    },
+    {
+        "output": [
+            {
+                "type": "奇异物质",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "粒子容器",
+                "number": 2
+            },
+            {
+                "type": "铁块",
+                "number": 2
+            },
+            {
+                "type": "重氢",
+                "number": 10
+            }
+        ],
+        "group": "组件",
+        "time": 8
+    },
+    {
+        "output": [
+            {
+                "type": "临界光子",
+                "number": 1
+            }
+        ],
+        "input": [],
+        "group": "组件",
+        "time": 10
+    },
+    {
+        "output": [
+            {
+                "type": "反物质",
+                "number": 2
+            },
+            {
+                "type": "氢",
+                "number": 2
+            }
+        ],
+        "input": [
+            {
+                "type": "临界光子",
+                "number": 2
+            }
+        ],
+        "group": "组件",
+        "time": 2
+    },
+    {
+        "output": [
+            {
+                "type": "超级磁场环",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "电磁涡轮",
+                "number": 2
+            },
+            {
+                "type": "磁铁",
+                "number": 3
+            },
+            {
+                "type": "高级石墨",
+                "number": 1
+            }
+        ],
+        "group": "组件",
+        "time": 3
+    },
+    {
+        "output": [
+            {
+                "type": "钛合金",
+                "number": 4
+            }
+        ],
+        "input": [
+            {
+                "type": "钛块",
+                "number": 4
+            },
+            {
+                "type": "钢材",
+                "number": 4
+            },
+            {
+                "type": "硫酸",
+                "number": 8
+            }
+        ],
+        "group": "组件",
+        "time": 12
+    },
+    {
+        "output": [
+            {
+                "type": "电浆激发器",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "磁线圈",
+                "number": 4
+            },
+            {
+                "type": "棱镜",
+                "number": 2
+            }
+        ],
+        "group": "组件",
+        "time": 2
+    },
+    {
+        "output": [
+            {
+                "type": "框架材料",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "碳纳米管",
+                "number": 4
+            },
+            {
+                "type": "钛合金",
+                "number": 1
+            },
+            {
+                "type": "高纯硅块",
+                "number": 1
+            }
+        ],
+        "group": "组件",
+        "time": 6
+    },
+    {
+        "output": [
+            {
+                "type": "光子合并器",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "棱镜",
+                "number": 2
+            },
+            {
+                "type": "电路板",
+                "number": 1
+            }
+        ],
+        "group": "组件",
+        "time": 3
+    },
+    {
+        "output": [
+            {
+                "type": "太阳帆",
+                "number": 2
+            }
+        ],
+        "input": [
+            {
+                "type": "石墨烯",
+                "number": 1
+            },
+            {
+                "type": "光子合并器",
+                "number": 1
+            }
+        ],
+        "group": "消耗品",
+        "time": 4
+    },
+    {
+        "output": [
+            {
+                "type": "戴森球组件",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "框架材料",
+                "number": 3
+            },
+            {
+                "type": "太阳帆",
+                "number": 3
+            },
+            {
+                "type": "处理器",
+                "number": 3
+            }
+        ],
+        "group": "组件",
+        "time": 8
+    },
+    {
+        "output": [
+            {
+                "type": "小型运载火箭",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "戴森球组件",
+                "number": 2
+            },
+            {
+                "type": "氘核燃料棒",
+                "number": 4
+            },
+            {
+                "type": "量子芯片",
+                "number": 2
+            }
+        ],
+        "group": "消耗品",
+        "time": 6
+    },
+    {
+        "output": [
+            {
+                "type": "增产剂Mk.Ⅰ",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "煤矿",
+                "number": 1
+            }
+        ],
+        "group": "消耗品",
+        "time": 0.5
+    },
+    {
+        "output": [
+            {
+                "type": "增产剂Mk.Ⅱ",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "增产剂Mk.Ⅰ",
+                "number": 2
+            },
+            {
+                "type": "金刚石",
+                "number": 1
+            }
+        ],
+        "group": "消耗品",
+        "time": 1
+    },
+    {
+        "output": [
+            {
+                "type": "增产剂Mk.Ⅲ",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "增产剂Mk.Ⅱ",
+                "number": 2
+            },
+            {
+                "type": "碳纳米管",
+                "number": 1
+            }
+        ],
+        "group": "消耗品",
+        "time": 2
+    },
+    {
+        "output": [
+            {
+                "type": "硫酸",
+                "number": 1
+            }
+        ],
+        "input": [],
+        "group": "组件",
+        "time": 1
+    },
+    {
+        "output": [
+            {
+                "type": "光栅石",
+                "number": 1
+            }
+        ],
+        "input": [],
+        "time": 1
+    },
+    {
+        "output": [
+            {
+                "type": "卡西米尔晶片",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "光栅石",
+                "number": 8
+            },
+            {
+                "type": "石墨烯",
+                "number": 2
+            },
+            {
+                "type": "氢",
+                "number": 12
+            }
+        ],
+        "group": "组件",
+        "time": 4
+    },
+    {
+        "output": [
+            {
+                "type": "单极磁石",
+                "number": 1
+            }
+        ],
+        "input": [],
+        "time": 1
+    },
+    {
+        "output": [
+            {
+                "type": "粒子容器",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "单极磁石",
+                "number": 10
+            },
+            {
+                "type": "铜块",
+                "number": 2
+            }
+        ],
+        "group": "组件",
+        "time": 4
+    },
+    {
+        "output": [
+            {
+                "type": "金伯利矿石",
+                "number": 1
+            }
+        ],
+        "input": [],
+        "time": 1
+    },
+    {
+        "output": [
+            {
+                "type": "金刚石",
+                "number": 2
+            }
+        ],
+        "input": [
+            {
+                "type": "金伯利矿石",
+                "number": 1
+            }
+        ],
+        "group": "组件",
+        "time": 1.5
+    },
+    {
+        "output": [
+            {
+                "type": "分形硅石",
+                "number": 1
+            }
+        ],
+        "input": [],
+        "time": 1
+    },
+    {
+        "output": [
+            {
+                "type": "晶格硅",
+                "number": 2
+            }
+        ],
+        "input": [
+            {
+                "type": "分形硅石",
+                "number": 1
+            }
+        ],
+        "group": "组件",
+        "time": 1.5
+    },
+    {
+        "output": [
+            {
+                "type": "地基",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "石材",
+                "number": 3
+            },
+            {
+                "type": "钢材",
+                "number": 1
+            }
+        ],
+        "group": "组件",
+        "time": 1
+    },
+    {
+        "output": [
+            {
+                "type": "液氢燃料棒",
+                "number": 2
+            }
+        ],
+        "input": [
+            {
+                "type": "钛块",
+                "number": 1
+            },
+            {
+                "type": "氢",
+                "number": 10
+            }
+        ],
+        "group": "组件",
+        "time": 6
+    },
+    {
+        "output": [
+            {
+                "type": "电力感应塔",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "铁块",
+                "number": 2
+            },
+            {
+                "type": "磁线圈",
+                "number": 1
+            }
+        ],
+        "group": "建筑",
+        "time": 1
+    },
+    {
+        "output": [
+            {
+                "type": "无线输电塔",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "电力感应塔",
+                "number": 1
+            },
+            {
+                "type": "电浆激发器",
+                "number": 3
+            }
+        ],
+        "group": "建筑",
+        "time": 3
+    },
+    {
+        "output": [
+            {
+                "type": "卫星配电站",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "无线输电塔",
+                "number": 1
+            },
+            {
+                "type": "超级磁场环",
+                "number": 10
+            },
+            {
+                "type": "框架材料",
+                "number": 2
+            }
+        ],
+        "group": "建筑",
+        "time": 5
+    },
+    {
+        "output": [
+            {
+                "type": "风力涡轮机",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "铁块",
+                "number": 6
+            },
+            {
+                "type": "齿轮",
+                "number": 1
+            },
+            {
+                "type": "磁线圈",
+                "number": 3
+            }
+        ],
+        "group": "建筑",
+        "time": 4
+    },
+    {
+        "output": [
+            {
+                "type": "火力发电机",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "铁块",
+                "number": 10
+            },
+            {
+                "type": "石材",
+                "number": 4
+            },
+            {
+                "type": "齿轮",
+                "number": 4
+            },
+            {
+                "type": "磁线圈",
+                "number": 4
+            }
+        ],
+        "group": "建筑",
+        "time": 5
+    },
+    {
+        "output": [
+            {
+                "type": "传送带",
+                "number": 3
+            }
+        ],
+        "input": [
+            {
+                "type": "铁块",
+                "number": 2
+            },
+            {
+                "type": "齿轮",
+                "number": 1
+            }
+        ],
+        "group": "建筑",
+        "time": 1
+    },
+    {
+        "output": [
+            {
+                "type": "高速传送带",
+                "number": 3
+            }
+        ],
+        "input": [
+            {
+                "type": "传送带",
+                "number": 3
+            },
+            {
+                "type": "电磁涡轮",
+                "number": 1
+            }
+        ],
+        "group": "建筑",
+        "time": 1
+    },
+    {
+        "output": [
+            {
+                "type": "极速传送带",
+                "number": 3
+            }
+        ],
+        "input": [
+            {
+                "type": "高速传送带",
+                "number": 3
+            },
+            {
+                "type": "超级磁场环",
+                "number": 1
+            },
+            {
+                "type": "石墨烯",
+                "number": 1
+            }
+        ],
+        "group": "建筑",
+        "time": 1
+    },
+    {
+        "output": [
+            {
+                "type": "小型储物仓",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "铁块",
+                "number": 4
+            },
+            {
+                "type": "石材",
+                "number": 4
+            }
+        ],
+        "group": "建筑",
+        "time": 2
+    },
+    {
+        "output": [
+            {
+                "type": "大型储物仓",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "钢材",
+                "number": 8
+            },
+            {
+                "type": "石材",
+                "number": 8
+            }
+        ],
+        "group": "建筑",
+        "time": 4
+    },
+    {
+        "output": [
+            {
+                "type": "太阳能板",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "高纯硅块",
+                "number": 10
+            },
+            {
+                "type": "铜块",
+                "number": 10
+            },
+            {
+                "type": "电路板",
+                "number": 5
+            }
+        ],
+        "group": "建筑",
+        "time": 6
+    },
+    {
+        "output": [
+            {
+                "type": "蓄电池",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "铁块",
+                "number": 6
+            },
+            {
+                "type": "超级磁场环",
+                "number": 1
+            },
+            {
+                "type": "晶格硅",
+                "number": 6
+            }
+        ],
+        "group": "建筑",
+        "time": 5
+    },
+    {
+        "output": [
+            {
+                "type": "射线接收站",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "钢材",
+                "number": 20
+            },
+            {
+                "type": "高纯硅块",
+                "number": 20
+            },
+            {
+                "type": "光子合并器",
+                "number": 10
+            },
+            {
+                "type": "处理器",
+                "number": 5
+            },
+            {
+                "type": "超级磁场环",
+                "number": 20
+            }
+        ],
+        "group": "建筑",
+        "time": 8
+    },
+    {
+        "output": [
+            {
+                "type": "微型聚变发电站",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "钛合金",
+                "number": 12
+            },
+            {
+                "type": "超级磁场环",
+                "number": 10
+            },
+            {
+                "type": "碳纳米管",
+                "number": 8
+            },
+            {
+                "type": "处理器",
+                "number": 4
+            }
+        ],
+        "group": "建筑",
+        "time": 10
+    },
+    {
+        "output": [
+            {
+                "type": "能量枢纽",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "钢材",
+                "number": 40
+            },
+            {
+                "type": "钛合金",
+                "number": 40
+            },
+            {
+                "type": "处理器",
+                "number": 40
+            },
+            {
+                "type": "粒子容器",
+                "number": 8
+            }
+        ],
+        "group": "建筑",
+        "time": 15
+    },
+    {
+        "output": [
+            {
+                "type": "储液灌",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "铁块",
+                "number": 8
+            },
+            {
+                "type": "石材",
+                "number": 4
+            },
+            {
+                "type": "玻璃",
+                "number": 4
+            }
+        ],
+        "group": "建筑",
+        "time": 2
+    },
+    {
+        "output": [
+            {
+                "type": "分拣器",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "铁块",
+                "number": 1
+            },
+            {
+                "type": "电路板",
+                "number": 1
+            }
+        ],
+        "group": "建筑",
+        "time": 1
+    },
+    {
+        "output": [
+            {
+                "type": "高速分拣器",
+                "number": 2
+            }
+        ],
+        "input": [
+            {
+                "type": "分拣器",
+                "number": 2
+            },
+            {
+                "type": "电动机",
+                "number": 1
+            }
+        ],
+        "group": "建筑",
+        "time": 1
+    },
+    {
+        "output": [
+            {
+                "type": "极速分拣器",
+                "number": 2
+            }
+        ],
+        "input": [
+            {
+                "type": "高速分拣器",
+                "number": 2
+            },
+            {
+                "type": "电磁涡轮",
+                "number": 1
+            }
+        ],
+        "group": "建筑",
+        "time": 1
+    },
+    {
+        "output": [
+            {
+                "type": "采矿机",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "铁块",
+                "number": 4
+            },
+            {
+                "type": "电路板",
+                "number": 2
+            },
+            {
+                "type": "磁线圈",
+                "number": 2
+            },
+            {
+                "type": "齿轮",
+                "number": 2
+            }
+        ],
+        "group": "建筑",
+        "time": 3
+    },
+    {
+        "output": [
+            {
+                "type": "抽水机",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "铁块",
+                "number": 8
+            },
+            {
+                "type": "石材",
+                "number": 4
+            },
+            {
+                "type": "电动机",
+                "number": 4
+            },
+            {
+                "type": "电路板",
+                "number": 2
+            }
+        ],
+        "group": "建筑",
+        "time": 4
+    },
+    {
+        "output": [
+            {
+                "type": "原油萃取站",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "钢材",
+                "number": 12
+            },
+            {
+                "type": "石材",
+                "number": 12
+            },
+            {
+                "type": "电路板",
+                "number": 6
+            },
+            {
+                "type": "电浆激发器",
+                "number": 4
+            }
+        ],
+        "group": "建筑",
+        "time": 8
+    },
+    {
+        "output": [
+            {
+                "type": "原油精炼厂",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "钢材",
+                "number": 10
+            },
+            {
+                "type": "石材",
+                "number": 10
+            },
+            {
+                "type": "电路板",
+                "number": 6
+            },
+            {
+                "type": "电浆激发器",
+                "number": 6
+            }
+        ],
+        "group": "建筑",
+        "time": 6
+    },
+    {
+        "output": [
+            {
+                "type": "垂直发射井",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "钛合金",
+                "number": 80
+            },
+            {
+                "type": "框架材料",
+                "number": 30
+            },
+            {
+                "type": "引力透镜",
+                "number": 20
+            },
+            {
+                "type": "量子芯片",
+                "number": 10
+            }
+        ],
+        "group": "建筑",
+        "time": 30
+    },
+    {
+        "output": [
+            {
+                "type": "四向分流器",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "铁块",
+                "number": 3
+            },
+            {
+                "type": "齿轮",
+                "number": 2
+            },
+            {
+                "type": "电路板",
+                "number": 1
+            }
+        ],
+        "group": "建筑",
+        "time": 2
+    },
+    {
+        "output": [
+            {
+                "type": "流速监测器",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "铁块",
+                "number": 3
+            },
+            {
+                "type": "齿轮",
+                "number": 2
+            },
+            {
+                "type": "玻璃",
+                "number": 1
+            },
+            {
+                "type": "电路板",
+                "number": 2
+            }
+        ],
+        "group": "建筑",
+        "time": 2
+    },
+    {
+        "output": [
+            {
+                "type": "制作台Mk.Ⅰ",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "铁块",
+                "number": 4
+            },
+            {
+                "type": "齿轮",
+                "number": 8
+            },
+            {
+                "type": "电路板",
+                "number": 4
+            }
+        ],
+        "group": "建筑",
+        "time": 2
+    },
+    {
+        "output": [
+            {
+                "type": "制作台Mk.Ⅱ",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "制作台Mk.Ⅰ",
+                "number": 1
+            },
+            {
+                "type": "石墨烯",
+                "number": 8
+            },
+            {
+                "type": "处理器",
+                "number": 4
+            }
+        ],
+        "group": "建筑",
+        "time": 3
+    },
+    {
+        "output": [
+            {
+                "type": "制作台Mk.Ⅲ",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "制作台Mk.Ⅱ",
+                "number": 1
+            },
+            {
+                "type": "粒子带宽",
+                "number": 8
+            },
+            {
+                "type": "量子芯片",
+                "number": 2
+            }
+        ],
+        "group": "建筑",
+        "time": 4
+    },
+    {
+        "output": [
+            {
+                "type": "电弧熔炉",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "铁块",
+                "number": 4
+            },
+            {
+                "type": "石材",
+                "number": 2
+            },
+            {
+                "type": "电路板",
+                "number": 4
+            },
+            {
+                "type": "磁线圈",
+                "number": 2
+            }
+        ],
+        "group": "建筑",
+        "time": 3
+    },
+    {
+        "output": [
+            {
+                "type": "位面熔炉",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "电弧熔炉",
+                "number": 1
+            },
+            {
+                "type": "框架材料",
+                "number": 5
+            },
+            {
+                "type": "位面过滤器",
+                "number": 4
+            },
+            {
+                "type": "单极磁石",
+                "number": 15
+            }
+        ],
+        "group": "建筑",
+        "time": 5
+    },
+    {
+        "output": [
+            {
+                "type": "分馏塔",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "钢材",
+                "number": 8
+            },
+            {
+                "type": "石材",
+                "number": 4
+            },
+            {
+                "type": "玻璃",
+                "number": 4
+            },
+            {
+                "type": "处理器",
+                "number": 1
+            }
+        ],
+        "group": "建筑",
+        "time": 3
+    },
+    {
+        "output": [
+            {
+                "type": "化工厂",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "钢材",
+                "number": 8
+            },
+            {
+                "type": "石材",
+                "number": 8
+            },
+            {
+                "type": "玻璃",
+                "number": 8
+            },
+            {
+                "type": "电路板",
+                "number": 2
+            }
+        ],
+        "group": "建筑",
+        "time": 5
+    },
+    {
+        "output": [
+            {
+                "type": "量子化工厂",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "化工厂",
+                "number": 1
+            },
+            {
+                "type": "钛化玻璃",
+                "number": 10
+            },
+            {
+                "type": "奇异物质",
+                "number": 3
+            },
+            {
+                "type": "量子芯片",
+                "number": 3
+            }
+        ],
+        "group": "建筑",
+        "time": 10
+    },
+    {
+        "output": [
+            {
+                "type": "矩阵研究站",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "铁块",
+                "number": 8
+            },
+            {
+                "type": "玻璃",
+                "number": 4
+            },
+            {
+                "type": "电路板",
+                "number": 4
+            },
+            {
+                "type": "磁线圈",
+                "number": 4
+            }
+        ],
+        "group": "建筑",
+        "time": 3
+    },
+    {
+        "output": [
+            {
+                "type": "电磁轨道弹射器",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "钢材",
+                "number": 20
+            },
+            {
+                "type": "齿轮",
+                "number": 20
+            },
+            {
+                "type": "处理器",
+                "number": 5
+            },
+            {
+                "type": "超级磁场环",
+                "number": 10
+            }
+        ],
+        "group": "建筑",
+        "time": 6
+    },
+    {
+        "output": [
+            {
+                "type": "行星内物流运输站",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "钢材",
+                "number": 40
+            },
+            {
+                "type": "钛块",
+                "number": 40
+            },
+            {
+                "type": "处理器",
+                "number": 40
+            },
+            {
+                "type": "粒子容器",
+                "number": 20
+            }
+        ],
+        "group": "建筑",
+        "time": 20
+    },
+    {
+        "output": [
+            {
+                "type": "物流配送器",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "铁块",
+                "number": 8
+            },
+            {
+                "type": "电浆激发器",
+                "number": 4
+            },
+            {
+                "type": "处理器",
+                "number": 4
+            }
+        ],
+        "group": "建筑",
+        "time": 8
+    },
+    {
+        "output": [
+            {
+                "type": "微型粒子对撞机",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "钛合金",
+                "number": 20
+            },
+            {
+                "type": "框架材料",
+                "number": 20
+            },
+            {
+                "type": "超级磁场环",
+                "number": 25
+            },
+            {
+                "type": "石墨烯",
+                "number": 10
+            },
+            {
+                "type": "处理器",
+                "number": 8
+            }
+        ],
+        "group": "建筑",
+        "time": 15
+    },
+    {
+        "output": [
+            {
+                "type": "星际物流运输站",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "行星内物流运输站",
+                "number": 1
+            },
+            {
+                "type": "钛合金",
+                "number": 40
+            },
+            {
+                "type": "粒子容器",
+                "number": 20
+            }
+        ],
+        "group": "建筑",
+        "time": 30
+    },
+    {
+        "output": [
+            {
+                "type": "加力推进器",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "钛合金",
+                "number": 5
+            },
+            {
+                "type": "电磁涡轮",
+                "number": 5
+            }
+        ],
+        "group": "组件",
+        "time": 6
+    },
+    {
+        "output": [
+            {
+                "type": "轨道采集器",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "星际物流运输站",
+                "number": 1
+            },
+            {
+                "type": "超级磁场环",
+                "number": 50
+            },
+            {
+                "type": "加力推进器",
+                "number": 20
+            },
+            {
+                "type": "蓄电池满",
+                "number": 20
+            }
+        ],
+        "group": "建筑",
+        "time": 30
+    },
+    {
+        "output": [
+            {
+                "type": "推进器",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "钢材",
+                "number": 2
+            },
+            {
+                "type": "铜块",
+                "number": 3
+            }
+        ],
+        "group": "组件",
+        "time": 4
+    },
+    {
+        "output": [
+            {
+                "type": "配送运输机",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "铁块",
+                "number": 2
+            },
+            {
+                "type": "电磁涡轮",
+                "number": 1
+            },
+            {
+                "type": "处理器",
+                "number": 1
+            }
+        ],
+        "group": "组件",
+        "time": 2
+    },
+    {
+        "output": [
+            {
+                "type": "物流运输机",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "铁块",
+                "number": 5
+            },
+            {
+                "type": "处理器",
+                "number": 2
+            },
+            {
+                "type": "推进器",
+                "number": 2
+            }
+        ],
+        "group": "组件",
+        "time": 4
+    },
+    {
+        "output": [
+            {
+                "type": "星际物流运输机",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "钛合金",
+                "number": 10
+            },
+            {
+                "type": "处理器",
+                "number": 10
+            },
+            {
+                "type": "加力推进器",
+                "number": 2
+            }
+        ],
+        "group": "组件",
+        "time": 6
+    },
+    {
+        "output": [
+            {
+                "type": "光子合并器",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "光栅石",
+                "number": 1
+            },
+            {
+                "type": "电路板",
+                "number": 1
+            }
+        ],
+        "group": "组件",
+        "time": 3
+    },
+    {
+        "output": [
+            {
+                "type": "湮灭约束球",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "粒子容器",
+                "number": 1
+            },
+            {
+                "type": "处理器",
+                "number": 1
+            }
+        ],
+        "group": "组件",
+        "time": 20
+    },
+    {
+        "output": [
+            {
+                "type": "反物质燃烧棒",
+                "number": 2
+            }
+        ],
+        "input": [
+            {
+                "type": "反物质",
+                "number": 12
+            },
+            {
+                "type": "氢",
+                "number": 12
+            },
+            {
+                "type": "湮灭约束球",
+                "number": 1
+            },
+            {
+                "type": "钛合金",
+                "number": 1
+            }
+        ],
+        "group": "消耗品",
+        "time": 24
+    },
+    {
+        "output": [
+            {
+                "type": "人造恒星",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "钛合金",
+                "number": 20
+            },
+            {
+                "type": "框架材料",
+                "number": 20
+            },
+            {
+                "type": "湮灭约束球",
+                "number": 10
+            },
+            {
+                "type": "量子芯片",
+                "number": 10
+            }
+        ],
+        "group": "建筑",
+        "time": 30
+    },
+    {
+        "output": [
+            {
+                "type": "地热发电站",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "钢材",
+                "number": 15
+            },
+            {
+                "type": "铜块",
+                "number": 20
+            },
+            {
+                "type": "光子合并器",
+                "number": 4
+            },
+            {
+                "type": "超级磁场环",
+                "number": 1
+            }
+        ],
+        "group": "建筑",
+        "time": 6
+    },
+    {
+        "output": [
+            {
+                "type": "自动集装机",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "钢材",
+                "number": 3
+            },
+            {
+                "type": "齿轮",
+                "number": 4
+            },
+            {
+                "type": "超级磁场环",
+                "number": 1
+            },
+            {
+                "type": "处理器",
+                "number": 2
+            }
+        ],
+        "group": "建筑",
+        "time": 4
+    },
+    {
+        "output": [
+            {
+                "type": "大型采矿机",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "钛合金",
+                "number": 20
+            },
+            {
+                "type": "框架材料",
+                "number": 10
+            },
+            {
+                "type": "超级磁场环",
+                "number": 10
+            },
+            {
+                "type": "量子芯片",
+                "number": 4
+            },
+            {
+                "type": "光栅石",
+                "number": 40
+            }
+        ],
+        "group": "建筑",
+        "time": 20
+    },
+    {
+        "output": [
+            {
+                "type": "喷涂机",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "钢材",
+                "number": 4
+            },
+            {
+                "type": "电浆激发器",
+                "number": 2
+            },
+            {
+                "type": "电路板",
+                "number": 2
+            },
+            {
+                "type": "微晶元件",
+                "number": 2
+            }
+        ],
+        "group": "建筑",
+        "time": 3
+    },
+    {
+        "output": [
+            {
+                "type": "氢",
+                "number": 3
+            },
+            {
+                "type": "高级石墨",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "氢",
+                "number": 2
+            },
+            {
+                "type": "精炼油",
+                "number": 1
+            }
+        ],
+        "group": "组件",
+        "time": 4
+    },
+    {
+        "output": [
+            {
+                "type": "临界光子",
+                "number": 1
+            }
+        ],
+        "input": [
+            {
+                "type": "引力透镜",
+                "number": 0.008333
+            }
+        ],
+        "group": "组件",
+        "time": 5
+    },
+    {
+        "output": [
+            {
+                "type": "重氢",
+                "number": 0.01
+            },
+            {
+                "type": "氢",
+                "number": 0.99
+            }
+        ],
+        "input": [
+            {
+                "type": "氢",
+                "number": 1
+            }
+        ],
+        "group": "组件",
+        "time": 1
+    }
+]

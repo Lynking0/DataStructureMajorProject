@@ -11,9 +11,13 @@ config_version=5
 [application]
 
 config/name="DataStructureMajorProject"
-run/main_scene="res://Topography/Topography.tscn"
+run/main_scene="res://Industry/Industry.tscn"
 config/features=PackedStringArray("4.0", "C#", "GL Compatibility")
 config/icon="res://icon.svg"
+
+[autoload]
+
+IndustryRecipeLoader="*res://Industry/Loader.cs"
 
 [dotnet]
 
