@@ -1,6 +1,6 @@
 using System;
 using Godot;
-using GraphInformation.DoubleVector2Extensions;
+using Shared.Extensions.DoubleVector2Extensions;
 
 namespace GraphInformation
 {
@@ -8,21 +8,23 @@ namespace GraphInformation
     {
         public Vertex A;
         public Vertex B;
-        /// <summary>
-        ///   点A的控制点（相对坐标）
-        /// </summary>
-        public Vector2D AC;
-        /// <summary>
-        ///   点B的控制点（相对坐标）
-        /// </summary>
-        public Vector2D BC;
-
-        public Edge(Vertex a, Vertex b, Vector2D aC, Vector2D bC)
+        public Curve2D Curve;
+        public Edge(Vertex a, Vertex b, Curve2D curve)
         {
             A = a;
             B = b;
-            AC = aC;
-            BC = bC;
+            Curve = curve;
+        }
+        /// <summary>
+        ///   获取另一头的节点，若v不是该边的端点，则返回null。
+        /// </summary>
+        public Vertex? GetOtherEnd(Vertex v)
+        {
+            if (v == A)
+                return B;
+            if (v == B)
+                return A;
+            return null;
         }
     }
 }

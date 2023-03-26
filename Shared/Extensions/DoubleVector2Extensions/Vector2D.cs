@@ -1,7 +1,7 @@
 using System;
 using Godot;
 
-namespace GraphInformation.DoubleVector2Extensions
+namespace Shared.Extensions.DoubleVector2Extensions
 {
     public partial struct Vector2D
     {

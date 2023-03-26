@@ -1,7 +1,7 @@
 using Godot;
 using System;
 using GraphInformation;
-using GraphInformation.DoubleVector2Extensions;
+using Shared.Extensions.DoubleVector2Extensions;
 
 namespace Topography
 {
@@ -9,8 +9,8 @@ namespace Topography
     {
         public override void _Ready()
         {
-            FractalNoiseGenerator.Seed = -0x1a41c0e9;
-            FractalNoiseGenerator.Frequency = 1 / 120.0;
+            FractalNoiseGenerator.Seed = 0x1b0a6fe7;
+            FractalNoiseGenerator.Frequency = 1 / 180.0;
             FractalNoiseGenerator.Amplitude = 1 / 2.5;
             FractalNoiseGenerator.Octaves = 8;
             FractalNoiseGenerator.PingPongStrength = 2;
@@ -27,10 +27,10 @@ namespace Topography
             RenderingServer.GlobalShaderParameterSet("Lacunarity", FractalNoiseGenerator.Lacunarity);
             RenderingServer.GlobalShaderParameterSet("Gain", FractalNoiseGenerator.Gain);
             RenderingServer.GlobalShaderParameterSet("BottomNumber", FractalNoiseGenerator.BottomNumber);
-            RenderingServer.GlobalShaderParameterSet("LevelCnt", 0);
+            RenderingServer.GlobalShaderParameterSet("LevelCnt", 10);
 
             Graph.Instance.PossionDiskSample();
-            GD.Print(Graph.Instance.vertices.Count);
+            Graph.Instance.CreateEdges();
         }
 
         public override void _Input(InputEvent @event)
@@ -62,19 +62,22 @@ namespace Topography
         //     noise.Gain = 0.56;
         //     noise.Amplitude = 1 / 2.5;
         // }
-        // public override void _Draw()
-        // {
-        // 	const int size = 1;
-        //     for (int y = 0; y < VerCellNum; y += size)
-        //     {
-        //         for (int x = 0; x < HorCellNum; x += size)
-        //         {
-        //             float curNoiseVal = (float)noise.GetFractalNoise(x, y);
-        //             curNoiseVal = (1 - curNoiseVal) * 0.7f;
-        //             curNoiseVal = (int)(curNoiseVal * LevelCnt) / LevelCnt;
-        //             base.DrawRect(new Rect2(new Vector2(x, y), new Vector2(size, size)), new Color((float)curNoiseVal, curNoiseVal, curNoiseVal));
-        //         }
-        //     }
-        // }
+        public override void _Draw()
+        {
+            // for (int x = 0; x <= 1152; ++x)
+            // {
+            //     for (int y = 0; y <= 648; ++y)
+            //     {
+            //         double gX, gY;
+            //         FractalNoiseGenerator.GetFractalNoise(x, y, out gX, out gY);
+            //         // GD.Print((gX, gY));
+            //         float szm = (float)Math.Sqrt(gX * gX + gY * gY);
+            //         // DrawRect(new Rect2(new Vector2(x, y), new Vector2(1, 1)),
+            //         //     new Color((float)Math.Abs(gX), (float)Math.Abs(gY), 0, 1));
+            //         DrawRect(new Rect2(new Vector2(x, y), new Vector2(1, 1)),
+            //             new Color((float)gX, (float)gY, 0, 1));
+            //     }
+            // }
+        }
     }
 }

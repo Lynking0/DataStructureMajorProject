@@ -80,7 +80,7 @@ namespace Topography
         /// </summary>
         public static double GetFractalNoise(double x, double y, out double gradX, out double gradY)
         {
-#if DEBUG
+#if SECURITY
             if (FractalNoiseGenerator.WeightedStrength != 0) {
                 throw new Exception(@"FractalNoiseGenerator.GetGradient(): 
                 只有当FractalNoiseGenerator.WeightedStrength为0时才能调用本函数.");
