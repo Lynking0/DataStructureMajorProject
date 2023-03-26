@@ -1,11 +1,11 @@
 using System;
 using Godot;
 
-namespace GraphInformation.DoubleVector2Extensions
+namespace Shared.Extensions.DoubleVector2Extensions
 {
     public partial struct Vector2D
-    {   
-        const double Epsilon = 1e-14;     
+    {
+        private const double Epsilon = 1e-14;
         public static explicit operator Vector2(Vector2D vd) => new Vector2((float)vd.X, (float)vd.Y);
         public static implicit operator Vector2D(Vector2 vf) => new Vector2D(vf.X, vf.Y);
         public static explicit operator Vector2I(Vector2D vd) => new Vector2I((int)vd.X, (int)vd.Y);
@@ -50,6 +50,66 @@ namespace GraphInformation.DoubleVector2Extensions
             a.Y /= b;
             return a;
         }
+        /// <summary>
+        /// Compares two <see cref="Vector2D"/> vectors by first checking if
+        /// the X value of the <paramref name="left"/> vector is less than
+        /// the X value of the <paramref name="right"/> vector.
+        /// If the X values are exactly equal, then it repeats this check
+        /// with the Y values of the two vectors.
+        /// This operator is useful for sorting vectors.
+        /// </summary>
+        /// <param name="left">The left vector.</param>
+        /// <param name="right">The right vector.</param>
+        /// <returns>Whether or not the left is less than the right.</returns>
+        public static bool operator <(Vector2D left, Vector2D right)
+        {
+            return left.X == right.X ? left.Y < right.Y : left.X < right.X;
+        }
+        /// <summary>
+        /// Compares two <see cref="Vector2D"/> vectors by first checking if
+        /// the X value of the <paramref name="left"/> vector is greater than
+        /// the X value of the <paramref name="right"/> vector.
+        /// If the X values are exactly equal, then it repeats this check
+        /// with the Y values of the two vectors.
+        /// This operator is useful for sorting vectors.
+        /// </summary>
+        /// <param name="left">The left vector.</param>
+        /// <param name="right">The right vector.</param>
+        /// <returns>Whether or not the left is greater than the right.</returns>
+        public static bool operator >(Vector2D left, Vector2D right)
+        {
+            return left.X == right.X ? left.Y > right.Y : left.X > right.X;
+        }
+        /// <summary>
+        /// Compares two <see cref="Vector2D"/> vectors by first checking if
+        /// the X value of the <paramref name="left"/> vector is less than
+        /// or equal to the X value of the <paramref name="right"/> vector.
+        /// If the X values are exactly equal, then it repeats this check
+        /// with the Y values of the two vectors.
+        /// This operator is useful for sorting vectors.
+        /// </summary>
+        /// <param name="left">The left vector.</param>
+        /// <param name="right">The right vector.</param>
+        /// <returns>Whether or not the left is less than or equal to the right.</returns>
+        public static bool operator <=(Vector2D left, Vector2D right)
+        {
+            return left.X == right.X ? left.Y <= right.Y : left.X < right.X;
+        }
+        /// <summary>
+        /// Compares two <see cref="Vector2D"/> vectors by first checking if
+        /// the X value of the <paramref name="left"/> vector is greater than
+        /// or equal to the X value of the <paramref name="right"/> vector.
+        /// If the X values are exactly equal, then it repeats this check
+        /// with the Y values of the two vectors.
+        /// This operator is useful for sorting vectors.
+        /// </summary>
+        /// <param name="left">The left vector.</param>
+        /// <param name="right">The right vector.</param>
+        /// <returns>Whether or not the left is greater than or equal to the right.</returns>
+        public static bool operator >=(Vector2D left, Vector2D right)
+        {
+            return left.X == right.X ? left.Y >= right.Y : left.X > right.X;
+        }
         public static bool operator ==(Vector2D left, Vector2D right)
         {
             return left.Equals(right);
@@ -78,12 +138,12 @@ namespace GraphInformation.DoubleVector2Extensions
         {
             return $"({X.ToString(format)}, {Y.ToString(format)})";
         }        /// <summary>
-        /// Returns this vector's angle with respect to the X axis, or (1, 0) vector, in radians.
-        ///
-        /// Equivalent to the result of <see cref="Math.Atan2(double, double)"/> when
-        /// called with the vector's <see cref="Y"/> and <see cref="X"/> as parameters: <c>Math.Atan2(v.Y, v.X)</c>.
-        /// </summary>
-        /// <returns>The angle of this vector, in radians.</returns>
+                 /// Returns this vector's angle with respect to the X axis, or (1, 0) vector, in radians.
+                 ///
+                 /// Equivalent to the result of <see cref="Math.Atan2(double, double)"/> when
+                 /// called with the vector's <see cref="Y"/> and <see cref="X"/> as parameters: <c>Math.Atan2(v.Y, v.X)</c>.
+                 /// </summary>
+                 /// <returns>The angle of this vector, in radians.</returns>
         public double AngleD()
         {
             return Math.Atan2(this.Y, this.X);
@@ -348,7 +408,7 @@ namespace GraphInformation.DoubleVector2Extensions
         /// <returns>The reflected vector.</returns>
         public Vector2D ReflectD(Vector2D normal)
         {
-#if DEBUG
+#if SECURITY
             if (!normal.IsNormalizedD())
             {
                 throw new ArgumentException("Argument is not normalized.", nameof(normal));

@@ -2,7 +2,7 @@ using System;
 using Godot;
 using System.Collections;
 using System.Collections.Generic;
-using GraphInformation.DoubleVector2Extensions;
+using Shared.Extensions.DoubleVector2Extensions;
 
 
 namespace GraphInformation.SpatialIndexer
@@ -93,7 +93,7 @@ namespace GraphInformation.SpatialIndexer
             return GetEnumerator();
         }
         /// <summary>
-        ///   查询某位置附近是否有其他点，此函数不会检查pos是否在地图内。
+        ///   查询某位置附近（Graph.VerticesDistance距离内）是否有其他点，此函数不会检查pos是否在地图内。
         /// </summary>
         public bool HasAdjacency(Vector2D pos)
         {
@@ -112,6 +112,38 @@ namespace GraphInformation.SpatialIndexer
                 }
             }
             return false;
+        }
+        /// <summary>
+        ///   返回所有距离小于2*Graph.VerticesDistance的节点对。
+        /// </summary>
+        public List<(Vertex, Vertex)> GetNearbyPairs()
+        {
+            List<(Vertex, Vertex)> pairs = new List<(Vertex, Vertex)>();
+            for (int i = 0; i < Grid.GetLength(0); ++i)
+            {
+                for (int j = 0; j < Grid.GetLength(1); ++j)
+                {
+                    if (Grid[i, j] is not Vertex vertex)
+                        continue;
+                    // 只找坐标大于当前点的点
+                    for (int i_ = i; i_ <= i + 3; ++i_)
+                    {
+                        if (i_ < 0 || i_ >= Grid.GetLength(0))
+                            continue;
+                        for (int j_ = j - 3; j_ <= j + 3; ++j_)
+                        {
+                            if (j_ < 0 || j_ >= Grid.GetLength(1))
+                                continue;
+                            if (Grid[i_, j_] is not Vertex vertex_)
+                                continue;
+                            if (vertex.Position < vertex_.Position &&
+                                vertex.Position.DistanceToD(vertex_.Position) < 2 * Graph.VerticesDistance)
+                                pairs.Add((vertex, vertex_));
+                        }
+                    }
+                }
+            }
+            return pairs;
         }
     }
 }

@@ -1,9 +1,12 @@
 using System;
 using Godot;
 using GraphInformation.SpatialIndexer;
-using GraphInformation.DoubleVector2Extensions;
+using Shared.Extensions.DoubleVector2Extensions;
 using System.Collections.Generic;
 using Topography;
+using GraphInformation.DataStructureAndAlgorithm.DisjointSet;
+using GraphInformation.DataStructureAndAlgorithm.OptimalCombinationAlgorithm;
+using static Shared.RandomMethods;
 
 namespace GraphInformation
 {
@@ -11,15 +14,25 @@ namespace GraphInformation
     {
         public static Graph Instance = new Graph();
         private VertexSpatialIndexer VerticesContainer;
-        /// <summary>
-        ///   包含图中所有节点的可迭代对象
-        /// </summary>
-        public IReadOnlyCollection<Vertex> vertices => VerticesContainer;
+        public IReadOnlyCollection<Vertex> Vertices => VerticesContainer;
+        public IEnumerable<Edge> Edges
+        {
+            get
+            {
+                foreach (Vertex v in Vertices)
+                    foreach (Edge e in v.Adjacencies)
+                        if (e.A == v)
+                            yield return e;
+            }
+        }
 
         public Graph()
         {
             VerticesContainer = new VertexSpatialIndexer();
         }
+        /// <summary>
+        ///   生成各个点
+        /// </summary>
         public void PossionDiskSample()
         {
             VerticesContainer.Clear();
@@ -67,6 +80,63 @@ namespace GraphInformation
                 FractalNoiseGenerator.GetFractalNoise(vertex.Position.X, vertex.Position.Y, out gradX, out gradY);
                 vertex.Gradient = new Vector2D(gradX, gradY);
             }
+        }
+        public void CreateEdges()
+        {
+            // UnionFindDisjointSet<Vertex> unionFindSet = new UnionFindDisjointSet<Vertex>(Vertices);
+            List<(Vertex, Vertex)> pairs = VerticesContainer.GetNearbyPairs();
+            RandomDislocate(pairs);
+            FirstCreation(pairs);
+        }
+        /// <summary>
+        ///   首次尝试建边，将所有节点当作Intermediate看待并尝试生成Edge，并将最后未建成边的节点标记为Terminal。
+        /// </summary>
+        public void FirstCreation(List<(Vertex, Vertex)> pairs)
+        {
+            foreach ((Vertex a, Vertex b) in pairs)
+            {
+                Edge edge = new Edge(a, b, new Curve2D());
+                EdgeEvaluator.Instance.MaxEnergy = Graph.MaxVertexAltitude;
+                EdgeEvaluator.Instance.A = a.Position;
+                EdgeEvaluator.Instance.D = b.Position;
+                if (Mathf.Abs(a.Gradient.OrthogonalD().AngleToD(b.Position - a.Position)) < Math.PI / 2)
+                {
+                    EdgeEvaluator.Instance.B = a.Position + a.Gradient.OrthogonalD().NormalizedD() * Graph.CtrlPointDistance;
+                    edge.Curve.AddPoint((Vector2)a.Position,
+                        @out: (Vector2)(a.Gradient.OrthogonalD().NormalizedD() * Graph.CtrlPointDistance));
+                }
+                else
+                {
+                    EdgeEvaluator.Instance.B = a.Position - a.Gradient.OrthogonalD().NormalizedD() * Graph.CtrlPointDistance;
+                    edge.Curve.AddPoint((Vector2)a.Position,
+                        @out: -(Vector2)(a.Gradient.OrthogonalD().NormalizedD() * Graph.CtrlPointDistance));
+                }
+                if (Mathf.Abs(b.Gradient.OrthogonalD().AngleToD(a.Position - b.Position)) < Math.PI / 2)
+                {
+                    EdgeEvaluator.Instance.C = b.Position + b.Gradient.OrthogonalD().NormalizedD() * Graph.CtrlPointDistance;
+                    edge.Curve.AddPoint((Vector2)b.Position,
+                        @in: (Vector2)(b.Gradient.OrthogonalD().NormalizedD() * Graph.CtrlPointDistance));
+                }
+                else
+                {
+                    EdgeEvaluator.Instance.C = b.Position - b.Gradient.OrthogonalD().NormalizedD() * Graph.CtrlPointDistance;
+                    edge.Curve.AddPoint((Vector2)b.Position,
+                        @in: -(Vector2)(b.Gradient.OrthogonalD().NormalizedD() * Graph.CtrlPointDistance));
+                }
+                // GD.Print(EdgeEvaluator.Instance.Annealing());
+                // GD.Print(EdgeEvaluator.Instance.Annealing());
+                // GD.Print(EdgeEvaluator.Instance.Annealing());
+                // GD.Print();
+
+                double v = EdgeEvaluator.Instance.Annealing().energy;
+                if (v < EdgeEvaluator.Instance.MaxEnergy)
+                {
+                    a.Adjacencies.Add(edge);
+                    b.Adjacencies.Add(edge);
+                }
+            }
+            foreach (Vertex v in Vertices)
+                v.Type = v.Adjacencies.Count == 0 ? Vertex.VertexType.Terminal : Vertex.VertexType.Intermediate;
         }
     }
 }
