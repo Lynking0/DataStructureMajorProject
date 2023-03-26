@@ -23,6 +23,15 @@ namespace Industry
             Number = number;
             Type = type;
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        public bool Compatible(Item item)
+        {
+            return Type == item.Type;
+        }
     }
 
     public class Recipe
@@ -48,6 +57,16 @@ namespace Industry
             if (input.Length > 0)
                 return input + " => " + output;
             return output;
+        }
+
+        public bool Available(Item item)
+        {
+            foreach (Item output in Output)
+            {
+                if (output.Type == item.Type)
+                    return true;
+            }
+            return false;
         }
     }
 }

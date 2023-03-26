@@ -29,8 +29,12 @@ namespace Industry
 
             _recipes.Add(new Recipe(10, "", new List<Item> { new Item(1, "A"), new Item(1, "C") }, new List<Item> { new Item(1, "AC") }));
             _recipes.Add(new Recipe(10, "", new List<Item> { new Item(1, "B"), new Item(1, "D") }, new List<Item> { new Item(1, "BD") }));
-
             _recipes.Add(new Recipe(10, "", new List<Item> { new Item(1, "AC"), new Item(1, "BD") }, new List<Item> { new Item(1, "ABCD") }));
+
+            _recipes.Add(new Recipe(10, "consumption", new List<Item> { new Item(1, "ABCD") }, new List<Item> { }));
+            _recipes.Add(new Recipe(10, "consumption", new List<Item> { new Item(1, "BCD") }, new List<Item> { }));
+            _recipes.Add(new Recipe(10, "consumption", new List<Item> { new Item(1, "ABC") }, new List<Item> { }));
+
 #else
             var file = FileAccess.Open("res://Industry/Recipes.json", FileAccess.ModeFlags.Read);
             var recipeData = Json.ParseString(file.GetAsText()).AsGodotArray();
