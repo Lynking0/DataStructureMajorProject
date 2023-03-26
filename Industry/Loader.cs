@@ -1,11 +1,12 @@
 using Godot;
-using Godot.Collections;
 using System.Collections.Generic;
 
 namespace Industry
 {
-    public partial class Loader : Node
+    public partial class Loader
     {
+        public static Loader Instance = new Loader();
+
         private List<Recipe> _recipes = new List<Recipe>();
         public IReadOnlyCollection<Recipe> Recipes => _recipes;
 
@@ -60,6 +61,11 @@ namespace Industry
                 _recipes.Add(new Recipe(time, group, input, output));
             }
 #endif
+        }
+
+        public Recipe GetRandomRecipe()
+        {
+            return _recipes[GD.RandRange(0, _recipes.Count - 1)];
         }
     }
 }

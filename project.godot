@@ -15,10 +15,6 @@ run/main_scene="res://Industry/Industry.tscn"
 config/features=PackedStringArray("4.0", "C#", "GL Compatibility")
 config/icon="res://icon.svg"
 
-[autoload]
-
-IndustryRecipeLoader="*res://Industry/Loader.cs"
-
 [dotnet]
 
 project/assembly_name="DataStructureMajorProject"
