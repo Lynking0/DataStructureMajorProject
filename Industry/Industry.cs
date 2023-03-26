@@ -25,7 +25,7 @@ namespace Industry
 #if DEBUG
         public override void _Draw()
         {
-            foreach (Vertex vertex in Graph.Instance.vertices)
+            foreach (Vertex vertex in Graph.Instance.Vertices)
             {
                 if (vertex.Position.IsInRect(0, 0, 1152, 648))
                 {

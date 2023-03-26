@@ -1,6 +1,6 @@
 using Godot;
 using System.Collections.Generic;
-using GraphInformation.DoubleVector2Extensions;
+using Shared.Extensions.DoubleVector2Extensions;
 
 namespace Industry
 {
