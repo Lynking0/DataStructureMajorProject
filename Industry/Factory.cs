@@ -1,30 +1,40 @@
+using Godot;
 using System.Collections.Generic;
+using GraphInformation.DoubleVector2Extensions;
 
 namespace Industry
 {
     using ItemType = System.String;
-    public class Factory
+    public partial class Factory
     {
-        private readonly Recipe _recipe;
+        public readonly Recipe Recipe;
+        public readonly Vector2D Position;
         private Dictionary<ItemType, uint> storage = new Dictionary<ItemType, uint>();
+        private const uint BaseProduceSpeed = 100;
 
-        private const uint _baseReference = 100;
-        Factory(Recipe recipe)
+        public Factory(Recipe recipe, Vector2D position)
         {
-            _recipe = recipe;
+            Recipe = recipe;
+            Position = position;
+            _Factories.Add(this);
         }
+        ~Factory()
+        {
+            _Factories.Remove(this);
+        }
+
         private bool CanProduce()
         {
-            foreach (var item in _recipe.Input)
+            foreach (Item item in Recipe.Input)
                 if (!storage.ContainsKey(item.Type) || storage[item.Type] < item.Number)
                     return false;
             return true;
         }
         private void Produce()
         {
-            foreach (var item in _recipe.Input)
+            foreach (Item item in Recipe.Input)
                 storage[item.Type] -= item.Number;
-            foreach (var item in _recipe.Output)
+            foreach (Item item in Recipe.Output)
                 if (storage.ContainsKey(item.Type))
                     storage[item.Type] += item.Number;
                 else
@@ -49,8 +59,8 @@ namespace Industry
         public List<Item> GetRequirement()
         {
             var requirement = new List<Item>();
-            foreach (var item in _recipe.Input)
-                requirement.Add(new Item(item.Number * _baseReference / _recipe.Time, item.Type));
+            foreach (var item in Recipe.Input)
+                requirement.Add(new Item(item.Number * BaseProduceSpeed / Recipe.Time, item.Type));
             return requirement;
         }
     }

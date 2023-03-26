@@ -1,15 +1,10 @@
-[gd_scene load_steps=4 format=3 uid="uid://ccp8hgy4gk3e0"]
+[gd_scene load_steps=3 format=3 uid="uid://ccp8hgy4gk3e0"]
 
-[ext_resource type="Script" path="res://Render/Render.cs" id="1_r72id"]
+[ext_resource type="PackedScene" uid="uid://bysbm06prbqdc" path="res://Industry/Industry.tscn" id="2_6n1og"]
 [ext_resource type="PackedScene" uid="uid://ctsucjmtkxiyf" path="res://Topography/Topography.tscn" id="3_c0utw"]
-
-[sub_resource type="SystemFont" id="SystemFont_7olmp"]
 
 [node name="game" type="Node2D"]
 
 [node name="Topography" parent="." instance=ExtResource("3_c0utw")]
 
-[node name="Industry" type="Node2D" parent="." node_paths=PackedStringArray("p")]
-script = ExtResource("1_r72id")
-_font = SubResource("SystemFont_7olmp")
-p = NodePath("")
+[node name="Industry" parent="." instance=ExtResource("2_6n1og")]

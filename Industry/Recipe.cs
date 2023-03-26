@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Shared.Extensions.ICollectionExtensions;
 
 namespace Industry
 {
@@ -38,6 +39,15 @@ namespace Industry
             Group = group;
             _output = output;
             _input = intput;
+        }
+
+        public static implicit operator string(Recipe r)
+        {
+            var input = string.Join(',', r.Input.Map(item => item.Type));
+            var output = string.Join(',', r.Output.Map(item => item.Type));
+            if (input.Length > 0)
+                return input + " => " + output;
+            return output;
         }
     }
 }
