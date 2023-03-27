@@ -11,13 +11,14 @@ namespace Industry
         public Vector2 Position { get; }
         private Dictionary<ItemType, uint> storage = new Dictionary<ItemType, uint>();
         private const uint BaseProduceSpeed = 100;
+        private QuadTree<Factory>.Handle QuadTreeHandle;
 
         public Factory(Recipe recipe, Vector2 position)
         {
             Recipe = recipe;
             Position = position;
             _Factories.Add(this);
-            // QuadTree.Insert(this);
+            QuadTreeHandle = QuadTree.Insert(this);
         }
         ~Factory()
         {

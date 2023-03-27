@@ -2,88 +2,86 @@ using Godot;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-// using System.Collections.Generic;
 
 namespace Shared
 {
     namespace QuadTree
     {
+        /*
+        Layout:
+         __       _____ 
+        /  |     |  _  |
+        `| |     | |/' |
+         | |     |  /| |
+        _| |_    \ |_/ /
+        \___/     \___/ 
+
+         _____      _____ 
+        / __  \    |____ |
+        `' / /'        / /
+        / /          \ \
+        ./ /___    .___/ /
+        \_____/    \____/         
+        */
         public interface ILocatable
         {
             Vector2 Position { get; }
         }
-        /*
-            Layout:
-             __       _____ 
-            /  |     |  _  |
-            `| |     | |/' |
-             | |     |  /| |
-            _| |_    \ |_/ /
-            \___/     \___/ 
-
-             _____      _____ 
-            / __  \    |____ |
-            `' / /'        / /
-            / /          \ \
-            ./ /___    .___/ /
-            \_____/    \____/         
-        */
+        public enum QuadTreeNodeType
+        {
+            Internal,
+            Leaf,
+        }
         public class QuadTree<T> where T : class, ILocatable
         {
-            enum QuadTreeNodeType
+            public class Handle
             {
-                Internal,
-                Leaf,
+                public QuadTreeNode? Node;
+                public Handle(QuadTreeNode node)
+                {
+                    Node = node;
+                }
+
+                public IEnumerable<List<T>> Nearby()
+                {
+                    if (Node == null)
+                        throw new Exception("Handle is invalid");
+                    return Node.Nearby();
+                }
             }
-            class QuadTreeNode
+            public class QuadTreeNode
             {
                 private Int32 Level;
                 private Rect2 Bounds;
                 private QuadTreeNodeType Type;
                 private QuadTreeNode?[]? Nodes;
                 private T?[]? Items;
-
                 private UInt32 ObjectCount = 0;
-                // private Object[] Objects;
-                // private QuadTreeNode[] Nodes
-                // {
-                //     get
-                //     {
-                //         if (Type != QuadTreeNodeType.Internal)
-                //             // throw new Exception("Node is not internal, cannot get nodes");
-                //             return new QuadTreeNode[MAX_OBJECT];
-                //         return (QuadTreeNode[])Nodes;
-                //     }
-                // }
-                // private T[] Items
-                // {
-                //     get
-                //     {
-                //         if (Type != QuadTreeNodeType.Leaf)
-                //             // throw new Exception("Node is not leaf, cannot get items");
-                //             return new T[MAX_OBJECT];
-                //         return (T[])Objects;
-                //     }
-                // }
+                private QuadTreeNode? Parent;
 
                 private QuadTreeNode[] InitForInternal()
                 {
                     return new QuadTreeNode[]{
-                        new QuadTreeNode(QuadTreeNodeType.Leaf,Level + 1, new Rect2(Bounds.Position + new Vector2(Bounds.Size.X / 2, 0), Bounds.Size / 2)),
-                        new QuadTreeNode(QuadTreeNodeType.Leaf,Level + 1, new Rect2(Bounds.Position, Bounds.Size / 2)),
-                        new QuadTreeNode(QuadTreeNodeType.Leaf,Level + 1, new Rect2(Bounds.Position + new Vector2(0, Bounds.Size.Y / 2), Bounds.Size / 2)),
-                        new QuadTreeNode(QuadTreeNodeType.Leaf,Level + 1, new Rect2(Bounds.Position + Bounds.Size / 2, Bounds.Size / 2))
+                        new QuadTreeNode(this,QuadTreeNodeType.Leaf,Level + 1, new Rect2(Bounds.Position + new Vector2(Bounds.Size.X / 2, 0), Bounds.Size / 2)),
+                        new QuadTreeNode(this,QuadTreeNodeType.Leaf,Level + 1, new Rect2(Bounds.Position, Bounds.Size / 2)),
+                        new QuadTreeNode(this,QuadTreeNodeType.Leaf,Level + 1, new Rect2(Bounds.Position + new Vector2(0, Bounds.Size.Y / 2), Bounds.Size / 2)),
+                        new QuadTreeNode(this,QuadTreeNodeType.Leaf,Level + 1, new Rect2(Bounds.Position + Bounds.Size / 2, Bounds.Size / 2))
                     };
                 }
                 private T[] InitForLeaf()
                 {
                     return new T[MAX_OBJECT];
                 }
+                private QuadTreeNode(QuadTreeNode parent, QuadTreeNodeType type, int level, Rect2 bounds) : this(type, level, bounds)
+                {
+                    Parent = parent;
+                }
                 public QuadTreeNode(QuadTreeNodeType type, int level, Rect2 bounds)
                 {
                     Level = level;
                     Bounds = bounds;
                     Type = type;
+                    Parent = null;
                     if (type == QuadTreeNodeType.Internal)
                         Nodes = InitForInternal();
                     else if (type == QuadTreeNodeType.Leaf)
@@ -110,12 +108,13 @@ namespace Shared
                 }
                 private int GetIndex(T obj) { return GetIndex(obj.Position); }
 
-                public void Insert(T obj)
+                public Handle Insert(T obj)
                 {
                     if (Type == QuadTreeNodeType.Internal)
                     {
-                        Nodes![GetIndex(obj)]!.Insert(obj);
+                        var handle = Nodes![GetIndex(obj)]!.Insert(obj);
                         ObjectCount++;
+                        return handle;
                     }
                     else if (Type == QuadTreeNodeType.Leaf)
                     {
@@ -125,12 +124,14 @@ namespace Shared
                             {
                                 Items[i] = obj;
                                 ObjectCount++;
-                                return;
+                                return new Handle(this);
                             }
                         }
                         Split();
-                        Insert(obj);
+                        return Insert(obj);
                     }
+                    else
+                        throw new Exception("Invalid node type");
                 }
 
                 public void Split()
@@ -162,12 +163,13 @@ namespace Shared
                     }
                     else if (Type == QuadTreeNodeType.Leaf)
                     {
-                        var items = new T[ObjectCount];
-                        for (int i = 0; i < Items!.Length; i++)
+                        var items = new List<T>();
+                        foreach (var item in Items!)
                         {
-                            items[i] = Items[i]!;
+                            if (item is not null)
+                                items.Add(item);
                         }
-                        return new List<T>(items);
+                        return items;
                     }
                     else
                         throw new Exception("Invalid node type");
@@ -219,24 +221,45 @@ namespace Shared
                         throw new Exception("Invalid node type");
                 }
                 public void Remove(T obj) { Remove(obj.Position); }
+
+                public IEnumerable<List<T>> Nearby(QuadTreeNode? exclude = null)
+                {
+                    if (Type == QuadTreeNodeType.Leaf)
+                        yield return GetItems();
+                    else if (Type == QuadTreeNodeType.Internal)
+                        foreach (var node in Nodes!)
+                        {
+                            if (node is not null && node != exclude)
+                            {
+                                var result = node.GetItems();
+                                if (result.Count > 0)
+                                    yield return result;
+                            }
+                        }
+                    //parent
+                    if (Parent is not null)
+                    {
+                        foreach (var item in Parent.Nearby(this))
+                            yield return item;
+                    }
+                }
             }
             private const int MAX_OBJECT = 4;
 
-            private QuadTreeNode Root;
+            public QuadTreeNode Root;
 
             public QuadTree(Rect2 bounds)
             {
                 Root = new QuadTreeNode(QuadTreeNodeType.Internal, 0, bounds);
             }
-            public void Insert(T obj)
+            public Handle Insert(T obj)
             {
-                Root.Insert(obj);
+                return Root.Insert(obj);
             }
             public void Remove(T obj)
             {
                 Root.Remove(obj);
             }
-            //TODO: Test it
         }
     }
 }

@@ -1,8 +1,6 @@
 using Godot;
-using System.Collections.Generic;
 using System.Linq;
 using GraphInformation;
-using Shared.QuadTree;
 
 namespace Industry
 {
@@ -28,16 +26,6 @@ namespace Industry
 #if DEBUG
         public override void _Draw()
         {
-            var quadtree = new QuadTree<Factory>(new Rect2(0, 0, 16, 16));
-            var r = new Recipe(1, "", new List<Item>(), new List<Item>());
-            quadtree.Insert(new Factory(r, new Vector2(0, 0)));
-            quadtree.Insert(new Factory(r, new Vector2(1, 1)));
-            quadtree.Insert(new Factory(r, new Vector2(2, 2)));
-            quadtree.Insert(new Factory(r, new Vector2(3, 3)));
-            quadtree.Insert(new Factory(r, new Vector2(4, 4)));
-            GD.Print(quadtree);
-            quadtree.Remove(new Factory(r, new Vector2(4, 4)));
-            GD.Print(quadtree);
             foreach (Vertex vertex in Graph.Instance.Vertices)
             {
                 if (vertex.Position.IsInRect(0, 0, 1152, 648))
