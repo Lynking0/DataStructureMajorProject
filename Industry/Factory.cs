@@ -17,7 +17,7 @@ namespace Industry
             Recipe = recipe;
             Position = position;
             _Factories.Add(this);
-            QuadTree.Insert(this);
+            // QuadTree.Insert(this);
         }
         ~Factory()
         {
