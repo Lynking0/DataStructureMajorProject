@@ -11,18 +11,17 @@ namespace Industry
         public Vector2 Position { get; }
         private Dictionary<ItemType, uint> storage = new Dictionary<ItemType, uint>();
         private const uint BaseProduceSpeed = 100;
-        private QuadTree<Factory>.Handle QuadTreeHandle;
+        public QuadTree<Factory>.Handle QuadTreeHandle;
 
         public Factory(Recipe recipe, Vector2 position)
         {
             Recipe = recipe;
             Position = position;
-            _Factories.Add(this);
-            QuadTreeHandle = QuadTree.Insert(this);
+            QuadTreeHandle = FactoriesQuadTree.Insert(this);
         }
         ~Factory()
         {
-            _Factories.Remove(this);
+            FactoriesQuadTree.Remove(this);
         }
 
         private bool CanProduce()

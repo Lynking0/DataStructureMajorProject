@@ -6,8 +6,7 @@ namespace Industry
 {
     public partial class Factory
     {
-        private static List<Factory> _Factories = new List<Factory>();
-        public static IReadOnlyCollection<Factory> Factories => _Factories;
-        public static QuadTree<Factory> QuadTree = new QuadTree<Factory>(new Rect2(0, 0, 1152, 648));
+        public static QuadTree<Factory> FactoriesQuadTree = new QuadTree<Factory>(new Rect2(-1600, -1200, 3200, 2400));
+        public static IEnumerable<Factory> Factories => FactoriesQuadTree.GetItems();
     }
 }

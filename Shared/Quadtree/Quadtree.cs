@@ -2,6 +2,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 
 namespace Shared
 {
@@ -42,7 +43,7 @@ namespace Shared
                     Node = node;
                 }
 
-                public IEnumerable<List<T>> Nearby()
+                public IEnumerable<IEnumerable<T>> Nearby()
                 {
                     if (Node == null)
                         throw new Exception("Handle is invalid");
@@ -56,7 +57,7 @@ namespace Shared
                 private QuadTreeNodeType Type;
                 private QuadTreeNode?[]? Nodes;
                 private T?[]? Items;
-                private UInt32 ObjectCount = 0;
+                public UInt32 ItemCount { get; private set; }
                 private QuadTreeNode? Parent;
 
                 private QuadTreeNode[] InitForInternal()
@@ -70,7 +71,7 @@ namespace Shared
                 }
                 private T[] InitForLeaf()
                 {
-                    return new T[MAX_OBJECT];
+                    return new T[MAX_ITEM];
                 }
                 private QuadTreeNode(QuadTreeNode parent, QuadTreeNodeType type, int level, Rect2 bounds) : this(type, level, bounds)
                 {
@@ -113,7 +114,7 @@ namespace Shared
                     if (Type == QuadTreeNodeType.Internal)
                     {
                         var handle = Nodes![GetIndex(obj)]!.Insert(obj);
-                        ObjectCount++;
+                        ItemCount++;
                         return handle;
                     }
                     else if (Type == QuadTreeNodeType.Leaf)
@@ -123,7 +124,7 @@ namespace Shared
                             if (Items[i] is null)
                             {
                                 Items[i] = obj;
-                                ObjectCount++;
+                                ItemCount++;
                                 return new Handle(this);
                             }
                         }
@@ -140,7 +141,7 @@ namespace Shared
                     // var items = new T[4];
                     // Items!.CopyTo(items, 0);
                     Type = QuadTreeNodeType.Internal;
-                    ObjectCount = 0;
+                    ItemCount = 0;
                     Nodes = InitForInternal();
                     foreach (var item in Items!)
                     {
@@ -149,7 +150,7 @@ namespace Shared
                     }
                     Items = null;
                 }
-                public List<T> GetItems()
+                public IEnumerable<T> GetItems()
                 {
                     if (Type == QuadTreeNodeType.Internal)
                     {
@@ -177,11 +178,11 @@ namespace Shared
                 public void Merge()
                 {
                     Debug.Assert(Type == QuadTreeNodeType.Internal, "Node is not internal, cannot merge");
-                    Debug.Assert(ObjectCount <= MAX_OBJECT, "Node has too many objects, cannot merge");
+                    Debug.Assert(ItemCount <= MAX_ITEM, "Node has too many items, cannot merge");
                     Items = InitForLeaf();
-                    ObjectCount = 0;
+                    ItemCount = 0;
                     foreach (var item in GetItems())
-                        Items[ObjectCount++] = item;
+                        Items[ItemCount++] = item;
                     Type = QuadTreeNodeType.Leaf;
                     Nodes = null;
                 }
@@ -199,7 +200,7 @@ namespace Shared
 
                 public void Remove(Vector2 position)
                 {
-                    ObjectCount--;
+                    ItemCount--;
                     if (Type == QuadTreeNodeType.Leaf)
                     {
                         for (int i = 0; i < Items!.Length; i++)
@@ -214,7 +215,7 @@ namespace Shared
                     else if (Type == QuadTreeNodeType.Internal)
                     {
                         Nodes![GetIndex(position)]!.Remove(position);
-                        if (ObjectCount <= MAX_OBJECT)
+                        if (ItemCount <= MAX_ITEM)
                             Merge();
                     }
                     else
@@ -222,7 +223,7 @@ namespace Shared
                 }
                 public void Remove(T obj) { Remove(obj.Position); }
 
-                public IEnumerable<List<T>> Nearby(QuadTreeNode? exclude = null)
+                public IEnumerable<IEnumerable<T>> Nearby(QuadTreeNode? exclude = null)
                 {
                     if (Type == QuadTreeNodeType.Leaf)
                         yield return GetItems();
@@ -232,7 +233,7 @@ namespace Shared
                             if (node is not null && node != exclude)
                             {
                                 var result = node.GetItems();
-                                if (result.Count > 0)
+                                if (result.Count() > 0)
                                     yield return result;
                             }
                         }
@@ -243,11 +244,43 @@ namespace Shared
                             yield return item;
                     }
                 }
+#if DEBUG
+                public void Detail()
+                {
+                    Debug.Assert(Parent == null, "Just use for root node.");
+                    var itemCountByLevel = new Dictionary<int, int>();
+                    void Count(QuadTreeNode node)
+                    {
+
+                        if (node.Type == QuadTreeNodeType.Internal)
+                        {
+                            foreach (var child in node.Nodes!)
+                                if (child is not null)
+                                    Count(child);
+                        }
+                        else
+                        {
+                            if (itemCountByLevel!.ContainsKey(node.Level))
+                                itemCountByLevel[node.Level]++;
+                            else
+                                itemCountByLevel[node.Level] = 1;
+                        }
+                    }
+                    Count(this);
+                    GD.Print("-----------------QuadTree-----------------");
+                    GD.Print("Item Count: ", ItemCount);
+                    GD.Print("Max Level: ", itemCountByLevel.Keys.Max());
+                    GD.Print("Item Count By Level");
+                    foreach (var item in itemCountByLevel)
+                        GD.Print("Level ", item.Key, ": ", item.Value);
+                    GD.Print("------------------------------------------");
+                }
+#endif
             }
-            private const int MAX_OBJECT = 4;
 
-            public QuadTreeNode Root;
-
+            private const int MAX_ITEM = 4;
+            private QuadTreeNode Root;
+            public uint Count { get => Root.ItemCount; }
             public QuadTree(Rect2 bounds)
             {
                 Root = new QuadTreeNode(QuadTreeNodeType.Internal, 0, bounds);
@@ -260,6 +293,16 @@ namespace Shared
             {
                 Root.Remove(obj);
             }
+            public IEnumerable<T> GetItems()
+            {
+                return Root.GetItems();
+            }
+#if DEBUG
+            public void Detail()
+            {
+                Root.Detail();
+            }
+#endif
         }
     }
 }

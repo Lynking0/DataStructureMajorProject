@@ -1,4 +1,5 @@
 using Godot;
+using System.Collections.Generic;
 using System.Linq;
 using GraphInformation;
 
@@ -26,31 +27,45 @@ namespace Industry
 #if DEBUG
         public override void _Draw()
         {
+            var factoryInitStopWatch = new System.Diagnostics.Stopwatch();
+            factoryInitStopWatch.Start();
             foreach (Vertex vertex in Graph.Instance.Vertices)
             {
+                var factory = new Factory(Loader.Instance.GetRandomRecipe(), (Vector2)vertex.Position);
                 if (vertex.Position.IsInRect(0, 0, 1152, 648))
                 {
-                    var factory = new Factory(Loader.Instance.GetRandomRecipe(), (Vector2)vertex.Position);
                     DrawString(Font, (Vector2)vertex.Position, factory.Recipe, fontSize: 12);
                 }
             }
+            GD.Print(Factory.FactoriesQuadTree.Count);
             foreach (var curFactory in Factory.Factories)
             {
+                var nearFactorySets = curFactory.QuadTreeHandle.Nearby();
                 foreach (var requirement in curFactory.Recipe.Input)
                 {
-                    foreach (var target in
-                    (from targetFactory in Factory.Factories
-                     where targetFactory != curFactory
-                     where targetFactory.Recipe.Available(requirement)
-                     orderby targetFactory.Position.DistanceSquaredTo(curFactory.Position)
-                     select targetFactory))
+                    bool requirementFulfill = false;
+                    foreach (var nearFactorires in nearFactorySets)
                     {
-                        var link = new ProduceLink(target, curFactory, requirement);
-                        DrawLine((Vector2)target.Position, (Vector2)curFactory.Position, new Color(1, 1, 1, 1), 2);
-                        break;
+                        var factorires = nearFactorires.ToList();
+                        factorires.Sort((a, b) => a.Position.DistanceSquaredTo(curFactory.Position).CompareTo(b.Position.DistanceSquaredTo(curFactory.Position)));
+                        foreach (var targetFactory in factorires)
+                        {
+                            if (targetFactory.Recipe.Output.Any(outputItem => requirement.Type == outputItem.Type))
+                            {
+                                var link = new ProduceLink(targetFactory, curFactory, requirement);
+                                DrawLine(curFactory.Position, targetFactory.Position, Colors.Red, width: 2);
+                                requirementFulfill = true;
+                                break;
+                            }
+                        }
+                        if (requirementFulfill)
+                            break;
                     }
                 }
             }
+            factoryInitStopWatch.Stop();
+            GD.Print("Factory build in ", factoryInitStopWatch.ElapsedMilliseconds, " ms");
+            Factory.FactoriesQuadTree.Detail();
         }
 #endif
     }
