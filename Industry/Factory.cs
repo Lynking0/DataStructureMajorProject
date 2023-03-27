@@ -1,22 +1,23 @@
 using Godot;
 using System.Collections.Generic;
-using Shared.Extensions.DoubleVector2Extensions;
+using Shared.QuadTree;
 
 namespace Industry
 {
     using ItemType = System.String;
-    public partial class Factory
+    public partial class Factory : ILocatable
     {
-        public readonly Recipe Recipe;
-        public readonly Vector2D Position;
+        public Recipe Recipe { get; }
+        public Vector2 Position { get; }
         private Dictionary<ItemType, uint> storage = new Dictionary<ItemType, uint>();
         private const uint BaseProduceSpeed = 100;
 
-        public Factory(Recipe recipe, Vector2D position)
+        public Factory(Recipe recipe, Vector2 position)
         {
             Recipe = recipe;
             Position = position;
             _Factories.Add(this);
+            QuadTree.Insert(this);
         }
         ~Factory()
         {

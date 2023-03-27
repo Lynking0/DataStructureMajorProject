@@ -2,6 +2,7 @@ using Godot;
 using System.Collections.Generic;
 using System.Linq;
 using GraphInformation;
+using Shared.QuadTree;
 
 namespace Industry
 {
@@ -27,25 +28,24 @@ namespace Industry
 #if DEBUG
         public override void _Draw()
         {
+            var quadtree = new QuadTree<Factory>(new Rect2(0, 0, 16, 16));
+            var r = new Recipe(1, "", new List<Item>(), new List<Item>());
+            quadtree.Insert(new Factory(r, new Vector2(0, 0)));
+            quadtree.Insert(new Factory(r, new Vector2(1, 1)));
+            quadtree.Insert(new Factory(r, new Vector2(2, 2)));
+            quadtree.Insert(new Factory(r, new Vector2(3, 3)));
+            quadtree.Insert(new Factory(r, new Vector2(4, 4)));
+            GD.Print(quadtree);
+            quadtree.Remove(new Factory(r, new Vector2(4, 4)));
+            GD.Print(quadtree);
             foreach (Vertex vertex in Graph.Instance.Vertices)
             {
                 if (vertex.Position.IsInRect(0, 0, 1152, 648))
                 {
-                    var factory = new Factory(Loader.Instance.GetRandomRecipe(), vertex.Position);
+                    var factory = new Factory(Loader.Instance.GetRandomRecipe(), (Vector2)vertex.Position);
                     DrawString(Font, (Vector2)vertex.Position, factory.Recipe, fontSize: 12);
                 }
             }
-            // foreach (var factory in
-            // from factory in Factory.Factories
-            // where factory.Recipe.Group == "consumption"
-            // select factory)
-            // {
-
-            // }
-            var a = new Item(10, "A");
-            var b = new Item(10, "A");
-            GD.Print(a == b);
-            GD.Print(a.Equals(b));
             foreach (var curFactory in Factory.Factories)
             {
                 foreach (var requirement in curFactory.Recipe.Input)
@@ -54,7 +54,7 @@ namespace Industry
                     (from targetFactory in Factory.Factories
                      where targetFactory != curFactory
                      where targetFactory.Recipe.Available(requirement)
-                     orderby targetFactory.Position.DistanceSquaredToD(curFactory.Position)
+                     orderby targetFactory.Position.DistanceSquaredTo(curFactory.Position)
                      select targetFactory))
                     {
                         var link = new ProduceLink(target, curFactory, requirement);
