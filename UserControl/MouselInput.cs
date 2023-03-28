@@ -5,38 +5,46 @@ namespace UserControl
     public partial class MouselInput : Control
     {
         [Signal]
-        public delegate void MapMoveToEventHandler(Vector2 position);
+        public delegate void MapMoveToEventHandler(Vector2 positionDelta);
+        [Signal]
+        public delegate void MapZoomInEventHandler(Vector2 mousePosition);
+        [Signal]
+        public delegate void MapZoomOutEventHandler(Vector2 mousePosition);
 
         private bool MapDragging = false;
         private Vector2? StartDraggingPosition;
-        private Vector2? StartPosition;
-        private Vector2 MapPosition = new Vector2(0, 0);
 
         public override void _Input(InputEvent @event)
         {
-            if (@event is InputEventMouseButton mouseEvent && mouseEvent.ButtonIndex == MouseButton.Middle)
+            if (@event is InputEventMouseButton mouseEvent)
             {
-
-                if (!MapDragging && mouseEvent.Pressed)
+                switch (mouseEvent.ButtonIndex)
                 {
-                    MapDragging = true;
-                    StartPosition = MapPosition;
-                    StartDraggingPosition = GetGlobalMousePosition();
-                }
-                if (MapDragging && !mouseEvent.Pressed)
-                {
-                    MapDragging = false;
-                    StartPosition = null;
-                    StartDraggingPosition = null;
+                    case MouseButton.Middle:
+                        if (!MapDragging && mouseEvent.Pressed)
+                        {
+                            MapDragging = true;
+                            StartDraggingPosition = GetGlobalMousePosition();
+                        }
+                        if (MapDragging && !mouseEvent.Pressed)
+                        {
+                            MapDragging = false;
+                            StartDraggingPosition = null;
+                        }
+                        break;
+                    case MouseButton.WheelUp:
+                        EmitSignal(SignalName.MapZoomIn, GetGlobalMousePosition());
+                        break;
+                    case MouseButton.WheelDown:
+                        EmitSignal(SignalName.MapZoomOut, GetGlobalMousePosition());
+                        break;
                 }
             }
-            else
+            if (@event is InputEventMouseMotion motionEvent && MapDragging)
             {
-                if (@event is InputEventMouseMotion motionEvent && MapDragging)
-                {
-                    MapPosition = (Vector2)StartPosition! + (GetGlobalMousePosition() - (Vector2)StartDraggingPosition!);
-                    EmitSignal(SignalName.MapMoveTo, MapPosition);
-                }
+                var curMousePosition = GetGlobalMousePosition();
+                EmitSignal(SignalName.MapMoveTo, curMousePosition - (Vector2)StartDraggingPosition!);
+                StartDraggingPosition = curMousePosition;
             }
         }
     }

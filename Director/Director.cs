@@ -1,21 +1,25 @@
 using Godot;
+using UserControl;
+using TopographyMoudle;
 
 namespace Director
 {
-    partial class Director : Control
+    public partial class Director : Control
     {
         private MapController? MapController;
-        private UserControl.MouselInput? MouselInput;
+        private MouselInput? MouselInput;
 
         public override void _Ready()
         {
             MapController = GetNode<MapController>("../MouseInput/GameViewportContainer");
-            MouselInput = GetNode<UserControl.MouselInput>("../MouseInput");
-            // GD.Print("MapController: ", MapController);
-            // GD.Print("MouselInput: ", MouselInput);
+            MouselInput = GetNode<MouselInput>("../MouseInput");
 
-            TopographyMoudle.Topography.InitParams();
-            TopographyMoudle.Topography.Generate();
+            MouselInput.MapMoveTo += MapController!.SetMapPosition;
+            MouselInput.MapZoomIn += MapController.MapZoomIn;
+            MouselInput.MapZoomOut += MapController.MapZoomOut;
+
+            Topography.InitParams();
+            Topography.Generate();
         }
     }
 }

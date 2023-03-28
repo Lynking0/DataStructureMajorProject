@@ -15,7 +15,7 @@ const int primeY = 1136930381;
 
 uniform float scale;
 uniform vec2 transform;
-uniform vec2 screenSize;
+uniform vec2 windowSize;
 
 int primedHash(int seed, int xPrimed, int yPrimed) {
 	int hash = seed ^ xPrimed ^ yPrimed;
@@ -101,7 +101,7 @@ float discretize(float x) {
 
 void fragment() {
 	// Place fragment code here.
-	vec2 pos = (VERTEX + transform - screenSize / 2.0) / scale;
+	vec2 pos = (VERTEX - transform - windowSize / 2.0) / scale;
 	float x = pos.x * Frequency;
 	float y = pos.y * Frequency;
 	int seed = Seed;
