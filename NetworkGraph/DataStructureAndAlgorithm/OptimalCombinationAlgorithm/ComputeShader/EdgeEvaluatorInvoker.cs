@@ -17,7 +17,7 @@ namespace NetworkGraph.DataStructureAndAlgorithm.OptimalCombinationAlgorithm.Com
             // Create a local rendering device.
             rd = RenderingServer.CreateLocalRenderingDevice();
             // Load GLSL shader
-            RDShaderFile shaderFile = GD.Load<RDShaderFile>("res://compute_example.glsl");
+            RDShaderFile shaderFile = GD.Load<RDShaderFile>("res://NetworkGraph/DataStructureAndAlgorithm/OptimalCombinationAlgorithm/ComputeShader/EdgeEvaluator.glsl");
             RDShaderSpirV shaderBytecode = shaderFile.GetSpirV();
             Rid shader = rd.ShaderCreateFromSpirV(shaderBytecode);
         }

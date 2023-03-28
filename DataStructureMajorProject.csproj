@@ -5,6 +5,7 @@
     <TargetFramework>net6.0</TargetFramework>
     <EnableDynamicLoading>true</EnableDynamicLoading>
     <DefineConstants>SECURITY</DefineConstants>
+    <DefineConstants>RECIPE_DEBUG</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <Content Include="Topography\Topography.cs" />

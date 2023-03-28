@@ -94,6 +94,7 @@ namespace NetworkGraph
         /// </summary>
         private void FirstCreation(List<(Vertex, Vertex)> pairs)
         {
+            EdgeEvaluatorInvoker.Init();
             EdgeEvaluatorInvoker.Data = new List<(Vector2D a, Vector2D b, Vector2D c, Vector2D d)>();
             foreach ((Vertex a, Vertex b) in pairs)
             {
