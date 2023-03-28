@@ -1,8 +1,8 @@
-[gd_scene load_steps=5 format=3 uid="uid://ctsucjmtkxiyf"]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://Topography/Topography.cs" id="1_xhick"]
 [ext_resource type="Shader" path="res://Topography/Topography.gdshader" id="2_7vfbp"]
-[ext_resource type="Script" path="res://NetworkGraph/TestVertexDrawer.cs" id="3_iw25i"]
+[ext_resource type="Script" path="res://Graph/TestVertexDrawer.cs" id="3_iw25i"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_qxqdn"]
 shader = ExtResource("2_7vfbp")

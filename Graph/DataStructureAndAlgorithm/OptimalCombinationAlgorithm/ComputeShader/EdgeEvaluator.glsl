@@ -235,9 +235,9 @@ layout(set = 0, binding = 11, std430) restrict buffer IsVaild
 } is_vaild;
 
 const float AttenuationRate = 0.997;
-const float InitTemperature = 5000;
-const float LowestTemperature = 2000;
-const float MaxRejectTimes = 10;
+const float InitTemperature = 5000.0;
+const float LowestTemperature = 2000.0;
+const int MaxRejectTimes = 10;
 
 vec2 a;
 vec2 b;
@@ -261,13 +261,13 @@ float get_accept_PR(float cur_energy, float next_energy, float temperature)
 {
 	if (next_energy > cur_energy)
         return 1.0;
-    return exp((next_energy - cur_energy) / (temperature * (1.0 / 2400000)));
+    return exp((next_energy - cur_energy) / (temperature * (1.0 / 2400000.0)));
 }
 
 void main()
 {
 	int gID = int(gl_GlobalInvocationID.x);
-	if (gID > params.MaxID)
+	if (gID >= params.MaxID)
 		return;
 	a = vec2(vertex_a_x.data[gID], vertex_a_y.data[gID]);
 	b = vec2(vertex_b_x.data[gID], vertex_b_y.data[gID]);
