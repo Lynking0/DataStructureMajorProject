@@ -2,7 +2,7 @@ using System;
 using Godot;
 using Shared.Extensions.DoubleVector2Extensions;
 
-namespace GraphInformation
+namespace NetworkGraph
 {
     public class Edge
     {

@@ -1,14 +1,12 @@
 using Godot;
 using System;
-using GraphInformation;
+using NetworkGraph;
 using Shared.Extensions.DoubleVector2Extensions;
 
-namespace GraphInformation
+namespace NetworkGraph
 {
     public partial class TestVertexDrawer : Node2D
     {
-#if SECURITY
-
         public override void _Draw()
         {
             foreach (Edge edge in Graph.Instance.Edges)
@@ -32,7 +30,5 @@ namespace GraphInformation
                 }
             }
         }
-
-#endif
     }
 }

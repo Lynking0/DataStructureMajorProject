@@ -2,9 +2,9 @@ using System;
 using Godot;
 using Shared.Extensions.DoubleVector2Extensions;
 using System.Collections.Generic;
-using GraphInformation.DataStructureAndAlgorithm.DisjointSet;
+using NetworkGraph.DataStructureAndAlgorithm.DisjointSet;
 
-namespace GraphInformation
+namespace NetworkGraph
 {
     public class Vertex : IDisjointSetElement<Vertex>
     {

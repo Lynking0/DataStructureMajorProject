@@ -26,17 +26,13 @@ namespace Topography
         /// </summary>
         public static double PingPongStrength = 2.0;
         /// <summary>
-        ///   更高的WeightedStrength代表着当较低的octave影响较大（噪声值较低）时，则较高的octave影响变小。（默认为0）
-        /// </summary>
-        public static double WeightedStrength = 0;
-        /// <summary>
-        ///   octave每高一级，采样点坐标乘以Lacunarity。
-        ///   当Lacunarity>1，相当于octave每高一级，要叠加的噪声图像缩小Lacunarity倍。（默认为2.0）
+        ///   octave每高一级，采样点坐标乘以Lacunarity（Lacunarity>1）。
+        ///   相当于octave每高一级，要叠加的噪声图像缩小Lacunarity倍。（默认为2.0）
         /// </summary>
         public static double Lacunarity = 2.0;
         /// <summary>
-        ///   octave每高一级，振幅乘以Gain。
-        ///   当Gain<1，相当于octave每高一级，要叠加的噪声值影响变小。（默认为0.5）
+        ///   octave每高一级，振幅乘以Gain（Gain<1）。
+        ///   相当于octave每高一级，要叠加的噪声值影响变小。（默认为0.5）
         /// </summary>
         public static double Gain = 0.5;
         /// <summary>
@@ -65,8 +61,6 @@ namespace Topography
                 // (normalizedNoise - 0.5) * 2 —— 从[0, 1]映射到[-1, 1]
                 // * amp —— amp越大，当前噪声对结果影响越大
                 sum += (normalizedNoise - 0.5) * 2 * amp;
-                // 当WeightedStrength>0，若normalizedNoise值较小，amp也相应的会衰减的更快
-                amp *= LinearInterpolation(1.0, normalizedNoise, WeightedStrength);
 
                 x *= Lacunarity;
                 y *= Lacunarity;
@@ -80,12 +74,6 @@ namespace Topography
         /// </summary>
         public static double GetFractalNoise(double x, double y, out double gradX, out double gradY)
         {
-#if SECURITY
-            if (FractalNoiseGenerator.WeightedStrength != 0) {
-                throw new Exception(@"FractalNoiseGenerator.GetGradient(): 
-                只有当FractalNoiseGenerator.WeightedStrength为0时才能调用本函数.");
-            }
-#endif
             x *= Frequency;
             y *= Frequency;
             int seed = Seed;

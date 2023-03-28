@@ -3,8 +3,9 @@ using System;
 using Shared.Extensions.DoubleVector2Extensions;
 using static Shared.RandomMethods;
 
-namespace GraphInformation.DataStructureAndAlgorithm.OptimalCombinationAlgorithm
+namespace NetworkGraph.DataStructureAndAlgorithm.OptimalCombinationAlgorithm
 {
+    [Obsolete("相关功能已移至EdgeEvaluator.glsl中")]
     public class EdgeEvaluator : Abstract.SimulatedAnnealing<double>
     {
         public static EdgeEvaluator Instance = new EdgeEvaluator();

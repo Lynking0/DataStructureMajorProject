@@ -5,26 +5,30 @@ namespace Topography
 {
     public static partial class FractalNoiseGenerator
     {
-        private const int PrimeX = 501125321;
-        private const int PrimeY = 1136930381;
-        private static Int32 Hash(Int32 seed, Int32 x, Int32 y)
-        {
-            Int32 hash = seed ^ x * PrimeX ^ y * PrimeY;
-            hash *= 0x27d4eb2d;
-            return hash;
-        }
         /// <summary>
-        ///   伪随机数生成器
+        ///   获取预生成的伪随机数
         /// </summary>
-        /// <returns>[-1,1)的伪随机数</returns>
-        private static double Pseudorandom(Int32 seed, Int32 x, Int32 y)
+        private static double Pseudorandom(Int32 octave, Int32 x, Int32 y)
         {
-            Int32 hash = Hash(seed, x, y);
-            hash *= hash;
-            hash ^= hash << 19;
-            return hash * (1 / 2147483648.0);
+            PseudorandomGenerator.PseudorandomData Precalculation = 
+                PseudorandomGenerator.Precalculations![octave];
+#if SECURITY
+            if (PseudorandomGenerator.Precalculations is null)
+                throw new Exception("Topography.FractalNoiseGenerator.Pseudorandom(): 需先执行预计算.");
+            if (octave < 0 || octave >= PseudorandomGenerator.Precalculations!.Length)
+                throw new Exception("Topography.FractalNoiseGenerator.Pseudorandom(): octave下标越界.");
+            if (PseudorandomGenerator.Precalculations[octave].data is null)
+                throw new Exception("Topography.FractalNoiseGenerator.Pseudorandom(): 数据异常.");
+            if (x + Precalculation.xOffset < 0 || x + Precalculation.xOffset >= PseudorandomGenerator.Precalculations![octave].data.GetLength(0))
+                throw new Exception("Topography.FractalNoiseGenerator.Pseudorandom(): x下标越界.");
+            if (y + Precalculation.yOffset < 0 || y + Precalculation.yOffset >= PseudorandomGenerator.Precalculations![octave].data.GetLength(1))
+                throw new Exception("Topography.FractalNoiseGenerator.Pseudorandom(): y下标越界.");
+#endif
+            return Precalculation.data[
+                x + Precalculation.xOffset,
+                y + Precalculation.yOffset
+            ];
         }
-
         /// <summary>
         /// 1       ^       ^
         ///        / \     / \

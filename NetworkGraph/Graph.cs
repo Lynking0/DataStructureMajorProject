@@ -1,14 +1,14 @@
 using System;
 using Godot;
-using GraphInformation.SpatialIndexer;
+using NetworkGraph.SpatialIndexer;
 using Shared.Extensions.DoubleVector2Extensions;
 using System.Collections.Generic;
 using Topography;
-using GraphInformation.DataStructureAndAlgorithm.DisjointSet;
-using GraphInformation.DataStructureAndAlgorithm.OptimalCombinationAlgorithm;
+using NetworkGraph.DataStructureAndAlgorithm.DisjointSet;
+using NetworkGraph.DataStructureAndAlgorithm.OptimalCombinationAlgorithm;
 using static Shared.RandomMethods;
 
-namespace GraphInformation
+namespace NetworkGraph
 {
     public partial class Graph
     {
@@ -54,10 +54,10 @@ namespace GraphInformation
                     Vector2D extendedPos = new Vector2D(
                         basicPos.X + length * Mathf.Cos(angle), basicPos.Y + length * Mathf.Sin(angle));
                     if (!extendedPos.IsInRect(
-                        Graph.MinX + Graph.VerticesDistance / 2,
-                        Graph.MinY + Graph.VerticesDistance / 2,
-                        Graph.MaxX - Graph.VerticesDistance / 2,
-                        Graph.MaxY - Graph.VerticesDistance / 2))
+                        Graph.MinX + Graph.CtrlPointDistance,
+                        Graph.MinY + Graph.CtrlPointDistance,
+                        Graph.MaxX - Graph.CtrlPointDistance,
+                        Graph.MaxY - Graph.CtrlPointDistance))
                         continue;
                     if (VerticesContainer.HasAdjacency(extendedPos))
                         continue;
@@ -91,7 +91,7 @@ namespace GraphInformation
         /// <summary>
         ///   首次尝试建边，将所有节点当作Intermediate看待并尝试生成Edge，并将最后未建成边的节点标记为Terminal。
         /// </summary>
-        public void FirstCreation(List<(Vertex, Vertex)> pairs)
+        private void FirstCreation(List<(Vertex, Vertex)> pairs)
         {
             foreach ((Vertex a, Vertex b) in pairs)
             {

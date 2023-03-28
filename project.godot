@@ -21,7 +21,6 @@ project/assembly_name="DataStructureMajorProject"
 
 [rendering]
 
-renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
 
 [shader_globals]
@@ -45,10 +44,6 @@ Octaves={
 PingPongStrength={
 "type": "float",
 "value": 2.0
-}
-WeightedStrength={
-"type": "float",
-"value": 0.0
 }
 Lacunarity={
 "type": "float",

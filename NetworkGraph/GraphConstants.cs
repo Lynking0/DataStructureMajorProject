@@ -1,7 +1,7 @@
 using System;
 using Godot;
 
-namespace GraphInformation
+namespace NetworkGraph
 {
     public partial class Graph
     {
