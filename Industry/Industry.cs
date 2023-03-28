@@ -40,26 +40,17 @@ namespace Industry
             GD.Print(Factory.FactoriesQuadTree.Count);
             foreach (var curFactory in Factory.Factories)
             {
-                var nearFactorySets = curFactory.QuadTreeHandle.Nearby();
+                var nearFactories = curFactory.QuadTreeHandle.Nearby(curFactory);
                 foreach (var requirement in curFactory.Recipe.Input)
                 {
-                    bool requirementFulfill = false;
-                    foreach (var nearFactorires in nearFactorySets)
+                    foreach (var targetFactory in nearFactories)
                     {
-                        var factorires = nearFactorires.ToList();
-                        factorires.Sort((a, b) => a.Position.DistanceSquaredTo(curFactory.Position).CompareTo(b.Position.DistanceSquaredTo(curFactory.Position)));
-                        foreach (var targetFactory in factorires)
+                        if (targetFactory.Recipe.Output.Any(outputItem => requirement.Type == outputItem.Type))
                         {
-                            if (targetFactory.Recipe.Output.Any(outputItem => requirement.Type == outputItem.Type))
-                            {
-                                var link = new ProduceLink(targetFactory, curFactory, requirement);
-                                DrawLine(curFactory.Position, targetFactory.Position, Colors.Red, width: 2);
-                                requirementFulfill = true;
-                                break;
-                            }
-                        }
-                        if (requirementFulfill)
+                            var link = new ProduceLink(targetFactory, curFactory, requirement);
+                            DrawLine(curFactory.Position, targetFactory.Position, Colors.Red, width: 2);
                             break;
+                        }
                     }
                 }
             }

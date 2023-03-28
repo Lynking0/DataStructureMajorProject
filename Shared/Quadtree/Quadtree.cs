@@ -42,12 +42,21 @@ namespace Shared
                 {
                     Node = node;
                 }
-
-                public IEnumerable<IEnumerable<T>> Nearby()
+                public IEnumerable<T> Nearby(T obj)
+                {
+                    return Nearby(obj.Position);
+                }
+                public IEnumerable<T> Nearby(Vector2 position)
                 {
                     if (Node == null)
                         throw new Exception("Handle is invalid");
-                    return Node.Nearby();
+                    foreach (var nearFactories in Node.Nearby())
+                    {
+                        var temp = nearFactories.ToList();
+                        temp.Sort((a, b) => a.Position.DistanceSquaredTo(position).CompareTo(b.Position.DistanceSquaredTo(position)));
+                        foreach (var factory in temp)
+                            yield return factory;
+                    }
                 }
             }
             public class QuadTreeNode
