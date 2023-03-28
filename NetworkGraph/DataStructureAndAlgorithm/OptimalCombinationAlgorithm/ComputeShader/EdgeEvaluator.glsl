@@ -1,13 +1,14 @@
 #[compute]
 #version 450
 
-precision highp float;
 precision highp int;
 
-// 随机数生成部分
-int prngState = 0;
+layout(local_size_x = 10, local_size_y = 1, local_size_z = 1) in;
 
-void init_rand(int seed)
+// 随机数生成部分
+uint prngState = 0;
+
+void init_rand(uint seed)
 {
     // Seed the pseudo-random number generator
     prngState += seed;
@@ -15,7 +16,7 @@ void init_rand(int seed)
 
 float rand()
 {
-    int value;
+    uint value;
 
     // Use a linear congruential generator (LCG) to update the state of the PRNG
     prngState *= 1103515245;
@@ -33,7 +34,32 @@ float rand()
     value |= (prngState >> 16) & 0x03FF;
 
     // Return the random value
-    return value * (1.0 / 2147483648.0);
+    return value * (1.0 / 4294967296.0);
+}
+vec2 random_normal_distribution()
+{
+	float u = 0.0, v = 0.0, w = 0.0, c = 0.0;
+	do
+	{
+		u = rand() * 2.0 - 1.0;
+		v = rand() * 2.0 - 1.0;
+		w = u * u + v * v;
+	} while (w == 0.0 || w >= 1.0);
+	c = sqrt((-2.0 * log(w)) / w);
+	return vec2(u * c, v * c);
+}
+float normal_random(float mean, float deviation, float min_num, float max_num)
+{
+	while (true)
+	{
+		vec2 v = random_normal_distribution();
+		float temp = v.x * deviation + mean;
+		if (temp <= max_num && temp >= min_num)
+			return temp;
+		temp = v.y * deviation + mean;
+		if (temp <= max_num && temp >= min_num)
+			return temp;
+	};
 }
 // -----------
 
@@ -132,17 +158,17 @@ float bicubic_interpolation(int seed, float x, float y) {
             ys) * (1.0 / (1.5 * 1.5));
 }
 
-void get_noise(float _x, float _y) {
+float get_noise(vec2 v) {
 	// Place fragment code here.
-	float x = _x * noise_params.Frequency;
-	float y = _y * noise_params.Frequency;
+	float x = v.x * noise_params.Frequency;
+	float y = v.y * noise_params.Frequency;
 	int seed = int(noise_params.Seed);
 	
 	float sum = 0.0;
 	float amp = noise_params.Amplitude;
 	for (int i = 0; i < noise_params.Octaves; ++i) {
         // seed++ —— 改变种子以生成不同噪声
-		highp float singleNoise = bicubic_interpolation(seed++, x, y);
+		float singleNoise = bicubic_interpolation(seed++, x, y);
 		// 使用pingpong函数进行标准化
 		float normalizedNoise = pingpong((singleNoise + 1.0) * noise_params.PingPongStrength);
 		// 叠加
@@ -155,13 +181,10 @@ void get_noise(float _x, float _y) {
 		amp *= noise_params.Gain;
 	}
 	
-	float result = 
-		(pow(noise_params.BottomNumber, -sum) - 1.0 / noise_params.BottomNumber)
-		/ (noise_params.BottomNumber - 1.0 / noise_params.BottomNumber);
+	return (pow(noise_params.BottomNumber, -sum) - 1.0 / noise_params.BottomNumber)
+			/ (noise_params.BottomNumber - 1.0 / noise_params.BottomNumber);
 }
 // -----------
-
-layout(local_size_x = 10, local_size_y = 1, local_size_z = 1) in;
 
 layout(set = 0, binding = 1, std430) restrict buffer VertexAX
 {
@@ -197,17 +220,18 @@ layout(set = 0, binding = 8, std430) restrict buffer VertexDY
 } vertex_d_y;
 layout(set = 0, binding = 9, std430) restrict buffer Seeds
 {
-    int data[];
+    uint data[];
 } seeds;
 layout(set = 0, binding = 10, std430) restrict buffer Params
 {
 	float PI;
     float MaxVertexAltitude;
     float CtrlPointDistance;
+	float MaxID;
 } params;
 layout(set = 0, binding = 11, std430) restrict buffer IsVaild
 {
-    float data[];
+    bool data[];
 } is_vaild;
 
 const float AttenuationRate = 0.997;
@@ -215,17 +239,71 @@ const float InitTemperature = 5000;
 const float LowestTemperature = 2000;
 const float MaxRejectTimes = 10;
 
+vec2 a;
+vec2 b;
+vec2 c;
+vec2 d;
 
+float get_energy(float t)
+{
+	float _t = 1 - t;
+	vec2 v = a * _t * _t * _t + b * 3 * _t * _t * t + c * 3 * _t * t * t + d * t * t * t;
+	return get_noise(v);
+}
+
+float get_near_status(float cur_status, float temperature)
+{
+	float range = 1.0 - exp(-10.0 * (temperature / InitTemperature - (LowestTemperature - 100.0) / InitTemperature));
+	return normal_random(cur_status, range, 0.0, 1.0);
+}
+
+float get_accept_PR(float cur_energy, float next_energy, float temperature)
+{
+	if (next_energy > cur_energy)
+        return 1.0;
+    return exp((next_energy - cur_energy) / (temperature * (1.0 / 2400000)));
+}
 
 void main()
 {
 	int gID = int(gl_GlobalInvocationID.x);
-	vec2 a = vec2(vertex_a_x.data[gID], vertex_a_y.data[gID]);
-	vec2 b = vec2(vertex_b_x.data[gID], vertex_b_y.data[gID]);
-	vec2 c = vec2(vertex_c_x.data[gID], vertex_c_y.data[gID]);
-	vec2 d = vec2(vertex_d_x.data[gID], vertex_d_y.data[gID]);
+	if (gID > params.MaxID)
+		return;
+	a = vec2(vertex_a_x.data[gID], vertex_a_y.data[gID]);
+	b = vec2(vertex_b_x.data[gID], vertex_b_y.data[gID]);
+	c = vec2(vertex_c_x.data[gID], vertex_c_y.data[gID]);
+	d = vec2(vertex_d_x.data[gID], vertex_d_y.data[gID]);
 	init_rand(seeds.data[gID]);
 	
 	float status = rand();
 	float energy = get_energy(status);
+	int reject_cnt = 0;
+	for (float t = InitTemperature; ; t *= AttenuationRate)
+	{
+		if (t < LowestTemperature)
+			t = LowestTemperature;
+		if (energy >= params.MaxVertexAltitude)
+		{
+			is_vaild.data[gID] = false;
+			return;
+		}
+		float next_status = get_near_status(status, t);
+		float next_energy = get_energy(next_status);
+		if (rand() < get_accept_PR(energy, next_energy, t))
+		{
+			reject_cnt = 0;
+			status = next_status;
+			energy = next_energy;
+		}
+		else if (t == LowestTemperature)
+		{
+			if (reject_cnt < MaxRejectTimes)
+				++reject_cnt;
+			else
+			{
+				is_vaild.data[gID] = true;
+				return;
+			}
+		}
+	}
 }

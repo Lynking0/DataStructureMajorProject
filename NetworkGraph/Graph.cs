@@ -7,6 +7,7 @@ using Topography;
 using NetworkGraph.DataStructureAndAlgorithm.DisjointSet;
 using NetworkGraph.DataStructureAndAlgorithm.OptimalCombinationAlgorithm;
 using static Shared.RandomMethods;
+using NetworkGraph.DataStructureAndAlgorithm.OptimalCombinationAlgorithm.ComputeShader;
 
 namespace NetworkGraph
 {
@@ -93,50 +94,24 @@ namespace NetworkGraph
         /// </summary>
         private void FirstCreation(List<(Vertex, Vertex)> pairs)
         {
+            EdgeEvaluatorInvoker.Data = new List<(Vector2D a, Vector2D b, Vector2D c, Vector2D d)>();
             foreach ((Vertex a, Vertex b) in pairs)
             {
-                Edge edge = new Edge(a, b, new Curve2D());
-                EdgeEvaluator.Instance.MaxEnergy = Graph.MaxVertexAltitude;
-                EdgeEvaluator.Instance.A = a.Position;
-                EdgeEvaluator.Instance.D = b.Position;
+                Vector2D aCtrl, bCtrl;
                 if (Mathf.Abs(a.Gradient.OrthogonalD().AngleToD(b.Position - a.Position)) < Math.PI / 2)
-                {
-                    EdgeEvaluator.Instance.B = a.Position + a.Gradient.OrthogonalD().NormalizedD() * Graph.CtrlPointDistance;
-                    edge.Curve.AddPoint((Vector2)a.Position,
-                        @out: (Vector2)(a.Gradient.OrthogonalD().NormalizedD() * Graph.CtrlPointDistance));
-                }
+                    aCtrl = a.Position + a.Gradient.OrthogonalD().NormalizedD() * Graph.CtrlPointDistance;
                 else
-                {
-                    EdgeEvaluator.Instance.B = a.Position - a.Gradient.OrthogonalD().NormalizedD() * Graph.CtrlPointDistance;
-                    edge.Curve.AddPoint((Vector2)a.Position,
-                        @out: -(Vector2)(a.Gradient.OrthogonalD().NormalizedD() * Graph.CtrlPointDistance));
-                }
+                    aCtrl = a.Position - a.Gradient.OrthogonalD().NormalizedD() * Graph.CtrlPointDistance;
                 if (Mathf.Abs(b.Gradient.OrthogonalD().AngleToD(a.Position - b.Position)) < Math.PI / 2)
-                {
-                    EdgeEvaluator.Instance.C = b.Position + b.Gradient.OrthogonalD().NormalizedD() * Graph.CtrlPointDistance;
-                    edge.Curve.AddPoint((Vector2)b.Position,
-                        @in: (Vector2)(b.Gradient.OrthogonalD().NormalizedD() * Graph.CtrlPointDistance));
-                }
+                    bCtrl = b.Position + b.Gradient.OrthogonalD().NormalizedD() * Graph.CtrlPointDistance;
                 else
-                {
-                    EdgeEvaluator.Instance.C = b.Position - b.Gradient.OrthogonalD().NormalizedD() * Graph.CtrlPointDistance;
-                    edge.Curve.AddPoint((Vector2)b.Position,
-                        @in: -(Vector2)(b.Gradient.OrthogonalD().NormalizedD() * Graph.CtrlPointDistance));
-                }
-                // GD.Print(EdgeEvaluator.Instance.Annealing());
-                // GD.Print(EdgeEvaluator.Instance.Annealing());
-                // GD.Print(EdgeEvaluator.Instance.Annealing());
-                // GD.Print();
-
-                double v = EdgeEvaluator.Instance.Annealing().energy;
-                if (v < EdgeEvaluator.Instance.MaxEnergy)
-                {
-                    a.Adjacencies.Add(edge);
-                    b.Adjacencies.Add(edge);
-                }
+                    bCtrl = b.Position - b.Gradient.OrthogonalD().NormalizedD() * Graph.CtrlPointDistance;
+                EdgeEvaluatorInvoker.Data.Add((a.Position, aCtrl, bCtrl, b.Position));
             }
-            foreach (Vertex v in Vertices)
-                v.Type = v.Adjacencies.Count == 0 ? Vertex.VertexType.Terminal : Vertex.VertexType.Intermediate;
+            EdgeEvaluatorInvoker.Invoke();
+            bool[] isVaild = EdgeEvaluatorInvoker.Receive();
+            // foreach (Vertex v in Vertices)
+            //     v.Type = v.Adjacencies.Count == 0 ? Vertex.VertexType.Terminal : Vertex.VertexType.Intermediate;
         }
     }
 }
