@@ -28,8 +28,8 @@ namespace Topography
             RenderingServer.GlobalShaderParameterSet("BottomNumber", FractalNoiseGenerator.BottomNumber);
             RenderingServer.GlobalShaderParameterSet("LevelCnt", 0);
 
-            Graph.Instance.PossionDiskSample();
-            Graph.Instance.CreateEdges();
+            // Graph.Instance.CreateVertices();
+            // Graph.Instance.CreateEdges();
         }
 
         public override void _Input(InputEvent @event)

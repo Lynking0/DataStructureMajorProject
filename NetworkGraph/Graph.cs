@@ -33,7 +33,7 @@ namespace NetworkGraph
         /// <summary>
         ///   生成各个点
         /// </summary>
-        public void PossionDiskSample()
+        public void CreateVertices()
         {
             VerticesContainer.Clear();
             List<Vector2D> options = new List<Vector2D>();
