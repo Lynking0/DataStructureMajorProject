@@ -2,7 +2,7 @@ using Godot;
 using System.Collections.Generic;
 using Shared.QuadTree;
 
-namespace Industry
+namespace IndustryMoudle
 {
     public partial class Factory
     {

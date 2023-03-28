@@ -1,0 +1,14 @@
+[remap]
+
+importer="glsl"
+type="RDShaderFile"
+uid="uid://do0hd61kfoxcc"
+path="res://.godot/imported/EdgeEvaluator.glsl-b6c472c281743b068321ce63333f998b.res"
+
+[deps]
+
+source_file="res://Graph/DataStructureAndAlgorithm/OptimalCombinationAlgorithm/ComputeShader/EdgeEvaluator.glsl"
+dest_files=["res://.godot/imported/EdgeEvaluator.glsl-b6c472c281743b068321ce63333f998b.res"]
+
+[params]
+

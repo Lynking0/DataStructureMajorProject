@@ -1,15 +1,15 @@
 using System;
 using Godot;
-using NetworkGraph.SpatialIndexer;
+using GraphMoudle.SpatialIndexer;
 using Shared.Extensions.DoubleVector2Extensions;
 using System.Collections.Generic;
-using Topography;
-using NetworkGraph.DataStructureAndAlgorithm.DisjointSet;
-using NetworkGraph.DataStructureAndAlgorithm.OptimalCombinationAlgorithm;
+using TopographyMoudle;
+using GraphMoudle.DataStructureAndAlgorithm.DisjointSet;
+using GraphMoudle.DataStructureAndAlgorithm.OptimalCombinationAlgorithm;
 using static Shared.RandomMethods;
-using NetworkGraph.DataStructureAndAlgorithm.OptimalCombinationAlgorithm.ComputeShader;
+using GraphMoudle.DataStructureAndAlgorithm.OptimalCombinationAlgorithm.ComputeShader;
 
-namespace NetworkGraph
+namespace GraphMoudle
 {
     public partial class Graph
     {

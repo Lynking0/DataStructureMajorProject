@@ -3,7 +3,7 @@ using System;
 using Shared.Extensions.DoubleVector2Extensions;
 using static Shared.RandomMethods;
 
-namespace NetworkGraph.DataStructureAndAlgorithm.OptimalCombinationAlgorithm
+namespace GraphMoudle.DataStructureAndAlgorithm.OptimalCombinationAlgorithm
 {
     [Obsolete("相关功能已移至EdgeEvaluator.glsl中")]
     public class EdgeEvaluator : Abstract.SimulatedAnnealing<double>
@@ -18,7 +18,7 @@ namespace NetworkGraph.DataStructureAndAlgorithm.OptimalCombinationAlgorithm
         protected override double GetEnergy(double t)
         {
             Vector2D v = A * Mathf.Pow(1 - t, 3) + B * 3 * (Mathf.Pow(1 - t, 2) * t) + C * 3 * ((1 - t) * t * t) + D * (t * t * t);
-            return Topography.FractalNoiseGenerator.GetFractalNoise(v.X, v.Y);
+            return TopographyMoudle.FractalNoiseGenerator.GetFractalNoise(v.X, v.Y);
         }
         protected override double GetInitStatus()
         {

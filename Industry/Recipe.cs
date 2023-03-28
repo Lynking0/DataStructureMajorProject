@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Shared.Extensions.ICollectionExtensions;
 
-namespace Industry
+namespace IndustryMoudle
 {
     // public enum ItemType
     // {

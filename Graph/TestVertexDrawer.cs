@@ -1,9 +1,9 @@
 using Godot;
 using System;
-using NetworkGraph;
+using GraphMoudle;
 using Shared.Extensions.DoubleVector2Extensions;
 
-namespace NetworkGraph
+namespace GraphMoudle
 {
     public partial class TestVertexDrawer : Node2D
     {

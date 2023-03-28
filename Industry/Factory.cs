@@ -2,7 +2,7 @@ using Godot;
 using System.Collections.Generic;
 using Shared.QuadTree;
 
-namespace Industry
+namespace IndustryMoudle
 {
     using ItemType = System.String;
     public partial class Factory : ILocatable

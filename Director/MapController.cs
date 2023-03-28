@@ -17,5 +17,10 @@ namespace Director
             (Material as ShaderMaterial)!.SetShaderParameter("transform", MapTransform);
             (Material as ShaderMaterial)!.SetShaderParameter("scale", MapScale);
         }
+
+        public void SetMapPosition(Vector2 position)
+        {
+            MapTransform = position;
+        }
     }
 }

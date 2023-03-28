@@ -1,18 +1,43 @@
-[gd_scene load_steps=5 format=3 uid="uid://bghqq2rbbo7lg"]
+[gd_scene load_steps=7 format=3 uid="uid://b41f4athcgaas"]
 
 [ext_resource type="Shader" path="res://Topography/Topography.gdshader" id="1_eyknh"]
 [ext_resource type="Script" path="res://Director/Director.cs" id="2_67y13"]
 [ext_resource type="Script" path="res://Director/MapController.cs" id="2_0624i"]
+[ext_resource type="Script" path="res://UserControl/MouselInput.cs" id="2_x3ccx"]
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_plgit"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_88xvb"]
 shader = ExtResource("1_eyknh")
 shader_parameter/scale = null
 shader_parameter/transform = null
 shader_parameter/screenSize = null
 
-[node name="GameViewportContainer" type="SubViewportContainer"]
-material = SubResource("ShaderMaterial_plgit")
-custom_minimum_size = Vector2(50, 50)
+[sub_resource type="LabelSettings" id="LabelSettings_m3dq6"]
+font_size = 32
+
+[node name="Main" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Director" type="Control" parent="."]
+anchors_preset = 0
+script = ExtResource("2_67y13")
+
+[node name="MouseInput" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("2_x3ccx")
+
+[node name="GameViewportContainer" type="SubViewportContainer" parent="MouseInput"]
+material = SubResource("ShaderMaterial_88xvb")
+layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -21,10 +46,33 @@ grow_vertical = 2
 stretch = true
 script = ExtResource("2_0624i")
 
-[node name="GameViewport" type="SubViewport" parent="."]
+[node name="SubViewport" type="SubViewport" parent="MouseInput/GameViewportContainer"]
 handle_input_locally = false
-size = Vector2i(1152, 648)
 render_target_update_mode = 4
 
-[node name="Director" type="Node" parent="."]
-script = ExtResource("2_67y13")
+[node name="Title" type="Label" parent="MouseInput"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -101.0
+offset_right = 101.0
+offset_bottom = 48.0
+grow_horizontal = 2
+text = "This is a title."
+label_settings = SubResource("LabelSettings_m3dq6")
+
+[node name="foot" type="Label" parent="MouseInput"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -105.0
+offset_top = -48.0
+offset_right = 105.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "This is a Foot."
+label_settings = SubResource("LabelSettings_m3dq6")

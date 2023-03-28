@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using Shared.Extensions.DoubleVector2Extensions;
 
 
-namespace NetworkGraph.SpatialIndexer
+namespace GraphMoudle.SpatialIndexer
 {
     /// <summary>
     ///   使用网格对节点进行空间索引

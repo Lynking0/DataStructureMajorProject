@@ -1,9 +1,9 @@
 using Godot;
 using System.Collections.Generic;
 using System.Linq;
-using NetworkGraph;
+using GraphMoudle;
 
-namespace Industry
+namespace IndustryMoudle
 {
     public partial class Industry : Node2D
     {

@@ -2,7 +2,7 @@ using System;
 using Godot;
 using System.Collections.Generic;
 
-namespace NetworkGraph.DataStructureAndAlgorithm.DisjointSet
+namespace GraphMoudle.DataStructureAndAlgorithm.DisjointSet
 {
     public interface IDisjointSetElement<T>
     {

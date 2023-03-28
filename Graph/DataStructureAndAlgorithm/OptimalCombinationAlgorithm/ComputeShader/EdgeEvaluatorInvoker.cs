@@ -4,7 +4,7 @@ using Godot.Collections;
 using System.Collections.Generic;
 using Shared.Extensions.DoubleVector2Extensions;
 
-namespace NetworkGraph.DataStructureAndAlgorithm.OptimalCombinationAlgorithm.ComputeShader
+namespace GraphMoudle.DataStructureAndAlgorithm.OptimalCombinationAlgorithm.ComputeShader
 {
     public static class EdgeEvaluatorInvoker
     {
@@ -25,20 +25,20 @@ namespace NetworkGraph.DataStructureAndAlgorithm.OptimalCombinationAlgorithm.Com
         {
             float[] input0 = new float[]
             {
-                (float)Topography.FractalNoiseGenerator.Seed,
-                (float)Topography.FractalNoiseGenerator.Frequency,
-                (float)Topography.FractalNoiseGenerator.Amplitude,
-                (float)Topography.FractalNoiseGenerator.Octaves,
-                (float)Topography.FractalNoiseGenerator.PingPongStrength,
-                (float)Topography.FractalNoiseGenerator.Lacunarity,
-                (float)Topography.FractalNoiseGenerator.Gain,
-                (float)Topography.FractalNoiseGenerator.BottomNumber
+                (float)TopographyMoudle.FractalNoiseGenerator.Seed,
+                (float)TopographyMoudle.FractalNoiseGenerator.Frequency,
+                (float)TopographyMoudle.FractalNoiseGenerator.Amplitude,
+                (float)TopographyMoudle.FractalNoiseGenerator.Octaves,
+                (float)TopographyMoudle.FractalNoiseGenerator.PingPongStrength,
+                (float)TopographyMoudle.FractalNoiseGenerator.Lacunarity,
+                (float)TopographyMoudle.FractalNoiseGenerator.Gain,
+                (float)TopographyMoudle.FractalNoiseGenerator.BottomNumber
             };
             float[] input10 = new float[]
             {
                 (float)Math.PI,
-                (float)NetworkGraph.Graph.MaxVertexAltitude,
-                (float)NetworkGraph.Graph.CtrlPointDistance,
+                (float)GraphMoudle.Graph.MaxVertexAltitude,
+                (float)GraphMoudle.Graph.CtrlPointDistance,
                 (float)Data!.Count
             };
             float[] input1 = new float[Data.Count];

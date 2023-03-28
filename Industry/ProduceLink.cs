@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Industry
+namespace IndustryMoudle
 {
     public struct ProduceLink
     {

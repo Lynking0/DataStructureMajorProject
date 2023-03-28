@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-namespace NetworkGraph.DataStructureAndAlgorithm.OptimalCombinationAlgorithm.Abstract
+namespace GraphMoudle.DataStructureAndAlgorithm.OptimalCombinationAlgorithm.Abstract
 {
     [Obsolete("相关功能已移至compute shader中")]
     public abstract class SimulatedAnnealing<Status>
