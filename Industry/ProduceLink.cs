@@ -15,6 +15,12 @@ namespace Industry
             this.to = to;
             this.item = item;
             Links.Add(this);
+
+        }
+
+        public static implicit operator string(ProduceLink link)
+        {
+            return link.item.Type;
         }
     }
 }

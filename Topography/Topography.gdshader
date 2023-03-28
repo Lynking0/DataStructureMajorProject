@@ -14,6 +14,10 @@ global uniform int LevelCnt;
 const int primeX = 501125321;
 const int primeY = 1136930381;
 
+uniform float scale;
+uniform vec2 transform;
+uniform vec2 screenSize;
+
 int primedHash(int seed, int xPrimed, int yPrimed) {
 	int hash = seed ^ xPrimed ^ yPrimed;
 	hash *= 0x27d4eb2d;
@@ -98,8 +102,9 @@ float discretize(float x) {
 
 void fragment() {
 	// Place fragment code here.
-	float x = VERTEX.x * Frequency;
-	float y = VERTEX.y * Frequency;
+	vec2 pos = (VERTEX + transform - screenSize / 2.0) / scale;
+	float x = pos.x * Frequency;
+	float y = pos.y * Frequency;
 	int seed = Seed;
 	
 	float sum = 0.0;

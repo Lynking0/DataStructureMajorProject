@@ -1,0 +1,47 @@
+[gd_scene load_steps=2 format=3 uid="uid://b41f4athcgaas"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_m3dq6"]
+font_size = 32
+
+[node name="Main" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Input" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Title" type="Label" parent="Input"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -101.0
+offset_right = 101.0
+offset_bottom = 48.0
+grow_horizontal = 2
+text = "This is a title."
+label_settings = SubResource("LabelSettings_m3dq6")
+
+[node name="foot" type="Label" parent="Input"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -105.0
+offset_top = -48.0
+offset_right = 105.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "This is a Foot."
+label_settings = SubResource("LabelSettings_m3dq6")
