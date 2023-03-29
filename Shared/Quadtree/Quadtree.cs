@@ -8,19 +8,18 @@ namespace Shared.QuadTree
 {
     /*
     Layout:
-     __       _____ 
-    /  |     |  _  |
-    `| |     | |/' |
-     | |     |  /| |
-    _| |_    \ |_/ /
-    \___/     \___/ 
-
      _____      _____ 
-    / __  \    |____ |
-    `' / /'        / /
-    / /          \ \
-    ./ /___    .___/ /
-    \_____/    \____/         
+    |  _  |    / __  \
+    | |/' |    `' / /'
+    |  /| |      / /
+    \ |_/ /    ./ /___
+     \___/     \_____/
+      __        _____ 
+     /  |      |____ |
+     `| |          / /
+      | |          \ \
+     _| |_     .___/ /
+     \___/     \____/                                  
     */
     public interface ILocatable
     {
@@ -70,9 +69,13 @@ namespace Shared.QuadTree
             private QuadTreeNode[] InitForInternal()
             {
                 return new QuadTreeNode[]{
-                        new QuadTreeNode(this,QuadTreeNodeType.Leaf,Level + 1, new Rect2(Bounds.Position + new Vector2(Bounds.Size.X / 2, 0), Bounds.Size / 2)),
+                        // LU
                         new QuadTreeNode(this,QuadTreeNodeType.Leaf,Level + 1, new Rect2(Bounds.Position, Bounds.Size / 2)),
+                        // LD
                         new QuadTreeNode(this,QuadTreeNodeType.Leaf,Level + 1, new Rect2(Bounds.Position + new Vector2(0, Bounds.Size.Y / 2), Bounds.Size / 2)),
+                        // RU
+                        new QuadTreeNode(this,QuadTreeNodeType.Leaf,Level + 1, new Rect2(Bounds.Position + new Vector2(Bounds.Size.X / 2, 0), Bounds.Size / 2)),
+                        // RD
                         new QuadTreeNode(this,QuadTreeNodeType.Leaf,Level + 1, new Rect2(Bounds.Position + Bounds.Size / 2, Bounds.Size / 2))
                     };
             }
@@ -102,14 +105,14 @@ namespace Shared.QuadTree
                 if (position.X < Bounds.Position.X + Bounds.Size.X / 2)
                 {
                     if (position.Y < Bounds.Position.Y + Bounds.Size.Y / 2)
-                        return 1;
+                        return 0;
                     else
-                        return 2;
+                        return 1;
                 }
                 else
                 {
                     if (position.Y < Bounds.Position.Y + Bounds.Size.Y / 2)
-                        return 0;
+                        return 2;
                     else
                         return 3;
                 }
