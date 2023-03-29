@@ -1,9 +1,10 @@
-[gd_scene load_steps=7 format=3 uid="uid://b41f4athcgaas"]
+[gd_scene load_steps=8 format=3 uid="uid://b41f4athcgaas"]
 
 [ext_resource type="Shader" path="res://Topography/Topography.gdshader" id="1_eyknh"]
 [ext_resource type="Script" path="res://Director/Director.cs" id="2_67y13"]
-[ext_resource type="Script" path="res://Director/MapController.cs" id="2_0624i"]
 [ext_resource type="Script" path="res://UserControl/MouselInput.cs" id="2_x3ccx"]
+[ext_resource type="Script" path="res://Director/Map/MapController.cs" id="4_b7hkw"]
+[ext_resource type="Script" path="res://Director/Map/MapRender.cs" id="5_tv3h6"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_88xvb"]
 shader = ExtResource("1_eyknh")
@@ -36,6 +37,7 @@ grow_vertical = 2
 script = ExtResource("2_x3ccx")
 
 [node name="GameViewportContainer" type="SubViewportContainer" parent="MouseInput"]
+unique_name_in_owner = true
 material = SubResource("ShaderMaterial_88xvb")
 layout_mode = 1
 anchors_preset = 15
@@ -44,12 +46,15 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 stretch = true
-script = ExtResource("2_0624i")
+script = ExtResource("4_b7hkw")
 
 [node name="SubViewport" type="SubViewport" parent="MouseInput/GameViewportContainer"]
 handle_input_locally = false
 size = Vector2i(1152, 648)
 render_target_update_mode = 4
+
+[node name="MapRender" type="Node2D" parent="MouseInput"]
+script = ExtResource("5_tv3h6")
 
 [node name="Title" type="Label" parent="MouseInput"]
 layout_mode = 1

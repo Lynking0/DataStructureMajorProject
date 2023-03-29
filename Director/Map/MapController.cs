@@ -4,6 +4,9 @@ namespace Director
 {
     public partial class MapController : SubViewportContainer
     {
+        [Signal]
+        public delegate void MapChangedEventHandler(Vector2 transform, double scale);
+
         private double MapScale = 1;
         private Vector2 MapTransform = new Vector2(0, 0);
         private Vector2 WindowSize;
@@ -14,7 +17,6 @@ namespace Director
             WindowSize = GetWindow().Size;
             if (WindowSizeUpdateToShaderTimer is not null)
                 WindowSizeUpdateToShaderTimer.Start();
-
         }
 
         public override void _Ready()
@@ -26,13 +28,18 @@ namespace Director
             WindowSizeUpdateToShaderTimer.OneShot = true;
             WindowSizeUpdateToShaderTimer.WaitTime = 0.25f;
             AddChild(WindowSizeUpdateToShaderTimer);
-            WindowSizeUpdateToShaderTimer.Timeout += () => { (Material as ShaderMaterial)!.SetShaderParameter("windowSize", WindowSize); };
+            WindowSizeUpdateToShaderTimer.Timeout += () =>
+            {
+                (Material as ShaderMaterial)!.SetShaderParameter("windowSize", WindowSize);
+                EmitSignal(SignalName.MapChanged);
+            };
         }
 
         private void UpdateMapShader()
         {
             (Material as ShaderMaterial)!.SetShaderParameter("transform", MapTransform);
             (Material as ShaderMaterial)!.SetShaderParameter("scale", MapScale);
+            EmitSignal(SignalName.MapChanged, MapTransform, MapScale);
         }
 
         public void SetMapPosition(Vector2 positionDelta)
