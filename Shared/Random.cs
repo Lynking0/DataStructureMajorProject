@@ -38,10 +38,10 @@ namespace Shared
             {
                 (double a, double b) = RandomNormalDistribution();
                 double temp = a * deviation + mean;
-                if (temp <= max && temp >= min)
+                if (temp >= min && temp <= max)
                     return temp;
                 temp = b * deviation + mean;
-                if (temp <= max && temp >= min)
+                if (temp >= min && temp <= max)
                     return temp;
             };
         }

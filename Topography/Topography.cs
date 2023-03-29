@@ -7,7 +7,7 @@ namespace TopographyMoudle
     {
         public static void InitParams()
         {
-            FractalNoiseGenerator.Seed = 0;
+            FractalNoiseGenerator.Seed = 1;
             FractalNoiseGenerator.Frequency = 1 / 200.0;
             FractalNoiseGenerator.Amplitude = 1 / 2.5;
             FractalNoiseGenerator.Octaves = 5;

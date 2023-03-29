@@ -101,7 +101,7 @@ float discretize(float x) {
 
 void fragment() {
 	// Place fragment code here.
-	vec2 pos = (VERTEX + transform - screenSize / 2.0) / scale;
+	vec2 pos = (VERTEX + transform) / scale;
 	float x = pos.x * Frequency;
 	float y = pos.y * Frequency;
 	int seed = Seed;

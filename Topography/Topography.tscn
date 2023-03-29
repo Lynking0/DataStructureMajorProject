@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=5 format=3 uid="uid://bbj4lkdhe1na2"]
 
 [ext_resource type="Script" path="res://Topography/Topography.cs" id="1_xhick"]
 [ext_resource type="Shader" path="res://Topography/Topography.gdshader" id="2_7vfbp"]
@@ -6,6 +6,9 @@
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_qxqdn"]
 shader = ExtResource("2_7vfbp")
+shader_parameter/scale = null
+shader_parameter/transform = null
+shader_parameter/screenSize = null
 
 [node name="Node2D" type="Node2D"]
 script = ExtResource("1_xhick")

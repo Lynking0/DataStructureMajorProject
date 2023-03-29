@@ -109,10 +109,38 @@ namespace GraphMoudle
                     bCtrl = b.Position - b.Gradient.OrthogonalD().NormalizedD() * Graph.CtrlPointDistance;
                 EdgeEvaluatorInvoker.Data.Add((a.Position, aCtrl, bCtrl, b.Position));
             }
+            // EdgeEvaluator.Instance.MaxEnergy = Graph.MaxVertexAltitude;
+            // bool[] isVaild = new bool[pairs.Count];
+            // for (int i = 0; i < EdgeEvaluatorInvoker.Data.Count; ++i)
+            // {
+            //     EdgeEvaluator.Instance.A = EdgeEvaluatorInvoker.Data[i].a;
+            //     EdgeEvaluator.Instance.B = EdgeEvaluatorInvoker.Data[i].b;
+            //     EdgeEvaluator.Instance.C = EdgeEvaluatorInvoker.Data[i].c;
+            //     EdgeEvaluator.Instance.D = EdgeEvaluatorInvoker.Data[i].d;
+            //     isVaild[i] = EdgeEvaluator.Instance.Annealing().energy < Graph.MaxVertexAltitude;
+            // }
             EdgeEvaluatorInvoker.Invoke();
-            bool[] isVaild = EdgeEvaluatorInvoker.Receive();
-            // foreach (Vertex v in Vertices)
-            //     v.Type = v.Adjacencies.Count == 0 ? Vertex.VertexType.Terminal : Vertex.VertexType.Intermediate;
+            float[] isVaild = EdgeEvaluatorInvoker.Receive();
+            // for (int i = 0; i < isVaild.Item1.Length; ++i)
+            // {
+            //     GD.Print();
+            //     GD.Print((isVaild.Item1[i], isVaild.Item2[i]));
+            //     GD.Print((EdgeEvaluatorInvoker.Data[i].a.X, EdgeEvaluatorInvoker.Data[i].a.Y));
+            //     GD.Print((EdgeEvaluatorInvoker.Data[i].d.X, EdgeEvaluatorInvoker.Data[i].d.Y));
+            // }
+            for (int i = 0; i < pairs.Count; ++i)
+            {
+                if (isVaild[i] == 1.0)
+                {
+                    (Vertex a, Vertex b) = pairs[i];
+                    (Vector2D _, Vector2D aCtrl, Vector2D bCtrl, Vector2D _) = EdgeEvaluatorInvoker.Data[i];
+                    Edge edge = new Edge(a, b, new Curve2D());
+                    edge.Curve.AddPoint((Vector2)a.Position, @out: (Vector2)(aCtrl - a.Position));
+                    edge.Curve.AddPoint((Vector2)b.Position, @in: (Vector2)(bCtrl - b.Position));
+                    a.Adjacencies.Add(edge);
+                    b.Adjacencies.Add(edge);
+                }
+            }
         }
     }
 }
