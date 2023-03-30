@@ -241,9 +241,9 @@ layout(set = 0, binding = 11, std430) restrict buffer IsVaild
     float data[];
 } is_vaild;
 
-const float AttenuationRate = 0.997;
+const float AttenuationRate = 0.998;
 const float InitTemperature = 5000.0;
-const float LowestTemperature = 2000.0;
+const float LowestTemperature = 1500.0;
 const int MaxRejectTimes = 10;
 
 vec2 A;
@@ -268,7 +268,7 @@ float get_accept_PR(float cur_energy, float next_energy, float temperature)
 {
 	if (next_energy > cur_energy)
         return 1.0;
-    return exp((next_energy - cur_energy) / (temperature * (1.0 / 2400000.0)));
+    return exp((next_energy - cur_energy) / (temperature * (1.0 / 2300000.0)));
 }
 
 void main()

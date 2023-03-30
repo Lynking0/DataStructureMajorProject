@@ -4,10 +4,8 @@ using GraphMoudle.SpatialIndexer;
 using Shared.Extensions.DoubleVector2Extensions;
 using System.Collections.Generic;
 using TopographyMoudle;
-using GraphMoudle.DataStructureAndAlgorithm.DisjointSet;
-using GraphMoudle.DataStructureAndAlgorithm.OptimalCombinationAlgorithm;
-using static Shared.RandomMethods;
 using GraphMoudle.DataStructureAndAlgorithm.OptimalCombinationAlgorithm.ComputeShader;
+using static Shared.RandomMethods;
 
 namespace GraphMoudle
 {
@@ -84,63 +82,16 @@ namespace GraphMoudle
         }
         public void CreateEdges()
         {
-            // UnionFindDisjointSet<Vertex> unionFindSet = new UnionFindDisjointSet<Vertex>(Vertices);
+            // 找出邻近点对
             List<(Vertex, Vertex)> pairs = VerticesContainer.GetNearbyPairs();
-            RandomDislocate(pairs);
-            FirstCreation(pairs);
-        }
-        /// <summary>
-        ///   首次尝试建边，将所有节点当作Intermediate看待并尝试生成Edge，并将最后未建成边的节点标记为Terminal。
-        /// </summary>
-        private void FirstCreation(List<(Vertex, Vertex)> pairs)
-        {
+
+            foreach (Vertex vertex in Vertices)
+                vertex.Type = Vertex.VertexType.Isolated;
+
+            List<Edge> alternativeEdges = new List<Edge>();
             EdgeEvaluatorInvoker.Init();
-            EdgeEvaluatorInvoker.Data = new List<(Vector2D a, Vector2D b, Vector2D c, Vector2D d)>();
-            foreach ((Vertex a, Vertex b) in pairs)
-            {
-                Vector2D aCtrl, bCtrl;
-                if (Mathf.Abs(a.Gradient.OrthogonalD().AngleToD(b.Position - a.Position)) < Math.PI / 2)
-                    aCtrl = a.Position + a.Gradient.OrthogonalD().NormalizedD() * Graph.CtrlPointDistance;
-                else
-                    aCtrl = a.Position - a.Gradient.OrthogonalD().NormalizedD() * Graph.CtrlPointDistance;
-                if (Mathf.Abs(b.Gradient.OrthogonalD().AngleToD(a.Position - b.Position)) < Math.PI / 2)
-                    bCtrl = b.Position + b.Gradient.OrthogonalD().NormalizedD() * Graph.CtrlPointDistance;
-                else
-                    bCtrl = b.Position - b.Gradient.OrthogonalD().NormalizedD() * Graph.CtrlPointDistance;
-                EdgeEvaluatorInvoker.Data.Add((a.Position, aCtrl, bCtrl, b.Position));
-            }
-            // EdgeEvaluator.Instance.MaxEnergy = Graph.MaxVertexAltitude;
-            // bool[] isVaild = new bool[pairs.Count];
-            // for (int i = 0; i < EdgeEvaluatorInvoker.Data.Count; ++i)
-            // {
-            //     EdgeEvaluator.Instance.A = EdgeEvaluatorInvoker.Data[i].a;
-            //     EdgeEvaluator.Instance.B = EdgeEvaluatorInvoker.Data[i].b;
-            //     EdgeEvaluator.Instance.C = EdgeEvaluatorInvoker.Data[i].c;
-            //     EdgeEvaluator.Instance.D = EdgeEvaluatorInvoker.Data[i].d;
-            //     isVaild[i] = EdgeEvaluator.Instance.Annealing().energy < Graph.MaxVertexAltitude;
-            // }
-            EdgeEvaluatorInvoker.Invoke();
-            float[] isVaild = EdgeEvaluatorInvoker.Receive();
-            // for (int i = 0; i < isVaild.Item1.Length; ++i)
-            // {
-            //     GD.Print();
-            //     GD.Print((isVaild.Item1[i], isVaild.Item2[i]));
-            //     GD.Print((EdgeEvaluatorInvoker.Data[i].a.X, EdgeEvaluatorInvoker.Data[i].a.Y));
-            //     GD.Print((EdgeEvaluatorInvoker.Data[i].d.X, EdgeEvaluatorInvoker.Data[i].d.Y));
-            // }
-            for (int i = 0; i < pairs.Count; ++i)
-            {
-                if (isVaild[i] == 1.0)
-                {
-                    (Vertex a, Vertex b) = pairs[i];
-                    (Vector2D _, Vector2D aCtrl, Vector2D bCtrl, Vector2D _) = EdgeEvaluatorInvoker.Data[i];
-                    Edge edge = new Edge(a, b, new Curve2D());
-                    edge.Curve.AddPoint((Vector2)a.Position, @out: (Vector2)(aCtrl - a.Position));
-                    edge.Curve.AddPoint((Vector2)b.Position, @in: (Vector2)(bCtrl - b.Position));
-                    a.Adjacencies.Add(edge);
-                    b.Adjacencies.Add(edge);
-                }
-            }
+            FirstTimeFilter(pairs, alternativeEdges);
+            SecondTimeFilter(pairs, alternativeEdges);
         }
     }
 }

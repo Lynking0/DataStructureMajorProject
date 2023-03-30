@@ -17,10 +17,11 @@ namespace GraphMoudle
         public enum VertexType
         {
             Terminal = 0, // 控制点仅在一个方向，即梯度的反方向
-            Intermediate // 控制点可在两个方向，分别为梯度顺/逆时针转90度方向
+            Intermediate, // 控制点可在两个方向，分别为梯度顺/逆时针转90度方向
+            Isolated // 孤立点，没有任何的边，在建边后将被删除
         }
         /// <summary>
-        ///   控制生成Edge时控制点方向的选择，在生成Edge时使用。
+        ///   控制生成Edge时控制点方向的选择，仅在生成Edge时使用。
         /// </summary>
         public VertexType Type;
         public Vertex(double x, double y)
