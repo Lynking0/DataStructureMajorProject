@@ -48,6 +48,7 @@ script = ExtResource("2_0624i")
 
 [node name="SubViewport" type="SubViewport" parent="MouseInput/GameViewportContainer"]
 handle_input_locally = false
+size = Vector2i(1152, 648)
 render_target_update_mode = 4
 
 [node name="Title" type="Label" parent="MouseInput"]
