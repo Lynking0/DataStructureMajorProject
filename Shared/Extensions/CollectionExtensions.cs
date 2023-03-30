@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 /// <summary>
-///     提供IEnumerable<T>和ICollection<T>的扩展方法
+///   提供IEnumerable<T>和ICollection<T>的扩展方法
 /// </summary>
 namespace Shared.Extensions.ICollectionExtensions
 {

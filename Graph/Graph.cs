@@ -1,6 +1,6 @@
 using System;
 using Godot;
-using GraphMoudle.SpatialIndexer;
+using GraphMoudle.DataStructureAndAlgorithm.SpatialIndexer;
 using Shared.Extensions.DoubleVector2Extensions;
 using System.Collections.Generic;
 using TopographyMoudle;
