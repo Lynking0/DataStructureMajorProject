@@ -30,6 +30,52 @@ namespace Shared.QuadTree
         Internal,
         Leaf,
     }
+    public enum GeoCode
+    {
+        LU,
+        LD,
+        RU,
+        RD,
+    }
+    class Constants
+    {
+        public static int MAX_ITEM = 4;
+        public static int MAX_LEVEL = 4;
+    }
+    public struct GeoHash
+    {
+        private static int BufferLength = Constants.MAX_LEVEL * 2 / 8;
+        private byte[] Value;
+        private int Length;
+        public GeoHash()
+        {
+            if (Constants.MAX_LEVEL % (8 / 2) != 0)
+                throw new Exception("MAX_LEVEL must be divisible by 4");
+            Value = new byte[BufferLength];
+            Length = 0;
+        }
+        public GeoHash(GeoHash parent, GeoCode code) : this()
+        {
+            Length = parent.Length;
+            this += code;
+        }
+
+        public static GeoHash operator +(GeoHash self, GeoCode code)
+        {
+            self.Value[BufferLength - 1 - self.Length / 8] |= (byte)(code.GetHashCode() << (self.Length % 8));
+            self.Length += 2;
+            return self;
+        }
+        public static implicit operator string(GeoHash self)
+        {
+            string result = "";
+            foreach (var v in self.Value)
+            {
+                result += Convert.ToString(v, 2).PadLeft(8, '0') + " ";
+            }
+            return result;
+        }
+    }
     public class QuadTree<T> where T : class, ILocatable
     {
         public class Handle
@@ -65,27 +111,25 @@ namespace Shared.QuadTree
             private T?[]? Items;
             public UInt32 ItemCount { get; private set; }
             private QuadTreeNode? Parent;
+            public readonly GeoHash GeoHash;
 
             private QuadTreeNode[] InitForInternal()
             {
                 return new QuadTreeNode[]{
-                        // LU
-                        new QuadTreeNode(this,QuadTreeNodeType.Leaf,Level + 1, new Rect2(Bounds.Position, Bounds.Size / 2)),
-                        // LD
-                        new QuadTreeNode(this,QuadTreeNodeType.Leaf,Level + 1, new Rect2(Bounds.Position + new Vector2(0, Bounds.Size.Y / 2), Bounds.Size / 2)),
-                        // RU
-                        new QuadTreeNode(this,QuadTreeNodeType.Leaf,Level + 1, new Rect2(Bounds.Position + new Vector2(Bounds.Size.X / 2, 0), Bounds.Size / 2)),
-                        // RD
-                        new QuadTreeNode(this,QuadTreeNodeType.Leaf,Level + 1, new Rect2(Bounds.Position + Bounds.Size / 2, Bounds.Size / 2))
+                        new QuadTreeNode(this,GeoCode.LU, QuadTreeNodeType.Leaf,Level + 1),
+                        new QuadTreeNode(this,GeoCode.LD,QuadTreeNodeType.Leaf,Level + 1),
+                        new QuadTreeNode(this,GeoCode.RU,QuadTreeNodeType.Leaf,Level + 1),
+                        new QuadTreeNode(this,GeoCode.RD,QuadTreeNodeType.Leaf,Level + 1)
                     };
             }
             private T[] InitForLeaf()
             {
-                return new T[MAX_ITEM];
+                return new T[Constants.MAX_ITEM];
             }
-            private QuadTreeNode(QuadTreeNode parent, QuadTreeNodeType type, int level, Rect2 bounds) : this(type, level, bounds)
+            private QuadTreeNode(QuadTreeNode parent, GeoCode code, QuadTreeNodeType type, int level) : this(type, level, parent.GetSubBounds(code))
             {
                 Parent = parent;
+                GeoHash = new GeoHash(parent.GeoHash, code);
             }
             public QuadTreeNode(QuadTreeNodeType type, int level, Rect2 bounds)
             {
@@ -93,6 +137,7 @@ namespace Shared.QuadTree
                 Bounds = bounds;
                 Type = type;
                 Parent = null;
+                GeoHash = new GeoHash();
                 if (type == QuadTreeNodeType.Internal)
                     Nodes = InitForInternal();
                 else if (type == QuadTreeNodeType.Leaf)
@@ -100,30 +145,47 @@ namespace Shared.QuadTree
                 else
                     throw new Exception("Invalid node type");
             }
-            private int GetIndex(Vector2 position)
+            private GeoCode GetIndex(Vector2 position)
             {
                 if (position.X < Bounds.Position.X + Bounds.Size.X / 2)
                 {
                     if (position.Y < Bounds.Position.Y + Bounds.Size.Y / 2)
-                        return 0;
+                        return GeoCode.LU;
                     else
-                        return 1;
+                        return GeoCode.LD;
                 }
                 else
                 {
                     if (position.Y < Bounds.Position.Y + Bounds.Size.Y / 2)
-                        return 2;
+                        return GeoCode.RU;
                     else
-                        return 3;
+                        return GeoCode.RD;
                 }
             }
-            private int GetIndex(T obj) { return GetIndex(obj.Position); }
+            private GeoCode GetIndex(T obj) { return GetIndex(obj.Position); }
+
+            private Rect2 GetSubBounds(GeoCode code)
+            {
+                switch (code)
+                {
+                    case GeoCode.LU:
+                        return new Rect2(Bounds.Position, Bounds.Size / 2);
+                    case GeoCode.LD:
+                        return new Rect2(Bounds.Position + new Vector2(0, Bounds.Size.Y / 2), Bounds.Size / 2);
+                    case GeoCode.RU:
+                        return new Rect2(Bounds.Position + new Vector2(Bounds.Size.X / 2, 0), Bounds.Size / 2);
+                    case GeoCode.RD:
+                        return new Rect2(Bounds.Position + Bounds.Size / 2, Bounds.Size / 2);
+                    default:
+                        throw new Exception("Invalid code");
+                }
+            }
 
             public Handle Insert(T obj)
             {
                 if (Type == QuadTreeNodeType.Internal)
                 {
-                    var handle = Nodes![GetIndex(obj)]!.Insert(obj);
+                    var handle = Nodes![GetIndex(obj).GetHashCode()]!.Insert(obj);
                     ItemCount++;
                     return handle;
                 }
@@ -147,6 +209,8 @@ namespace Shared.QuadTree
 
             public void Split()
             {
+                if (Level == Constants.MAX_LEVEL - 1)
+                    throw new Exception("Cannot split, max level reached.Shared. QuadTree.Constants.MAX_LEVEL = " + Constants.MAX_LEVEL);
                 Debug.Assert(Type == QuadTreeNodeType.Leaf, "Node is not leaf, cannot split");
                 // var items = new T[4];
                 // Items!.CopyTo(items, 0);
@@ -188,7 +252,7 @@ namespace Shared.QuadTree
             public void Merge()
             {
                 Debug.Assert(Type == QuadTreeNodeType.Internal, "Node is not internal, cannot merge");
-                Debug.Assert(ItemCount <= MAX_ITEM, "Node has too many items, cannot merge");
+                Debug.Assert(ItemCount <= Constants.MAX_ITEM, "Node has too many items, cannot merge");
                 Items = InitForLeaf();
                 ItemCount = 0;
                 foreach (var item in GetItems())
@@ -200,7 +264,7 @@ namespace Shared.QuadTree
             public QuadTreeNode Query(Vector2 position)
             {
                 if (Type == QuadTreeNodeType.Internal)
-                    return Nodes![GetIndex(position)]!.Query(position);
+                    return Nodes![GetIndex(position).GetHashCode()]!.Query(position);
                 else if (Type == QuadTreeNodeType.Leaf)
                     return this;
                 else
@@ -224,8 +288,8 @@ namespace Shared.QuadTree
                 }
                 else if (Type == QuadTreeNodeType.Internal)
                 {
-                    Nodes![GetIndex(position)]!.Remove(position);
-                    if (ItemCount <= MAX_ITEM)
+                    Nodes![GetIndex(position).GetHashCode()]!.Remove(position);
+                    if (ItemCount <= Constants.MAX_ITEM)
                         Merge();
                 }
                 else
@@ -288,7 +352,6 @@ namespace Shared.QuadTree
 #endif
         }
 
-        private const int MAX_ITEM = 4;
         private QuadTreeNode Root;
         public uint Count { get => Root.ItemCount; }
         public QuadTree(Rect2 bounds)
