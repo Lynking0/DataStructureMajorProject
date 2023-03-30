@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -40,39 +41,45 @@ namespace Shared.QuadTree
     class Constants
     {
         public static int MAX_ITEM = 4;
-        public static int MAX_LEVEL = 4;
+        public static int MAX_LEVEL = 8;
     }
     public struct GeoHash
     {
-        private static int BufferLength = Constants.MAX_LEVEL * 2 / 8;
-        private byte[] Value;
-        private int Length;
+        private int Length = 0;
+        private BitArray X = new BitArray(Constants.MAX_LEVEL);
+        private BitArray Y = new BitArray(Constants.MAX_LEVEL);
         public GeoHash()
         {
-            if (Constants.MAX_LEVEL % (8 / 2) != 0)
-                throw new Exception("MAX_LEVEL must be divisible by 4");
-            Value = new byte[BufferLength];
             Length = 0;
         }
-        public GeoHash(GeoHash parent, GeoCode code) : this()
+        public GeoHash(GeoHash parent, GeoCode code)
         {
             Length = parent.Length;
             this += code;
         }
-
         public static GeoHash operator +(GeoHash self, GeoCode code)
         {
-            self.Value[BufferLength - 1 - self.Length / 8] |= (byte)(code.GetHashCode() << (self.Length % 8));
-            self.Length += 2;
+            self.X = self.X.LeftShift(1);
+            self.Y = self.Y.LeftShift(1);
+            self.X[0] = code.GetHashCode() / 2 == 1;
+            self.Y[0] = code.GetHashCode() % 2 == 1;
+            self.Length += 1;
             return self;
         }
         public static implicit operator string(GeoHash self)
         {
             string result = "";
-            foreach (var v in self.Value)
+            for (int i = 0; i < self.Length; i++)
             {
-                result += Convert.ToString(v, 2).PadLeft(8, '0') + " ";
+                result += self.X[i] ? "1" : "0";
+                result += self.Y[i] ? "1" : "0";
             }
+            return result + "L";
+        }
+        public List<GeoHash> Around()
+        {
+            var result = new List<GeoHash>();
+
             return result;
         }
     }
@@ -109,6 +116,7 @@ namespace Shared.QuadTree
             private QuadTreeNodeType Type;
             private QuadTreeNode?[]? Nodes;
             private T?[]? Items;
+            private Handle[]? Handles;
             public UInt32 ItemCount { get; private set; }
             private QuadTreeNode? Parent;
             public readonly GeoHash GeoHash;
@@ -121,10 +129,6 @@ namespace Shared.QuadTree
                         new QuadTreeNode(this,GeoCode.RU,QuadTreeNodeType.Leaf,Level + 1),
                         new QuadTreeNode(this,GeoCode.RD,QuadTreeNodeType.Leaf,Level + 1)
                     };
-            }
-            private T[] InitForLeaf()
-            {
-                return new T[Constants.MAX_ITEM];
             }
             private QuadTreeNode(QuadTreeNode parent, GeoCode code, QuadTreeNodeType type, int level) : this(type, level, parent.GetSubBounds(code))
             {
@@ -141,7 +145,10 @@ namespace Shared.QuadTree
                 if (type == QuadTreeNodeType.Internal)
                     Nodes = InitForInternal();
                 else if (type == QuadTreeNodeType.Leaf)
-                    Items = InitForLeaf();
+                {
+                    Items = new T[Constants.MAX_ITEM];
+                    Handles = new Handle[Constants.MAX_ITEM];
+                }
                 else
                     throw new Exception("Invalid node type");
             }
@@ -197,7 +204,8 @@ namespace Shared.QuadTree
                         {
                             Items[i] = obj;
                             ItemCount++;
-                            return new Handle(this);
+                            Handles![i] = new Handle(this);
+                            return Handles[i];
                         }
                     }
                     Split();
@@ -217,34 +225,48 @@ namespace Shared.QuadTree
                 Type = QuadTreeNodeType.Internal;
                 ItemCount = 0;
                 Nodes = InitForInternal();
-                foreach (var item in Items!)
+                for (int i = 0; i < Constants.MAX_ITEM; i++)
                 {
-                    if (item is not null)
-                        Insert(item);
+                    if (Items![i] is not null)
+                    {
+                        Handles![i].Node = Insert(Items[i]!).Node;
+                    }
                 }
                 Items = null;
+                Handles = null;
+            }
+            public IEnumerable<(T item, Handle handle)> GetItemWithHandles()
+            {
+                if (Type == QuadTreeNodeType.Internal)
+                {
+                    foreach (var node in Nodes!)
+                        if (node is not null)
+                            foreach (var data in node.GetItemWithHandles())
+                                yield return data;
+                }
+                else if (Type == QuadTreeNodeType.Leaf)
+                {
+                    for (int i = 0; i < Constants.MAX_ITEM; i++)
+                        if (Items![i] is not null)
+                            yield return (Items[i]!, Handles![i]);
+                }
+                else
+                    throw new Exception("Invalid node type");
             }
             public IEnumerable<T> GetItems()
             {
                 if (Type == QuadTreeNodeType.Internal)
                 {
-                    var items = new List<T>();
                     foreach (var node in Nodes!)
-                    {
                         if (node is not null)
-                            items.AddRange(node.GetItems());
-                    }
-                    return items;
+                            foreach (var item in node.GetItems())
+                                yield return item;
                 }
                 else if (Type == QuadTreeNodeType.Leaf)
                 {
-                    var items = new List<T>();
                     foreach (var item in Items!)
-                    {
                         if (item is not null)
-                            items.Add(item);
-                    }
-                    return items;
+                            yield return item;
                 }
                 else
                     throw new Exception("Invalid node type");
@@ -253,10 +275,14 @@ namespace Shared.QuadTree
             {
                 Debug.Assert(Type == QuadTreeNodeType.Internal, "Node is not internal, cannot merge");
                 Debug.Assert(ItemCount <= Constants.MAX_ITEM, "Node has too many items, cannot merge");
-                Items = InitForLeaf();
+                Items = new T[Constants.MAX_ITEM];
+                Handles = new Handle[Constants.MAX_ITEM];
                 ItemCount = 0;
-                foreach (var item in GetItems())
+                foreach (var (item, handle) in GetItemWithHandles())
+                {
+                    Handles[ItemCount] = handle;
                     Items[ItemCount++] = item;
+                }
                 Type = QuadTreeNodeType.Leaf;
                 Nodes = null;
             }
