@@ -30,8 +30,16 @@ namespace GraphMoudle.DataStructureAndAlgorithm.SpatialIndexer.RTree
             Count = 0;
             Capacity = capacity;
         }
+        public List<TData> Search(RTRect2 searchArea)
+        {
+
+        }
         public void Add(TData data)
         {
+        }
+        public bool Remove(TData data)
+        {
+            return true;
         }
         public void Clear()
         {
@@ -51,10 +59,6 @@ namespace GraphMoudle.DataStructureAndAlgorithm.SpatialIndexer.RTree
             if (Count > array.Length - arrayIndex)
                 throw new ArgumentException("The destination array has fewer elements than the collection.");
 
-        }
-        public bool Remove(TData data)
-        {
-            return true;
         }
         private IEnumerator<TData> _getEnumerator(RTNode? thisNode)
         {

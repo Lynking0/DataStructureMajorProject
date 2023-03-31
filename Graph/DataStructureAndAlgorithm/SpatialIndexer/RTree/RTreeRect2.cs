@@ -23,5 +23,14 @@ namespace GraphMoudle.DataStructureAndAlgorithm.SpatialIndexer.RTree
             BR = br;
             Size = (BR.X - TL.X) * (BR.Y - TL.Y);
         }
+        public bool IsOverLap(RTRect2 other)
+        {
+            return !(
+                TL.X > other.BR.X ||
+                TL.Y > other.BR.Y ||
+                BR.X < other.TL.X ||
+                BR.Y < other.TL.Y
+            );
+        }
     }
 }

@@ -11,6 +11,7 @@ namespace GraphMoudle
         public const double MaxY = 3000;
         public const double CtrlPointDistance = 24;
         public const double VerticesDistance = 57;
+        public const double EdgesDistance = 10;
         public const double MaxVertexAltitude = 0.1;
         public const double MaxSampleTryTimes = 30;
     }
