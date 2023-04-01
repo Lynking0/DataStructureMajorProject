@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 // https://echarts.apache.org/examples/zh/index.html
 // https://docs.godotengine.org/en/stable/
+// https://docs.godotengine.org/en/stable/tutorials/2d/custom_drawing_in_2d.html#introduction
 // https://learn.microsoft.com/en-us/dotnet/csharp/
 
 
