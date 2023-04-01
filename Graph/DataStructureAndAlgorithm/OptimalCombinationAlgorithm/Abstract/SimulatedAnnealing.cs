@@ -3,7 +3,6 @@ using System;
 
 namespace GraphMoudle.DataStructureAndAlgorithm.OptimalCombinationAlgorithm.Abstract
 {
-    [Obsolete("相关功能已移至compute shader中")]
     public abstract class SimulatedAnnealing<Status>
     {
         /// <summary>
@@ -57,7 +56,7 @@ namespace GraphMoudle.DataStructureAndAlgorithm.OptimalCombinationAlgorithm.Abst
             double energy = this.GetEnergy(status);
             (Status status, double energy) result = (status, energy);
             int rejectCnt = 0;
-#if _LHPTest
+#if PrintAnnealCnt
             int @cnt = 0;
 #endif
             for (double t = this.InitTemperature; ; t *= this.AttenuationRate)
@@ -68,12 +67,12 @@ namespace GraphMoudle.DataStructureAndAlgorithm.OptimalCombinationAlgorithm.Abst
                 {
                     if (this.CanEndAnnealing(energy))
                     {
-#if _LHPTest
+#if PrintAnnealCnt
                         GD.Print(@cnt);
 #endif
                         return (status, energy);
                     }
-#if _LHPTest
+#if PrintAnnealCnt
                     ++@cnt;
 #endif
                     Status nextStatus = this.GetNearStatus(status, t);
@@ -93,7 +92,7 @@ namespace GraphMoudle.DataStructureAndAlgorithm.OptimalCombinationAlgorithm.Abst
                                 ++rejectCnt;
                             else
                             {
-#if _LHPTest
+#if PrintAnnealCnt
                                 GD.Print(@cnt);
 #endif
                                 return result;
