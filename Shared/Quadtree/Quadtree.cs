@@ -1,6 +1,5 @@
 using Godot;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -46,48 +45,140 @@ namespace Shared.QuadTree
     public struct GeoHash
     {
         private int Length = 0;
-        private BitArray X = new BitArray(Constants.MAX_LEVEL);
-        private BitArray Y = new BitArray(Constants.MAX_LEVEL);
+        public uint X;
+        public uint Y;
         public GeoHash()
         {
+            X = 0;
+            Y = 0;
             Length = 0;
         }
-        public GeoHash(GeoHash parent, GeoCode code)
+
+#if DEBUG
+        public string Codes
+        {
+            get
+            {
+                var result = "";
+                var x = X;
+                var y = Y;
+                for (int i = 0; i < Length; i++)
+                {
+                    result += ((GeoCode)((x & 1) * 2 + (y & 1)));
+                    x >>= 1;
+                    y >>= 1;
+                }
+                return result;
+            }
+        }
+#endif
+
+        public GeoHash(GeoHash parent, GeoCode code) : this()
         {
             Length = parent.Length;
+            this.X = parent.X;
+            this.Y = parent.Y;
             this += code;
         }
+
+        public GeoHash(uint x, uint y, int length) : this()
+        {
+            X = x;
+            Y = y;
+            Length = length;
+        }
+
         public static GeoHash operator +(GeoHash self, GeoCode code)
         {
-            self.X = self.X.LeftShift(1);
-            self.Y = self.Y.LeftShift(1);
-            self.X[0] = code.GetHashCode() / 2 == 1;
-            self.Y[0] = code.GetHashCode() % 2 == 1;
+            self.X <<= 1;
+            self.Y <<= 1;
+            self.X |= (uint)(code.GetHashCode() / 2) & 1;
+            self.Y |= (uint)(code.GetHashCode() % 2) & 1;
             self.Length += 1;
             return self;
         }
+
+
+        public static GeoCode operator -(GeoHash self, GeoHash other)
+        {
+            if (!self.Include(other) || self == other)
+                throw new Exception("There is no inclusion relation that cannot be subtracted.");
+            var x = (other.X >> (other.Length - self.Length - 1)) & 1;
+            var y = (other.Y >> (other.Length - self.Length - 1)) & 1;
+            return (GeoCode)(y + x * 2);
+        }
+
         public static implicit operator string(GeoHash self)
         {
             string result = "";
-            for (int i = 0; i < self.Length; i++)
+            for (int i = self.Length - 1; i >= 0; i--)
             {
-                result += self.X[i] ? "1" : "0";
-                result += self.Y[i] ? "1" : "0";
+                result += ((self.X & (1 << i)) > 0) ? "1" : "0";
+                result += ((self.Y & (1 << i)) > 0) ? "1" : "0";
+                result += "=>";
             }
-            return result + "L";
+            return $"{result}  ({Convert.ToString(self.X, 2).PadLeft(self.Length, '0')}, {Convert.ToString(self.Y, 2).PadLeft(self.Length, '0')})";
         }
-        public List<GeoHash> Around()
-        {
-            var result = new List<GeoHash>();
 
-            return result;
+        public IEnumerable<GeoHash> Around(uint distance)
+        {
+            int M = 0;
+            for (int i = 0; i < Length; i++)
+                M |= 1 << i;
+            uint X_ = this.X, Y_ = this.Y;
+            bool IsAlive(uint x, uint y)
+            {
+                if (x < 0 || x > M)
+                    return false;
+                if (y < 0 || y > M)
+                    return false;
+                if (x == X_ && y == Y_)
+                    return false;
+                return true;
+            }
+            // top line and bottom line
+            for (uint x = X - distance; x <= X + distance; x++)
+            {
+                if (IsAlive(x, Y - distance))
+                    yield return new GeoHash(x, Y - distance, Length);
+                if (IsAlive(x, Y + distance))
+                    yield return new GeoHash(x, Y + distance, Length);
+            }
+            // left side and right side, but not include top line and bottom line
+            for (uint y = Y - distance + 1; y <= Y + distance - 1; y++)
+            {
+                if (IsAlive(X - distance, y))
+                    yield return new GeoHash(X - distance, y, Length);
+                if (IsAlive(X + distance, y))
+                    yield return new GeoHash(X + distance, y, Length);
+            }
+        }
+
+        public override bool Equals(object? obj)
+        {
+            return obj is GeoHash hash &&
+                    Length == hash.Length &&
+                    X == hash.X && Y == hash.Y;
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
+        public bool Include(GeoHash orther)
+        {
+            if (orther.Length < Length)
+                return false;
+            return X == orther.X >> orther.Length - Length
+                && Y == orther.Y >> orther.Length - Length;
         }
     }
-    public class QuadTree<T> where T : class, ILocatable
+    public partial class QuadTree<T> where T : class, ILocatable
     {
         public class Handle
         {
-            public QuadTreeNode? Node;
+            public QuadTreeNode Node;
             public Handle(QuadTreeNode node)
             {
                 Node = node;
@@ -109,14 +200,23 @@ namespace Shared.QuadTree
                 }
             }
         }
-        public class QuadTreeNode
+        public class QuadTreeContainer
+        {
+            public T Item;
+            public Handle Handle;
+            public QuadTreeContainer(T item, Handle handle)
+            {
+                Item = item;
+                Handle = handle;
+            }
+        }
+        public partial class QuadTreeNode
         {
             private Int32 Level;
-            private Rect2 Bounds;
-            private QuadTreeNodeType Type;
-            private QuadTreeNode?[]? Nodes;
-            private T?[]? Items;
-            private Handle[]? Handles;
+            public Rect2 Bounds { get; private set; }
+            public QuadTreeNodeType Type { get; private set; }
+            private QuadTreeNode[]? Nodes;
+            private QuadTreeContainer?[]? ItemContainers;
             public UInt32 ItemCount { get; private set; }
             private QuadTreeNode? Parent;
             public readonly GeoHash GeoHash;
@@ -146,8 +246,7 @@ namespace Shared.QuadTree
                     Nodes = InitForInternal();
                 else if (type == QuadTreeNodeType.Leaf)
                 {
-                    Items = new T[Constants.MAX_ITEM];
-                    Handles = new Handle[Constants.MAX_ITEM];
+                    ItemContainers = new QuadTreeContainer[Constants.MAX_ITEM];
                 }
                 else
                     throw new Exception("Invalid node type");
@@ -192,20 +291,19 @@ namespace Shared.QuadTree
             {
                 if (Type == QuadTreeNodeType.Internal)
                 {
-                    var handle = Nodes![GetIndex(obj).GetHashCode()]!.Insert(obj);
+                    var handle = Nodes![GetIndex(obj).GetHashCode()].Insert(obj);
                     ItemCount++;
                     return handle;
                 }
                 else if (Type == QuadTreeNodeType.Leaf)
                 {
-                    for (int i = 0; i < Items!.Length; i++)
+                    for (int i = 0; i < ItemContainers!.Length; i++)
                     {
-                        if (Items[i] is null)
+                        if (ItemContainers[i] is null)
                         {
-                            Items[i] = obj;
+                            ItemContainers[i] = new QuadTreeContainer(obj, new Handle(this));
                             ItemCount++;
-                            Handles![i] = new Handle(this);
-                            return Handles[i];
+                            return ItemContainers[i]!.Handle;
                         }
                     }
                     Split();
@@ -220,22 +318,34 @@ namespace Shared.QuadTree
                 if (Level == Constants.MAX_LEVEL - 1)
                     throw new Exception("Cannot split, max level reached.Shared. QuadTree.Constants.MAX_LEVEL = " + Constants.MAX_LEVEL);
                 Debug.Assert(Type == QuadTreeNodeType.Leaf, "Node is not leaf, cannot split");
-                // var items = new T[4];
-                // Items!.CopyTo(items, 0);
                 Type = QuadTreeNodeType.Internal;
-                ItemCount = 0;
                 Nodes = InitForInternal();
                 for (int i = 0; i < Constants.MAX_ITEM; i++)
                 {
-                    if (Items![i] is not null)
+                    if (ItemContainers![i] is not null)
                     {
-                        Handles![i].Node = Insert(Items[i]!).Node;
+                        Nodes[GetIndex(ItemContainers[i]!.Item).GetHashCode()].Adopt(ItemContainers[i]!);
                     }
                 }
-                Items = null;
-                Handles = null;
+                ItemContainers = null;
             }
-            public IEnumerable<(T item, Handle handle)> GetItemWithHandles()
+
+            public void Adopt(QuadTreeContainer container)
+            {
+                Debug.Assert(Type == QuadTreeNodeType.Leaf, "Node is not leaf, cannot adopt");
+                for (int i = 0; i < Constants.MAX_ITEM; i++)
+                {
+                    if (ItemContainers![i] is null)
+                    {
+                        ItemContainers[i] = container;
+                        ItemContainers[i]!.Handle.Node = this;
+                        ItemCount++;
+                        return;
+                    }
+                }
+            }
+
+            public IEnumerable<QuadTreeContainer> GetItemWithHandles()
             {
                 if (Type == QuadTreeNodeType.Internal)
                 {
@@ -247,8 +357,8 @@ namespace Shared.QuadTree
                 else if (Type == QuadTreeNodeType.Leaf)
                 {
                     for (int i = 0; i < Constants.MAX_ITEM; i++)
-                        if (Items![i] is not null)
-                            yield return (Items[i]!, Handles![i]);
+                        if (ItemContainers![i] is not null)
+                            yield return ItemContainers[i]!;
                 }
                 else
                     throw new Exception("Invalid node type");
@@ -264,57 +374,91 @@ namespace Shared.QuadTree
                 }
                 else if (Type == QuadTreeNodeType.Leaf)
                 {
-                    foreach (var item in Items!)
+                    foreach (var item in ItemContainers!)
                         if (item is not null)
-                            yield return item;
+                            yield return item.Item;
                 }
                 else
                     throw new Exception("Invalid node type");
             }
             public void Merge()
             {
+                Debug.Assert(true, "Unverified function.");
                 Debug.Assert(Type == QuadTreeNodeType.Internal, "Node is not internal, cannot merge");
                 Debug.Assert(ItemCount <= Constants.MAX_ITEM, "Node has too many items, cannot merge");
-                Items = new T[Constants.MAX_ITEM];
-                Handles = new Handle[Constants.MAX_ITEM];
+                ItemContainers = new QuadTreeContainer[Constants.MAX_ITEM];
                 ItemCount = 0;
-                foreach (var (item, handle) in GetItemWithHandles())
+                foreach (var contaniner in GetItemWithHandles())
                 {
-                    Handles[ItemCount] = handle;
-                    Items[ItemCount++] = item;
+                    ItemContainers[ItemCount++] = contaniner;
                 }
                 Type = QuadTreeNodeType.Leaf;
                 Nodes = null;
             }
 
-            public QuadTreeNode Query(Vector2 position)
+            public QuadTreeNode Query(GeoHash hash)
+            {
+                if (GeoHash.Include(hash))
+                {
+                    if (GeoHash == hash || Type == QuadTreeNodeType.Leaf)
+                    {
+                        return this;
+                    }
+                    if (Type == QuadTreeNodeType.Internal)
+                    {
+                        return Nodes![(GeoHash - hash).GetHashCode()].Query(hash);
+                    }
+                }
+                else
+                {
+                    if (Parent is not null)
+                        return Parent.Query(hash);
+                }
+                GD.Print(hash);
+                throw new Exception("Invalid GeoHash.");
+            }
+
+            private QuadTreeNode Query(Vector2 position)
             {
                 if (Type == QuadTreeNodeType.Internal)
-                    return Nodes![GetIndex(position).GetHashCode()]!.Query(position);
+                {
+                    return Nodes![GetIndex(position).GetHashCode()].Query(position);
+                }
                 else if (Type == QuadTreeNodeType.Leaf)
-                    return this;
+                {
+                    if (Bounds.HasPoint(position))
+                    {
+                        return this;
+                    }
+                    else
+                    {
+                        throw new Exception("Position not found");
+                    }
+                }
                 else
+                {
                     throw new Exception("Invalid node type");
+                }
             }
-            public QuadTreeNode Query(T obj) { return Query(obj.Position); }
+            private QuadTreeNode Query(T obj) { return Query(obj.Position); }
 
             public void Remove(Vector2 position)
             {
                 ItemCount--;
                 if (Type == QuadTreeNodeType.Leaf)
                 {
-                    for (int i = 0; i < Items!.Length; i++)
+                    for (int i = 0; i < ItemContainers!.Length; i++)
                     {
-                        if (Items[i]?.Position == position)
+                        if (ItemContainers[i]?.Item.Position == position)
                         {
-                            Items[i] = null;
+                            ItemContainers[i] = null;
                             return;
                         }
                     }
                 }
                 else if (Type == QuadTreeNodeType.Internal)
                 {
-                    Nodes![GetIndex(position).GetHashCode()]!.Remove(position);
+                    Nodes![GetIndex(position).GetHashCode()].Remove(position);
                     if (ItemCount <= Constants.MAX_ITEM)
                         Merge();
                 }
@@ -325,23 +469,25 @@ namespace Shared.QuadTree
 
             public IEnumerable<IEnumerable<T>> Nearby(QuadTreeNode? exclude = null)
             {
+                // TODO: NearBy
                 if (Type == QuadTreeNodeType.Leaf)
                     yield return GetItems();
-                else if (Type == QuadTreeNodeType.Internal)
-                    foreach (var node in Nodes!)
+                uint distance = 1;
+                while (true)
+                {
+                    IEnumerable<T> totalResult = Enumerable.Empty<T>();
+                    var near = GeoHash.Around(distance++).ToList();
+                    foreach (var item in near)
                     {
-                        if (node is not null && node != exclude)
+                        var node = Query(item);
+                        if (node != exclude)
                         {
                             var result = node.GetItems();
                             if (result.Count() > 0)
-                                yield return result;
+                                totalResult = totalResult.Concat(result);
                         }
                     }
-                //parent
-                if (Parent is not null)
-                {
-                    foreach (var item in Parent.Nearby(this))
-                        yield return item;
+                    yield return totalResult;
                 }
             }
 #if DEBUG
@@ -360,7 +506,7 @@ namespace Shared.QuadTree
                     }
                     else
                     {
-                        if (itemCountByLevel!.ContainsKey(node.Level))
+                        if (itemCountByLevel.ContainsKey(node.Level))
                             itemCountByLevel[node.Level]++;
                         else
                             itemCountByLevel[node.Level] = 1;
