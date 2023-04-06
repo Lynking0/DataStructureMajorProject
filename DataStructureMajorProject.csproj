@@ -4,8 +4,7 @@
     <Nullable>enable</Nullable>
     <TargetFramework>net6.0</TargetFramework>
     <EnableDynamicLoading>true</EnableDynamicLoading>
-    <DefineConstants>SECURITY</DefineConstants>
-    <DefineConstants>RECIPE_DEBUG</DefineConstants>
+    <DefineConstants>SECURITY;_LHPTest;RECIPE_DEBUG</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <Content Include="Topography\Topography.cs" />

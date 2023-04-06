@@ -1,3 +1,5 @@
+// #define PrintAnnealCnt
+
 using Godot;
 using System;
 

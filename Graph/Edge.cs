@@ -1,11 +1,11 @@
 using System;
 using Godot;
 using Shared.Extensions.DoubleVector2Extensions;
-using GraphMoudle.DataStructureAndAlgorithm.SpatialIndexer.RTree;
+using GraphMoudle.DataStructureAndAlgorithm.SpatialIndexer.RTreeStructure;
 
 namespace GraphMoudle
 {
-    public class Edge : IRTreeData<Edge>
+    public class Edge : IRTreeData
     {
         public Vertex A;
         public Vertex B;
@@ -30,7 +30,7 @@ namespace GraphMoudle
 
         #region IRTreeDataImplementation
 
-        public bool IsOverlap(Edge other)
+        public bool IsOverlap(IRTreeData other)
         {
             return false;
         }
@@ -42,7 +42,7 @@ namespace GraphMoudle
         private RTRect2 _getRectangle()
         {
             // x = (-x0+3x1-3x2+x3)t^3 + (3x0-6x1+3x2)t^2 + (-3x0+3x1)t + x0
-            // x' = 3(-x0+3x1-3x2+x3)t^2 + 2(3x0-6x1+3x2)t + (-3x0+3x1) = 0
+            // x'= 3(-x0+3x1-3x2+x3)t^2 + 2(3x0-6x1+3x2)t + (-3x0+3x1) = 0
             Vector2D p0 = Curve.GetPointPosition(0);
             Vector2D p1 = Curve.GetPointPosition(0) + Curve.GetPointOut(0);
             Vector2D p2 = Curve.GetPointPosition(1) + Curve.GetPointIn(1);

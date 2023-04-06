@@ -1,7 +1,7 @@
 using System;
 using Shared.Extensions.DoubleVector2Extensions;
 
-namespace GraphMoudle.DataStructureAndAlgorithm.SpatialIndexer.RTree
+namespace GraphMoudle.DataStructureAndAlgorithm.SpatialIndexer.RTreeStructure
 {
     /// <summary>
     ///   仅供RTree及其相关函数使用的Rect2

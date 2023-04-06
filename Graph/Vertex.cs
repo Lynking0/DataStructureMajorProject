@@ -3,10 +3,11 @@ using Godot;
 using Shared.Extensions.DoubleVector2Extensions;
 using System.Collections.Generic;
 using GraphMoudle.DataStructureAndAlgorithm.DisjointSet;
+using GraphMoudle.DataStructureAndAlgorithm.SpatialIndexer.RTreeStructure;
 
 namespace GraphMoudle
 {
-    public class Vertex : IDisjointSetElement<Vertex>
+    public class Vertex : IDisjointSetElement<Vertex>, IRTreeData
     {
         public Vertex? DisjointSetParent { get; set; }
         public int DisjointSetSize { get; set; }
@@ -35,5 +36,27 @@ namespace GraphMoudle
             Position = pos;
             Adjacencies = new List<Edge>();
         }
+        
+        #region IRTreeDataImplementation
+
+        public bool IsOverlap(IRTreeData other)
+        {
+            return false;
+        }
+        private RTRect2? _rectangle = null;
+        public RTRect2 Rectangle { get => _rectangle ??= _getRectangle(); }
+        /// <summary>
+        ///   点与边之间最小距离为Graph.EdgesDistance，在MBR的基础上需向四边扩张Graph.EdgesDistance / 2距离
+        /// </summary>
+        private RTRect2 _getRectangle()
+        {
+            double minX = Position.X - Graph.EdgesDistance / 2;
+            double maxX = Position.X + Graph.EdgesDistance / 2;
+            double minY = Position.Y - Graph.EdgesDistance / 2;
+            double maxY = Position.Y + Graph.EdgesDistance / 2;
+            return new RTRect2(new Vector2D(minX, minY), new Vector2D(maxX, maxY));
+        }
+
+        #endregion
     }
 }

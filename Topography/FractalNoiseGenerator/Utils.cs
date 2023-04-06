@@ -1,6 +1,5 @@
 using System;
 using Godot;
-
 namespace TopographyMoudle
 {
     public static partial class FractalNoiseGenerator

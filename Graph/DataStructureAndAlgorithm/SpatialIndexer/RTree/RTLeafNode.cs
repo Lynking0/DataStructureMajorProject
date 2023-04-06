@@ -1,17 +1,17 @@
 using System;
 using System.Collections.Generic;
 
-namespace GraphMoudle.DataStructureAndAlgorithm.SpatialIndexer.RTree
+namespace GraphMoudle.DataStructureAndAlgorithm.SpatialIndexer.RTreeStructure
 {
-    public partial class RTree<TData>
+    public partial class RTree
     {
         private class RTLeafNode : RTNode
         {
-            public List<TData> Datas;
+            public List<IRTreeData> Datas;
             public override IEnumerable<IShape> SubShapes { get => Datas; }
-            public RTLeafNode(RTree<TData> rTree, RTNode parent) : base(rTree, parent)
+            public RTLeafNode(RTree rTree, RTNode parent) : base(rTree, parent)
             {
-                Datas = new List<TData>();
+                Datas = new List<IRTreeData>();
             }
         }
     }
