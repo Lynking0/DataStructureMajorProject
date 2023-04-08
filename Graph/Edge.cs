@@ -1,10 +1,13 @@
 using System;
 using Godot;
+using GraphMoudle.DataStructureAndAlgorithm.OptimalCombinationAlgorithm;
 using Shared.Extensions.DoubleVector2Extensions;
+using GraphMoudle.DataStructureAndAlgorithm;
 using GraphMoudle.DataStructureAndAlgorithm.SpatialIndexer.RTreeStructure;
-
 namespace GraphMoudle
 {
+    using VEDC = VertexEdgeDistCalculator;
+    using EEDC = EdgeEdgeDistCalculator;
     public class Edge : IRTreeData
     {
         public Vertex A;
@@ -32,7 +35,46 @@ namespace GraphMoudle
 
         public bool IsOverlap(IRTreeData other)
         {
-            return false;
+            if (other is Vertex vertex)
+            {
+                if (vertex == A || vertex == B) // 若vertex为边的端点，则算作不碰撞
+                    return false;
+                VEDC.Instance.A = Curve.GetPointPosition(0);
+                VEDC.Instance.B = Curve.GetPointPosition(0) + Curve.GetPointOut(0);
+                VEDC.Instance.C = Curve.GetPointPosition(1) + Curve.GetPointIn(1);
+                VEDC.Instance.D = Curve.GetPointPosition(1);
+                VEDC.Instance.P = vertex.Position;
+                VEDC.Instance.MinDistance = Graph.EdgesDistance;
+                VEDC.Instance.MinStatus = 0;
+                VEDC.Instance.MaxStatus = 1;
+                return VEDC.Instance.Annealing().energy < Graph.EdgesDistance;
+            }
+            if (other is Edge edge)
+            {
+                EEDC.Instance.A1 = Curve.GetPointPosition(0);
+                EEDC.Instance.B1 = Curve.GetPointPosition(0) + Curve.GetPointOut(0);
+                EEDC.Instance.C1 = Curve.GetPointPosition(1) + Curve.GetPointIn(1);
+                EEDC.Instance.D1 = Curve.GetPointPosition(1);
+                EEDC.Instance.A2 = edge.Curve.GetPointPosition(0);
+                EEDC.Instance.B2 = edge.Curve.GetPointPosition(0) + edge.Curve.GetPointOut(0);
+                EEDC.Instance.C2 = edge.Curve.GetPointPosition(1) + edge.Curve.GetPointIn(1);
+                EEDC.Instance.D2 = edge.Curve.GetPointPosition(1);
+                EEDC.Instance.MinDistance = Graph.EdgesDistance;
+                if (A == edge.B || B == edge.A)
+                {
+                    Utils.Swap(ref EEDC.Instance.A2, ref EEDC.Instance.D2);
+                    Utils.Swap(ref EEDC.Instance.B2, ref EEDC.Instance.C2);
+                }
+                EEDC.Instance.MinStatus = A == edge.A || A == edge.B ? Graph.EdgesDistance : 0;
+                EEDC.Instance.MaxStatus = B == edge.A || B == edge.B ? 1 - Graph.EdgesDistance : 1;
+                double tempDist = EEDC.Instance.Annealing().energy;
+                Utils.Swap(ref EEDC.Instance.A1, ref EEDC.Instance.A2);
+                Utils.Swap(ref EEDC.Instance.B1, ref EEDC.Instance.B2);
+                Utils.Swap(ref EEDC.Instance.C1, ref EEDC.Instance.C2);
+                Utils.Swap(ref EEDC.Instance.D1, ref EEDC.Instance.D2);
+                return Math.Min(tempDist, EEDC.Instance.Annealing().energy) < Graph.EdgesDistance;
+            }
+            throw new Exception($"{GetType()}.IsOverlap(IRTreeData): Unexpected type.");
         }
         private RTRect2? _rectangle = null;
         public RTRect2 Rectangle { get => _rectangle ??= _getRectangle(); }

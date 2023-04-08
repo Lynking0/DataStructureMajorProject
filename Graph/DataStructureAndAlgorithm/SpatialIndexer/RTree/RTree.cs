@@ -29,13 +29,35 @@ namespace GraphMoudle.DataStructureAndAlgorithm.SpatialIndexer.RTreeStructure
             Count = 0;
             Capacity = capacity;
         }
-        public List<IRTreeData> Search(RTRect2 searchArea)
+        private void SearchLeaves(RTNode node, RTRect2 searchArea, List<IRTreeData> result)
         {
-            return new List<IRTreeData>();
+            foreach (IShape shape in node.SubShapes)
+            {
+                if (searchArea.IsOverLap(shape.Rectangle))
+                {
+                    if (shape is RTNode child)
+                        SearchLeaves(child, searchArea, result);
+                    else if (shape is IRTreeData data)
+                        result.Add(data);
+                }
+            }
+        }
+        public bool CanAdd(IRTreeData data)
+        {
+            if (Root is null)
+                return true;
+            List<IRTreeData> adjacencies = new List<IRTreeData>();
+            SearchLeaves(Root, data.Rectangle, adjacencies);
+            foreach (IRTreeData other in adjacencies)
+                if (data.IsOverlap(other))
+                    return false;
+            return true;
         }
         public void Add(IRTreeData data)
         {
+            
         }
+        [Obsolete("删除功能还没写！")]
         public bool Remove(IRTreeData data)
         {
             return true;

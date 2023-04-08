@@ -4,6 +4,12 @@ namespace GraphMoudle.DataStructureAndAlgorithm
 {
     public static class Utils
     {
+        public static void Swap<T>(ref T a, ref T b)
+        {
+            T temp = a;
+            a = b;
+            b = a;
+        }
         /// <summary>
         ///   盛金公式求解三次方程的实数解
         /// </summary>

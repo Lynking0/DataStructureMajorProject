@@ -25,10 +25,10 @@ namespace GraphMoudle.DataStructureAndAlgorithm.OptimalCombinationAlgorithm
         public Vector2D B2;
         public Vector2D C2;
         public Vector2D D2;
-        public Vector2D L1;
-        public Vector2D R1;
-        public Vector2D L2;
-        public Vector2D R2;
+        private Vector2D L1;
+        private Vector2D R1;
+        private Vector2D L2;
+        private Vector2D R2;
         public double MinDistance;
         public double MinStatus;
         public double MaxStatus;

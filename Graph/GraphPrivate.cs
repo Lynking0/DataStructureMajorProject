@@ -3,6 +3,7 @@ using Godot;
 using Shared.Extensions.DoubleVector2Extensions;
 using System.Collections.Generic;
 using GraphMoudle.DataStructureAndAlgorithm.OptimalCombinationAlgorithm.ComputeShader;
+using GraphMoudle.DataStructureAndAlgorithm;
 
 namespace GraphMoudle
 {
@@ -62,7 +63,7 @@ namespace GraphMoudle
                     continue;
                 if (b.Type == Vertex.VertexType.Isolated)
                 {
-                    (a, b) = (b, a);
+                    Utils.Swap(ref a, ref b);
                     // a是Isolated，b是Intermediate
                 }
             }

@@ -1,5 +1,4 @@
 using System;
-using Godot;
 using Shared.Extensions.DoubleVector2Extensions;
 using System.Collections.Generic;
 using GraphMoudle.DataStructureAndAlgorithm.DisjointSet;
@@ -36,12 +35,16 @@ namespace GraphMoudle
             Position = pos;
             Adjacencies = new List<Edge>();
         }
-        
+
         #region IRTreeDataImplementation
 
         public bool IsOverlap(IRTreeData other)
         {
-            return false;
+            if (other is Vertex vertex)
+                return true; // EdgesDistance < VerticesDistance
+            if (other is Edge edge)
+                return edge.IsOverlap(this);
+            throw new Exception($"{GetType()}.IsOverlap(IRTreeData): Unexpected type.");
         }
         private RTRect2? _rectangle = null;
         public RTRect2 Rectangle { get => _rectangle ??= _getRectangle(); }

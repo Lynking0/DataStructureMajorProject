@@ -13,15 +13,15 @@ namespace TopographyMoudle
                 PseudorandomGenerator.Precalculations![octave];
 #if SECURITY
             if (PseudorandomGenerator.Precalculations is null)
-                throw new Exception("TopographyMoudle.FractalNoiseGenerator.Pseudorandom(): 需先执行预计算.");
+                throw new Exception($"{typeof(FractalNoiseGenerator)}.Pseudorandom(Int32, Int32, Int32): 需先执行预计算.");
             if (octave < 0 || octave >= PseudorandomGenerator.Precalculations!.Length)
-                throw new Exception("TopographyMoudle.FractalNoiseGenerator.Pseudorandom(): octave下标越界.");
+                throw new Exception($"{typeof(FractalNoiseGenerator)}.Pseudorandom(Int32, Int32, Int32): octave下标越界.");
             if (PseudorandomGenerator.Precalculations[octave].data is null)
-                throw new Exception("TopographyMoudle.FractalNoiseGenerator.Pseudorandom(): 数据异常.");
+                throw new Exception($"{typeof(FractalNoiseGenerator)}.Pseudorandom(Int32, Int32, Int32): 数据异常.");
             if (x + Precalculation.xOffset < 0 || x + Precalculation.xOffset >= PseudorandomGenerator.Precalculations![octave].data.GetLength(0))
-                throw new Exception("TopographyMoudle.FractalNoiseGenerator.Pseudorandom(): x下标越界.");
+                throw new Exception($"{typeof(FractalNoiseGenerator)}.Pseudorandom(Int32, Int32, Int32): x下标越界.");
             if (y + Precalculation.yOffset < 0 || y + Precalculation.yOffset >= PseudorandomGenerator.Precalculations![octave].data.GetLength(1))
-                throw new Exception("TopographyMoudle.FractalNoiseGenerator.Pseudorandom(): y下标越界.");
+                throw new Exception($"{typeof(FractalNoiseGenerator)}.Pseudorandom(Int32, Int32, Int32): y下标越界.");
 #endif
             return Precalculation.data[
                 x + Precalculation.xOffset,
