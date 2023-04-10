@@ -9,6 +9,7 @@ namespace GraphMoudle.DataStructureAndAlgorithm.SpatialIndexer.RTreeStructure
         {
             public List<RTNode> Children;
             public override IEnumerable<IShape> SubShapes { get => Children; }
+            public override int SubShapesCount { get => Children.Count; }
             public RTIntlNode(RTree rTree, RTNode parent) : base(rTree, parent)
             {
                 Children = new List<RTNode>();

@@ -50,21 +50,21 @@ namespace GraphMoudle
                 {
                     double length = GD.RandRange(Graph.VerticesDistance, Graph.VerticesDistance * 2);
                     double angle = GD.RandRange(0, Math.Tau);
-                    Vector2D extendedPos = new Vector2D(
+                    Vector2D expandedPos = new Vector2D(
                         basicPos.X + length * Mathf.Cos(angle), basicPos.Y + length * Mathf.Sin(angle));
-                    if (!extendedPos.IsInRect(
+                    if (!expandedPos.IsInRect(
                         Graph.MinX + Graph.CtrlPointDistance,
                         Graph.MinY + Graph.CtrlPointDistance,
                         Graph.MaxX - Graph.CtrlPointDistance,
                         Graph.MaxY - Graph.CtrlPointDistance))
                         continue;
-                    if (VerticesContainer.HasAdjacency(extendedPos))
+                    if (VerticesContainer.HasAdjacency(expandedPos))
                         continue;
-                    if (FractalNoiseGenerator.GetFractalNoise(extendedPos.X, extendedPos.Y) >= Graph.MaxVertexAltitude)
+                    if (FractalNoiseGenerator.GetFractalNoise(expandedPos.X, expandedPos.Y) >= Graph.MaxVertexAltitude)
                         continue;
-                    options.Add(extendedPos);
-                    selects.Add(extendedPos);
-                    VerticesContainer.Add(new Vertex(extendedPos));
+                    options.Add(expandedPos);
+                    selects.Add(expandedPos);
+                    VerticesContainer.Add(new Vertex(expandedPos));
                     break;
                 }
                 if (cnt == Graph.MaxSampleTryTimes)

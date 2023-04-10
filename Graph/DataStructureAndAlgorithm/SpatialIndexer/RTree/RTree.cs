@@ -1,3 +1,4 @@
+using Godot;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -28,17 +29,32 @@ namespace GraphMoudle.DataStructureAndAlgorithm.SpatialIndexer.RTreeStructure
             Root = null;
             Count = 0;
             Capacity = capacity;
+            MininumCapacity = Mathf.CeilToInt(Capacity / 2.0);
         }
-        private void SearchLeaves(RTNode node, RTRect2 searchArea, List<IRTreeData> result)
+        /// <summary>
+        ///   选择叶子结点以放置新条目
+        /// </summary>
+        private RTLeafNode ChooseLeaf(RTRect2 targetMBR)
         {
-            foreach (IShape shape in node.SubShapes)
+            RTNode thisNode = Root!;
+            while (true)
             {
-                if (searchArea.IsOverLap(shape.Rectangle))
+                if (thisNode is RTLeafNode leafNode)
+                    return leafNode;
+                if (thisNode is RTIntlNode intlNode)
                 {
-                    if (shape is RTNode child)
-                        SearchLeaves(child, searchArea, result);
-                    else if (shape is IRTreeData data)
-                        result.Add(data);
+                    RTNode bestChild = intlNode.Children[0];
+                    double minCost = intlNode.Children[0].Rectangle.CalcExpandCost(targetMBR);
+                    for (int i = 1; i < intlNode.Children.Count; ++i)
+                    {
+                        double cost = intlNode.Children[i].Rectangle.CalcExpandCost(targetMBR);
+                        if (cost < minCost)
+                        {
+                            bestChild = intlNode.Children[i];
+                            minCost = cost;
+                        }
+                    }
+                    thisNode = bestChild;
                 }
             }
         }
@@ -47,7 +63,7 @@ namespace GraphMoudle.DataStructureAndAlgorithm.SpatialIndexer.RTreeStructure
             if (Root is null)
                 return true;
             List<IRTreeData> adjacencies = new List<IRTreeData>();
-            SearchLeaves(Root, data.Rectangle, adjacencies);
+            Root.SearchLeaves(data.Rectangle, adjacencies);
             foreach (IRTreeData other in adjacencies)
                 if (data.IsOverlap(other))
                     return false;
