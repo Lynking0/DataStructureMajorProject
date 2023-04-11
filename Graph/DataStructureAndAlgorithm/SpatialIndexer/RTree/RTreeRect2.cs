@@ -33,9 +33,20 @@ namespace GraphMoudle.DataStructureAndAlgorithm.SpatialIndexer.RTreeStructure
             );
         }
         /// <summary>
+        ///   计算两矩形形成MBR的扩张面积
+        /// </summary>
+        public static double CalcExpandCost(in RTRect2 a, in RTRect2 b)
+        {
+            double MinX = Math.Min(a.TL.X, b.TL.X);
+            double MinY = Math.Min(a.TL.Y, b.TL.Y);
+            double MaxX = Math.Max(a.BR.X, b.BR.X);
+            double MaxY = Math.Max(a.BR.Y, b.BR.Y);
+            return (MaxX - MinX) * (MaxY - MinY) - a.Area - b.Area;
+        }
+        /// <summary>
         ///   计算该矩形在加入other后的扩张面积
         /// </summary>
-        public double CalcExpandCost(RTRect2 other)
+        public double CalcExpandCost(in RTRect2 other)
         {
             double MinX = Math.Min(TL.X, other.TL.X);
             double MinY = Math.Min(TL.Y, other.TL.Y);
@@ -46,7 +57,7 @@ namespace GraphMoudle.DataStructureAndAlgorithm.SpatialIndexer.RTreeStructure
         /// <summary>
         ///   计算该矩形在加入other后的扩张面积以及扩张后的矩形
         /// </summary>
-        public double CalcExpandCost(RTRect2 other, out RTRect2 expandedRect)
+        public double CalcExpand(in RTRect2 other, out RTRect2 expandedRect)
         {
             expandedRect = new RTRect2(
                 new Vector2D(

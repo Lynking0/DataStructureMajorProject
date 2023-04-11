@@ -15,28 +15,23 @@ namespace GraphMoudle.DataStructureAndAlgorithm.SpatialIndexer.RTreeStructure
         /// </summary>
         private int Capacity;
         /// <summary>
-        ///   中间节点的最小子节点数以及叶子节点最小记录索引数（根节点除外）
-        /// </summary>
-        private int MininumCapacity;
-        /// <summary>
         ///   根节点
         /// </summary>
-        private RTNode? Root;
+        private RTNode Root;
         public int Count { get; private set; }
         public bool IsReadOnly { get => false; }
         public RTree(int capacity)
         {
-            Root = null;
+            Root = new RTLeafNode(this, null);
             Count = 0;
             Capacity = capacity;
-            MininumCapacity = Mathf.CeilToInt(Capacity / 2.0);
         }
         /// <summary>
         ///   选择叶子结点以放置新条目
         /// </summary>
         private RTLeafNode ChooseLeaf(RTRect2 targetMBR)
         {
-            RTNode thisNode = Root!;
+            RTNode thisNode = Root;
             while (true)
             {
                 if (thisNode is RTLeafNode leafNode)
@@ -58,6 +53,14 @@ namespace GraphMoudle.DataStructureAndAlgorithm.SpatialIndexer.RTreeStructure
                 }
             }
         }
+        /// <summary>
+        ///   Add后对R树进行调整
+        /// </summary>
+        private void CascadeAdjust(RTNode start)
+        {
+            for(RTNode? node = start; node is not null; node = node.Parent)
+                node.Adjust();
+        }
         public bool CanAdd(IRTreeData data)
         {
             if (Root is null)
@@ -69,18 +72,23 @@ namespace GraphMoudle.DataStructureAndAlgorithm.SpatialIndexer.RTreeStructure
                     return false;
             return true;
         }
+        /// <summary>
+        ///   添加一个data，此函数不会判断添加操作是否合法，调用此函数前需确保已调用CanAdd检测合法性。
+        /// </summary>
         public void Add(IRTreeData data)
         {
-            
+            RTLeafNode leaf = ChooseLeaf(data.Rectangle);
+            leaf.Datas.Add(data);
+            ++Count;
+            CascadeAdjust(leaf);
         }
-        [Obsolete("删除功能还没写！")]
         public bool Remove(IRTreeData data)
         {
-            return true;
+            throw new NotImplementedException();
         }
         public void Clear()
         {
-            Root = null;
+            Root = new RTLeafNode(this, null);
             Count = 0;
         }
         public bool Contains(IRTreeData data)
