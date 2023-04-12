@@ -18,12 +18,16 @@ namespace GraphMoudle.DataStructureAndAlgorithm.SpatialIndexer.RTreeStructure
             {
                 if (shape is RTNode child)
                     Children.Add(child);
-                throw new Exception($"{GetType()}.AddShape(IShape): Unexpected type.");
+                else
+                    throw new Exception($"{GetType()}.AddShape(IShape): Unexpected type <{shape.GetType()}>.");
             }
             protected override RTNode ClearAndSplit()
             {
+                CheckParent();
+                RTIntlNode newNode = new RTIntlNode(RTree, Parent);
+                (Parent as RTIntlNode)!.Children.Add(newNode);
                 Children = new List<RTNode>();
-                return new RTIntlNode(RTree, Parent);
+                return newNode;
             }
             protected override IShape[] GetSubShapesCopy()
             {
@@ -33,7 +37,7 @@ namespace GraphMoudle.DataStructureAndAlgorithm.SpatialIndexer.RTreeStructure
             {
                 foreach (RTNode child in Children)
                     if (searchArea.IsOverLap(child.Rectangle))
-                            child.SearchLeaves(searchArea, result);
+                        child.SearchLeaves(searchArea, result);
             }
         }
     }

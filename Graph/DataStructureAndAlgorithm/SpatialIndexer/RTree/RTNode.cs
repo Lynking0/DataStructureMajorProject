@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Shared.Extensions.ICollectionExtensions;
 using Shared.Extensions.DoubleVector2Extensions;
+using Godot;
 
 namespace GraphMoudle.DataStructureAndAlgorithm.SpatialIndexer.RTreeStructure
 {
@@ -36,28 +37,40 @@ namespace GraphMoudle.DataStructureAndAlgorithm.SpatialIndexer.RTreeStructure
             protected abstract RTNode ClearAndSplit();
             protected abstract IShape[] GetSubShapesCopy();
             /// <summary>
+            ///   检查Parent是否为空，若为空，则创建一个Parent并调整相关数据（不更改MBR）
+            /// </summary>
+            protected void CheckParent()
+            {
+                if (Parent is null)
+                {
+                    RTIntlNode parent = new RTIntlNode(RTree, null);
+                    parent.Children.Add(this);
+                    RTree.Root = Parent = parent;
+                }
+            }
+            /// <summary>
             ///   更新MBR
             /// </summary>
             protected void UpdateMBR()
             {
-                double MinX = double.PositiveInfinity;
-                double MinY = double.PositiveInfinity;
-                double MaxX = double.NegativeInfinity;
-                double MaxY = double.NegativeInfinity;
+                double minX = double.PositiveInfinity;
+                double minY = double.PositiveInfinity;
+                double maxX = double.NegativeInfinity;
+                double maxY = double.NegativeInfinity;
                 foreach (IShape shape in SubShapes)
                 {
-                    if (shape.Rectangle.TL.X < MinX)
-                        MinX = shape.Rectangle.TL.X;
-                    if (shape.Rectangle.TL.Y < MinY)
-                        MinY = shape.Rectangle.TL.Y;
-                    if (shape.Rectangle.BR.X > MaxX)
-                        MaxX = shape.Rectangle.BR.X;
-                    if (shape.Rectangle.BR.Y > MaxY)
-                        MaxY = shape.Rectangle.BR.Y;
+                    if (shape.Rectangle.TL.X < minX)
+                        minX = shape.Rectangle.TL.X;
+                    if (shape.Rectangle.TL.Y < minY)
+                        minY = shape.Rectangle.TL.Y;
+                    if (shape.Rectangle.BR.X > maxX)
+                        maxX = shape.Rectangle.BR.X;
+                    if (shape.Rectangle.BR.Y > maxY)
+                        maxY = shape.Rectangle.BR.Y;
                 }
                 Rectangle = new RTRect2(
-                    new Vector2D(MinX, MinY),
-                    new Vector2D(MaxX, MaxY)
+                    new Vector2D(minX, minY),
+                    new Vector2D(maxX, maxY)
                 );
             }
             /// <summary>

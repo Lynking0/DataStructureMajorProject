@@ -18,7 +18,7 @@ namespace GraphMoudle
         /// <summary>
         ///   当两边共顶点时碰撞检测的忽略范围
         /// </summary>
-        public const double EdgeIgnoreRatio = 0.15;
+        public const double EdgeIgnoreRatio = 0.25;
         public const double MaxVertexAltitude = 0.1;
         public const double MaxSampleTryTimes = 30;
     }

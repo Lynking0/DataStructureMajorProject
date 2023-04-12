@@ -63,8 +63,6 @@ namespace GraphMoudle.DataStructureAndAlgorithm.SpatialIndexer.RTreeStructure
         }
         public bool CanAdd(IRTreeData data)
         {
-            if (Root is null)
-                return true;
             List<IRTreeData> adjacencies = new List<IRTreeData>();
             Root.SearchLeaves(data.Rectangle, adjacencies);
             foreach (IRTreeData other in adjacencies)
@@ -103,7 +101,8 @@ namespace GraphMoudle.DataStructureAndAlgorithm.SpatialIndexer.RTreeStructure
                 throw new ArgumentOutOfRangeException("The starting array index cannot be negative.");
             if (Count > array.Length - arrayIndex)
                 throw new ArgumentException("The destination array has fewer elements than the collection.");
-
+            
+            throw new NotImplementedException();
         }
         private IEnumerator<IRTreeData> _getEnumerator(RTNode? thisNode)
         {

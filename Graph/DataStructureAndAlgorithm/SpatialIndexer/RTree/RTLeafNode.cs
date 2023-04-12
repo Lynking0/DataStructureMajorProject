@@ -18,12 +18,16 @@ namespace GraphMoudle.DataStructureAndAlgorithm.SpatialIndexer.RTreeStructure
             {
                 if (shape is IRTreeData data)
                     Datas.Add(data);
-                throw new Exception($"{GetType()}.AddShape(IShape): Unexpected type.");
+                else
+                    throw new Exception($"{GetType()}.AddShape(IShape): Unexpected type <{shape.GetType()}>.");
             }
             protected override RTNode ClearAndSplit()
             {
+                CheckParent();
+                RTLeafNode newNode = new RTLeafNode(RTree, Parent);
+                (Parent as RTIntlNode)!.Children.Add(newNode);
                 Datas = new List<IRTreeData>();
-                return new RTLeafNode(RTree, Parent);
+                return newNode;
             }
             protected override IShape[] GetSubShapesCopy()
             {

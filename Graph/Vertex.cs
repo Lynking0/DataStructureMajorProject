@@ -3,6 +3,7 @@ using Shared.Extensions.DoubleVector2Extensions;
 using System.Collections.Generic;
 using GraphMoudle.DataStructureAndAlgorithm.DisjointSet;
 using GraphMoudle.DataStructureAndAlgorithm.SpatialIndexer.RTreeStructure;
+using Godot;
 
 namespace GraphMoudle
 {
@@ -16,9 +17,9 @@ namespace GraphMoudle
         public List<Edge> Adjacencies;
         public enum VertexType
         {
-            Terminal = 0, // 控制点仅在一个方向，即梯度的反方向
-            Intermediate, // 控制点可在两个方向，分别为梯度顺/逆时针转90度方向
-            Isolated // 孤立点，没有任何的边，在建边后将被删除
+            Isolated = 0, // 孤立点，没有任何的边，在建边后将被删除
+            Terminal, // 控制点仅在一个方向，即梯度的反方向
+            Intermediate // 控制点可在两个方向，分别为梯度顺/逆时针转90度方向
         }
         /// <summary>
         ///   控制生成Edge时控制点方向的选择，仅在生成Edge时使用。
@@ -41,7 +42,7 @@ namespace GraphMoudle
         public bool IsOverlap(IRTreeData other)
         {
             if (other is Vertex vertex)
-                return true; // EdgesDistance < VerticesDistance
+                return false; // EdgesDistance < VerticesDistance
             if (other is Edge edge)
                 return edge.IsOverlap(this);
             throw new Exception($"{GetType()}.IsOverlap(IRTreeData): Unexpected type.");

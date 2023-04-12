@@ -1,6 +1,7 @@
 using System;
 using Godot;
 using GraphMoudle.DataStructureAndAlgorithm.SpatialIndexer;
+using GraphMoudle.DataStructureAndAlgorithm.SpatialIndexer.RTreeStructure;
 using Shared.Extensions.DoubleVector2Extensions;
 using System.Collections.Generic;
 using TopographyMoudle;
@@ -13,6 +14,7 @@ namespace GraphMoudle
     {
         public static Graph Instance = new Graph();
         private VertexSpatialIndexer VerticesContainer;
+        private RTree OverlapInspector;
         public IReadOnlyCollection<Vertex> Vertices => VerticesContainer;
         public IEnumerable<Edge> Edges
         {
@@ -28,6 +30,7 @@ namespace GraphMoudle
         public Graph()
         {
             VerticesContainer = new VertexSpatialIndexer();
+            OverlapInspector = new RTree(5);
         }
         /// <summary>
         ///   生成各个点
@@ -35,6 +38,8 @@ namespace GraphMoudle
         public void CreateVertices()
         {
             VerticesContainer.Clear();
+
+            // 泊松圆盘采样
             List<Vector2D> options = new List<Vector2D>();
             List<Vector2D> selects = new List<Vector2D>();
             Vector2D start = new Vector2D(GD.RandRange(Graph.MinX, Graph.MaxX), GD.RandRange(Graph.MinY, Graph.MaxY));
@@ -82,16 +87,31 @@ namespace GraphMoudle
         }
         public void CreateEdges()
         {
-            // 找出邻近点对
-            List<(Vertex, Vertex)> pairs = VerticesContainer.GetNearbyPairs();
-
+            // 初始化标记
             foreach (Vertex vertex in Vertices)
                 vertex.Type = Vertex.VertexType.Isolated;
 
+            // 找出邻近点对
+            List<(Vertex, Vertex)> pairs = VerticesContainer.GetNearbyPairs();
+ 
+            // 通过海拔高度初步筛选出可选边
             List<Edge> alternativeEdges = new List<Edge>();
             EdgeEvaluatorInvoker.Init();
             FirstTimeFilter(pairs, alternativeEdges);
             SecondTimeFilter(pairs, alternativeEdges);
+
+            // 初始化RTree，并加入各个Vertex
+            OverlapInspector.Clear();
+            foreach (Vertex vertex in Vertices)
+                OverlapInspector.Add(vertex); // 此时不存在vertex无法添加的可能性，故不调用CanAdd()函数
+
+            // 从初步筛出的边中选择出最终要生成的边，并生成分块信息
+            BuildEdges(alternativeEdges);
+
+            // 此时边已初步生成，删除此时还没有连边的点
+            foreach (Vertex vertex in VerticesContainer)
+                if (vertex.Adjacencies.Count == 0)
+                    VerticesContainer.Remove(vertex);
         }
     }
 }

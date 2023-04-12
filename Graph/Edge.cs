@@ -65,8 +65,8 @@ namespace GraphMoudle
                     Utils.Swap(ref EEDC.Instance.A2, ref EEDC.Instance.D2);
                     Utils.Swap(ref EEDC.Instance.B2, ref EEDC.Instance.C2);
                 }
-                EEDC.Instance.MinStatus = A == edge.A || A == edge.B ? Graph.EdgesDistance : 0;
-                EEDC.Instance.MaxStatus = B == edge.A || B == edge.B ? 1 - Graph.EdgesDistance : 1;
+                EEDC.Instance.MinStatus = A == edge.A || A == edge.B ? Graph.EdgeIgnoreRatio : 0;
+                EEDC.Instance.MaxStatus = B == edge.A || B == edge.B ? 1 - Graph.EdgeIgnoreRatio : 1;
                 double tempDist = EEDC.Instance.Annealing().energy;
                 Utils.Swap(ref EEDC.Instance.A1, ref EEDC.Instance.A2);
                 Utils.Swap(ref EEDC.Instance.B1, ref EEDC.Instance.B2);
@@ -103,10 +103,16 @@ namespace GraphMoudle
             t2 = (-b_ - Mathf.Sqrt(b_ * b_ - 4 * a_ * c_)) / (2 * a_);
             minX = Mathf.Min(d, a + b + c + d);
             maxX = Mathf.Max(d, a + b + c + d);
-            minX = Mathf.Min(minX, a * t1 * t1 * t1 + b * t1 * t1 + c * t1 + d);
-            maxX = Mathf.Max(maxX, a * t1 * t1 * t1 + b * t1 * t1 + c * t1 + d);
-            minX = Mathf.Min(minX, a * t2 * t2 * t2 + b * t2 * t2 + c * t2 + d);
-            maxX = Mathf.Max(maxX, a * t2 * t2 * t2 + b * t2 * t2 + c * t2 + d);
+            if (t1 >= 0 && t1 <= 1)
+            {
+                minX = Mathf.Min(minX, a * t1 * t1 * t1 + b * t1 * t1 + c * t1 + d);
+                maxX = Mathf.Max(maxX, a * t1 * t1 * t1 + b * t1 * t1 + c * t1 + d);
+            }
+            if (t2 >= 0 && t2 <= 1)
+            {
+                minX = Mathf.Min(minX, a * t2 * t2 * t2 + b * t2 * t2 + c * t2 + d);
+                maxX = Mathf.Max(maxX, a * t2 * t2 * t2 + b * t2 * t2 + c * t2 + d);
+            }
             minX -= Graph.EdgesDistance / 2;
             maxX += Graph.EdgesDistance / 2;
             // Y
@@ -121,10 +127,16 @@ namespace GraphMoudle
             t2 = (-b_ - Mathf.Sqrt(b_ * b_ - 4 * a_ * c_)) / (2 * a_);
             minY = Mathf.Min(d, a + b + c + d);
             maxY = Mathf.Max(d, a + b + c + d);
-            minY = Mathf.Min(minY, a * t1 * t1 * t1 + b * t1 * t1 + c * t1 + d);
-            maxY = Mathf.Max(maxY, a * t1 * t1 * t1 + b * t1 * t1 + c * t1 + d);
-            minY = Mathf.Min(minY, a * t2 * t2 * t2 + b * t2 * t2 + c * t2 + d);
-            maxY = Mathf.Max(maxY, a * t2 * t2 * t2 + b * t2 * t2 + c * t2 + d);
+            if (t1 >= 0 && t1 <= 1)
+            {
+                minY = Mathf.Min(minY, a * t1 * t1 * t1 + b * t1 * t1 + c * t1 + d);
+                maxY = Mathf.Max(maxY, a * t1 * t1 * t1 + b * t1 * t1 + c * t1 + d);
+            }
+            if (t2 >= 0 && t2 <= 1)
+            {
+                minY = Mathf.Min(minY, a * t2 * t2 * t2 + b * t2 * t2 + c * t2 + d);
+                maxY = Mathf.Max(maxY, a * t2 * t2 * t2 + b * t2 * t2 + c * t2 + d);
+            }
             minY -= Graph.EdgesDistance / 2;
             maxY += Graph.EdgesDistance / 2;
             return new RTRect2(new Vector2D(minX, minY), new Vector2D(maxX, maxY));
