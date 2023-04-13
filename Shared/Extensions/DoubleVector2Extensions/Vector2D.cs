@@ -21,5 +21,9 @@ namespace Shared.Extensions.DoubleVector2Extensions
         {
             return X >= minX && Y >= minY && X < maxX && Y < maxY;
         }
+        public static Vector2D Lerp(Vector2D from, Vector2D to, double weight)
+        {
+            return from + (to - from) * weight;
+        }
     }
 }

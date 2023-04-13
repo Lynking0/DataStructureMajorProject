@@ -5,6 +5,7 @@ using static Shared.RandomMethods;
 
 namespace GraphMoudle.DataStructureAndAlgorithm.OptimalCombinationAlgorithm
 {
+    [Obsolete("因结果不稳定且开销较大，该方案已被弃用")]
     public class VertexEdgeDistCalculator : Abstract.SimulatedAnnealing<double>
     {
         public static VertexEdgeDistCalculator Instance = new VertexEdgeDistCalculator();

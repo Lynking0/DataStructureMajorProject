@@ -1,14 +1,16 @@
 using System;
 using Godot;
+using System.Collections.Generic;
 using GraphMoudle.DataStructureAndAlgorithm.OptimalCombinationAlgorithm;
 using Shared.Extensions.DoubleVector2Extensions;
+using Shared.Extensions.BrokenLineExtensions;
 using GraphMoudle.DataStructureAndAlgorithm;
 using GraphMoudle.DataStructureAndAlgorithm.SpatialIndexer.RTreeStructure;
 namespace GraphMoudle
 {
     using VEDC = VertexEdgeDistCalculator;
     using EEDC = EdgeEdgeDistCalculator;
-    public class Edge : IRTreeData
+    public class Edge : IRTreeData, IBrokenLineLike
     {
         public Vertex A;
         public Vertex B;
@@ -31,6 +33,57 @@ namespace GraphMoudle
             return null;
         }
 
+        #region IBrokenLineLikeImplementation
+
+        private List<Vector2D>? _points = null;
+        public List<Vector2D> Points { get => _points ??= _getBrokenLinePoints(); }
+
+        const int PMaxDepth = 5;
+        const double PAngle = Math.PI * 4 / 180;
+
+        private List<Vector2D> _getBrokenLinePoints()
+        {
+            List<Vector2D> result = new List<Vector2D>();
+            result.Add(Curve.GetPointPosition(0));
+            __getBrokenLinePoints(
+                result, 0, 1, 0,
+                Curve.GetPointPosition(0),
+                Curve.GetPointPosition(0) + Curve.GetPointOut(0),
+                Curve.GetPointPosition(1) + Curve.GetPointIn(1),
+                Curve.GetPointPosition(1)
+            );
+            result.Add(Curve.GetPointPosition(1));
+            return result;
+        }
+        private void __getBrokenLinePoints(List<Vector2D> result, double minT, double maxT, int depth, Vector2D a, Vector2D b, Vector2D c, Vector2D d)
+        {
+            if (depth == PMaxDepth)
+                return;
+
+            double midT = (minT + maxT) * 0.5;
+
+            __getBrokenLinePoints(result, minT, midT, depth + 1, a, b, c, d);
+
+            double _minT = 1 - minT;
+            double _midT = 1 - midT;
+            double _maxT = 1 - maxT;
+
+            Vector2D start = a * (_minT * _minT * _minT) + b * (3 * _minT * _minT * minT) + c * (3 * _minT * minT * minT) + d * (minT * minT * minT);
+            Vector2D middle = a * (_midT * _midT * _midT) + b * (3 * _midT * _midT * midT) + c * (3 * _midT * midT * midT) + d * (midT * midT * midT);
+            Vector2D end = a * (_maxT * _maxT * _maxT) + b * (3 * _maxT * _maxT * maxT) + c * (3 * _maxT * maxT * maxT) + d * (maxT * maxT * maxT);
+
+            Vector2D normalA = (middle - start).NormalizedD();
+            Vector2D normalB = (end - middle).NormalizedD();
+
+            // 角度过大则进行分段
+            if (normalA.DotD(normalB) < Math.Cos(PAngle))
+                result.Add(middle);
+
+            __getBrokenLinePoints(result, midT, maxT, depth + 1, a, b, c, d);
+        }
+
+        #endregion
+
         #region IRTreeDataImplementation
 
         public bool IsOverlap(IRTreeData other)
@@ -39,40 +92,31 @@ namespace GraphMoudle
             {
                 if (vertex == A || vertex == B) // 若vertex为边的端点，则算作不碰撞
                     return false;
-                VEDC.Instance.A = Curve.GetPointPosition(0);
-                VEDC.Instance.B = Curve.GetPointPosition(0) + Curve.GetPointOut(0);
-                VEDC.Instance.C = Curve.GetPointPosition(1) + Curve.GetPointIn(1);
-                VEDC.Instance.D = Curve.GetPointPosition(1);
-                VEDC.Instance.P = vertex.Position;
-                VEDC.Instance.MinDistance = Graph.EdgesDistance;
-                VEDC.Instance.MinStatus = 0;
-                VEDC.Instance.MaxStatus = 1;
-                return VEDC.Instance.Annealing().energy < Graph.EdgesDistance;
+                return this.IsTooClose(vertex.Position, Graph.EdgesDistanceSquared);
             }
             if (other is Edge edge)
             {
-                EEDC.Instance.A1 = Curve.GetPointPosition(0);
-                EEDC.Instance.B1 = Curve.GetPointPosition(0) + Curve.GetPointOut(0);
-                EEDC.Instance.C1 = Curve.GetPointPosition(1) + Curve.GetPointIn(1);
-                EEDC.Instance.D1 = Curve.GetPointPosition(1);
-                EEDC.Instance.A2 = edge.Curve.GetPointPosition(0);
-                EEDC.Instance.B2 = edge.Curve.GetPointPosition(0) + edge.Curve.GetPointOut(0);
-                EEDC.Instance.C2 = edge.Curve.GetPointPosition(1) + edge.Curve.GetPointIn(1);
-                EEDC.Instance.D2 = edge.Curve.GetPointPosition(1);
-                EEDC.Instance.MinDistance = Graph.EdgesDistance;
-                if (A == edge.B || B == edge.A)
+                if (A == edge.A)
                 {
-                    Utils.Swap(ref EEDC.Instance.A2, ref EEDC.Instance.D2);
-                    Utils.Swap(ref EEDC.Instance.B2, ref EEDC.Instance.C2);
+                    return this.IsTooCloseIgnore(edge,
+                        Graph.EdgesDistanceSquared, Graph.EdgeIgnoreDist, false, false);
                 }
-                EEDC.Instance.MinStatus = A == edge.A || A == edge.B ? Graph.EdgeIgnoreRatio : 0;
-                EEDC.Instance.MaxStatus = B == edge.A || B == edge.B ? 1 - Graph.EdgeIgnoreRatio : 1;
-                double tempDist = EEDC.Instance.Annealing().energy;
-                Utils.Swap(ref EEDC.Instance.A1, ref EEDC.Instance.A2);
-                Utils.Swap(ref EEDC.Instance.B1, ref EEDC.Instance.B2);
-                Utils.Swap(ref EEDC.Instance.C1, ref EEDC.Instance.C2);
-                Utils.Swap(ref EEDC.Instance.D1, ref EEDC.Instance.D2);
-                return Math.Min(tempDist, EEDC.Instance.Annealing().energy) < Graph.EdgesDistance;
+                if (A == edge.B)
+                {
+                    return this.IsTooCloseIgnore(edge,
+                        Graph.EdgesDistanceSquared, Graph.EdgeIgnoreDist, false, true);
+                }
+                if (B == edge.A)
+                {
+                    return this.IsTooCloseIgnore(edge,
+                        Graph.EdgesDistanceSquared, Graph.EdgeIgnoreDist, true, false);
+                }
+                if (B == edge.B)
+                {
+                    return this.IsTooCloseIgnore(edge,
+                        Graph.EdgesDistanceSquared, Graph.EdgeIgnoreDist, true, true);
+                }
+                return this.IsTooClose(edge, Graph.EdgesDistanceSquared);
             }
             throw new Exception($"{GetType()}.IsOverlap(IRTreeData): Unexpected type.");
         }

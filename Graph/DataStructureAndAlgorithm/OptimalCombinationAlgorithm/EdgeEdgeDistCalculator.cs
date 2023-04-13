@@ -10,6 +10,7 @@ namespace GraphMoudle.DataStructureAndAlgorithm.OptimalCombinationAlgorithm
     ///   若Line2上存在若干点，它们的到Line1的最短线段不是Line1的法线（即不在本退火解空间内），说明Line1上离它们最近的点为其中一个端点。
     ///   所以计算本次退火的结果后，还会与Line1两端点分别到Line2的最短距离做比较。
     /// </summary>
+    [Obsolete("因结果不稳定且开销较大，该方案已被弃用")]
     public class EdgeEdgeDistCalculator : Abstract.SimulatedAnnealing<double>
     {
         /// <summary>

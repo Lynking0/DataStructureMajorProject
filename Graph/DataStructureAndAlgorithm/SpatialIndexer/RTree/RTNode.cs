@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using Shared.Extensions.ICollectionExtensions;
 using Shared.Extensions.DoubleVector2Extensions;
-using Godot;
 
 namespace GraphMoudle.DataStructureAndAlgorithm.SpatialIndexer.RTreeStructure
 {
@@ -105,6 +104,16 @@ namespace GraphMoudle.DataStructureAndAlgorithm.SpatialIndexer.RTreeStructure
                 RTNode splitNode = ClearAndSplit();
                 foreach (IShape shape in subShapesCopy)
                 {
+                    if (shape == seed1)
+                    {
+                        this.AddShape(shape);
+                        continue;
+                    }
+                    if (shape == seed2)
+                    {
+                        splitNode.AddShape(shape);
+                        continue;
+                    }
                     double dist1 = RTRect2.CalcExpandCost(shape.Rectangle, seed1!.Rectangle);
                     double dist2 = RTRect2.CalcExpandCost(shape.Rectangle, seed2!.Rectangle);
                     if (dist1 < dist2)
