@@ -1,5 +1,6 @@
 using System;
 using Shared.Extensions.DoubleVector2Extensions;
+using Godot;
 
 namespace GraphMoudle.DataStructureAndAlgorithm.SpatialIndexer.RTreeStructure
 {
@@ -23,7 +24,9 @@ namespace GraphMoudle.DataStructureAndAlgorithm.SpatialIndexer.RTreeStructure
             BR = br;
             Area = (BR.X - TL.X) * (BR.Y - TL.Y);
         }
-        public bool IsOverLap(RTRect2 other)
+        public static explicit operator Rect2(RTRect2 rTRect2) => new Rect2((Vector2)rTRect2.TL, (Vector2)(rTRect2.BR - rTRect2.TL));
+        public static explicit operator RTRect2(Rect2 rect2) => new RTRect2(rect2.Position, rect2.Position + rect2.Size);
+        public bool IsOverLap(in RTRect2 other)
         {
             return !(
                 TL.X > other.BR.X ||
@@ -53,23 +56,6 @@ namespace GraphMoudle.DataStructureAndAlgorithm.SpatialIndexer.RTreeStructure
             double MaxX = Math.Max(BR.X, other.BR.X);
             double MaxY = Math.Max(BR.Y, other.BR.Y);
             return (MaxX - MinX) * (MaxY - MinY) - Area;
-        }
-        /// <summary>
-        ///   计算该矩形在加入other后的扩张面积以及扩张后的矩形
-        /// </summary>
-        public double CalcExpand(in RTRect2 other, out RTRect2 expandedRect)
-        {
-            expandedRect = new RTRect2(
-                new Vector2D(
-                    Math.Min(TL.X, other.TL.X),
-                    Math.Min(TL.Y, other.TL.Y)
-                ),
-                new Vector2D(
-                    Math.Max(BR.X, other.BR.X),
-                    Math.Max(BR.Y, other.BR.Y)
-                )
-            );
-            return expandedRect.Area - Area;
         }
     }
 }

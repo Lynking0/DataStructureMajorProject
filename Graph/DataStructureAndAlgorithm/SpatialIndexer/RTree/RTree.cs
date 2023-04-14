@@ -57,7 +57,7 @@ namespace GraphMoudle.DataStructureAndAlgorithm.SpatialIndexer.RTreeStructure
         /// </summary>
         private void CascadeAdjust(RTNode start)
         {
-            for(RTNode? node = start; node is not null; node = node.Parent)
+            for (RTNode? node = start; node is not null; node = node.Parent)
                 node.Adjust();
         }
         public bool CanAdd(IRTreeData data)
@@ -68,6 +68,17 @@ namespace GraphMoudle.DataStructureAndAlgorithm.SpatialIndexer.RTreeStructure
                 if (data.IsOverlap(other))
                     return false;
             return true;
+        }
+        /// <summary>
+        ///   获取搜索矩阵附近的边
+        /// </summary>
+        public IEnumerable<Edge> Search(RTRect2 rect)
+        {
+            List<IRTreeData> adjacencies = new List<IRTreeData>();
+            Root.SearchLeaves(rect, adjacencies);
+            foreach (IRTreeData data in adjacencies)
+                if (data is Edge edge)
+                    yield return edge;
         }
         /// <summary>
         ///   添加一个data，此函数不会判断添加操作是否合法，调用此函数前需确保已调用CanAdd检测合法性。
@@ -100,7 +111,7 @@ namespace GraphMoudle.DataStructureAndAlgorithm.SpatialIndexer.RTreeStructure
                 throw new ArgumentOutOfRangeException("The starting array index cannot be negative.");
             if (Count > array.Length - arrayIndex)
                 throw new ArgumentException("The destination array has fewer elements than the collection.");
-            
+
             throw new NotImplementedException();
         }
         private IEnumerator<IRTreeData> _getEnumerator(RTNode? thisNode)
@@ -124,6 +135,28 @@ namespace GraphMoudle.DataStructureAndAlgorithm.SpatialIndexer.RTreeStructure
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
+        }
+        /// <summary>
+        ///   按照深度顺序遍历R树各个节点的MBR
+        /// </summary>
+        public IEnumerable<(int depth, RTRect2 rect)> RectangleTraversal()
+        {
+            if (Count != 0)
+            {
+                Queue<(int, RTNode)> queue = new Queue<(int, RTNode)>();
+                queue.Enqueue((0, Root));
+                yield return (0, Root.Rectangle);
+                while (queue.Count != 0)
+                {
+                    (int depth, RTNode node) = queue.Dequeue();
+                    foreach (IShape shape in node.SubShapes)
+                    {
+                        if (shape is RTNode nextNode)
+                            queue.Enqueue((depth + 1, nextNode));
+                        yield return (depth + 1, shape.Rectangle);
+                    }
+                }
+            }
         }
     }
 }

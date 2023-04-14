@@ -14,7 +14,7 @@ namespace GraphMoudle
     {
         public static Graph Instance = new Graph();
         private VertexSpatialIndexer VerticesContainer;
-        private RTree OverlapInspector;
+        public RTree GISInfoStorer;
         public IReadOnlyCollection<Vertex> Vertices => VerticesContainer;
         public IEnumerable<Edge> Edges
         {
@@ -30,7 +30,7 @@ namespace GraphMoudle
         public Graph()
         {
             VerticesContainer = new VertexSpatialIndexer();
-            OverlapInspector = new RTree(5);
+            GISInfoStorer = new RTree(5);
         }
         /// <summary>
         ///   生成各个点
@@ -101,9 +101,9 @@ namespace GraphMoudle
             SecondTimeFilter(pairs, alternativeEdges);
 
             // 初始化RTree，并加入各个Vertex
-            OverlapInspector.Clear();
+            GISInfoStorer.Clear();
             foreach (Vertex vertex in Vertices)
-                OverlapInspector.Add(vertex); // 此时不存在vertex无法添加的可能性，故不调用CanAdd()函数
+                GISInfoStorer.Add(vertex); // 此时不存在vertex无法添加的可能性，故不调用CanAdd()函数
 
             // 从初步筛出的边中选择出最终要生成的边，并生成分块信息
             BuildEdges(alternativeEdges);

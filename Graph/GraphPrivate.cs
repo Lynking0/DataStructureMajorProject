@@ -111,14 +111,14 @@ namespace GraphMoudle
             RandomDislocate(alternativeEdges);
             foreach (Edge edge in alternativeEdges)
             {
-                if (OverlapInspector.CanAdd(edge))
+                if (GISInfoStorer.CanAdd(edge))
                 {
-                    OverlapInspector.Add(edge);
+                    GISInfoStorer.Add(edge);
                     edge.A.Adjacencies.Add(edge);
                     edge.B.Adjacencies.Add(edge);
                 }
             }
-            GD.Print(OverlapInspector.Count - Vertices.Count);
+            GD.Print(GISInfoStorer.Count - Vertices.Count);
         }
     }
 }

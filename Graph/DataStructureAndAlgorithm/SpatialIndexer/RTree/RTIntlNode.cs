@@ -17,7 +17,10 @@ namespace GraphMoudle.DataStructureAndAlgorithm.SpatialIndexer.RTreeStructure
             protected override void AddShape(IShape shape)
             {
                 if (shape is RTNode child)
+                {
                     Children.Add(child);
+                    child.Parent = this;
+                }
                 else
                     throw new Exception($"{GetType()}.AddShape(IShape): Unexpected type <{shape.GetType()}>.");
             }

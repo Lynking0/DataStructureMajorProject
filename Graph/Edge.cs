@@ -38,8 +38,8 @@ namespace GraphMoudle
         private List<Vector2D>? _points = null;
         public List<Vector2D> Points { get => _points ??= _getBrokenLinePoints(); }
 
-        const int PMaxDepth = 5;
-        const double PAngle = Math.PI * 4 / 180;
+        const int PMaxDepth = 4;
+        const double PAngle = Math.PI * 5 / 180;
 
         private List<Vector2D> _getBrokenLinePoints()
         {
