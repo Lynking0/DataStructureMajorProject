@@ -14,6 +14,10 @@ namespace GraphMoudle.DataStructureAndAlgorithm.SpatialIndexer.RTreeStructure
         /// </summary>
         private int Capacity;
         /// <summary>
+        ///   中间节点的最小子节点数以及叶子节点最小记录索引数（根节点除外）
+        /// </summary>
+        private int MinimumCapacity;
+        /// <summary>
         ///   根节点
         /// </summary>
         private RTNode Root;
@@ -21,9 +25,10 @@ namespace GraphMoudle.DataStructureAndAlgorithm.SpatialIndexer.RTreeStructure
         public bool IsReadOnly { get => false; }
         public RTree(int capacity)
         {
-            Root = new RTLeafNode(this, null);
+            Root = new RTLeafNode(this, null, 0);
             Count = 0;
             Capacity = capacity;
+            MinimumCapacity = Godot.Mathf.FloorToInt(capacity / 2);
         }
         /// <summary>
         ///   选择叶子结点以放置新条目
@@ -50,6 +55,30 @@ namespace GraphMoudle.DataStructureAndAlgorithm.SpatialIndexer.RTreeStructure
                     }
                     thisNode = bestChild;
                 }
+            }
+        }
+        /// <summary>
+        ///   选择指定层级的中间结点以放置新条目
+        /// </summary>
+        private RTIntlNode ChooseIntlNode(RTRect2 targetMBR, int level)
+        {
+            RTIntlNode node = (Root as RTIntlNode)!;
+            while (true)
+            {
+                if (node.Level == level)
+                    return node;
+                RTNode bestChild = node.Children[0];
+                double minCost = node.Children[0].Rectangle.CalcExpandCost(targetMBR);
+                for (int i = 1; i < node.Children.Count; ++i)
+                {
+                    double cost = node.Children[i].Rectangle.CalcExpandCost(targetMBR);
+                    if (cost < minCost)
+                    {
+                        bestChild = node.Children[i];
+                        minCost = cost;
+                    }
+                }
+                node = (bestChild as RTIntlNode)!;
             }
         }
         /// <summary>
@@ -90,18 +119,49 @@ namespace GraphMoudle.DataStructureAndAlgorithm.SpatialIndexer.RTreeStructure
             ++Count;
             CascadeAdjust(leaf);
         }
+        /// <summary>
+        ///   将一个RTNode及其子树添加进R树
+        /// </summary>
+        private void AddNode(RTNode node)
+        {
+            node.Parent = ChooseIntlNode(node.Rectangle, node.Level + 1);
+            (node.Parent as RTIntlNode)!.Children.Add(node);
+            CascadeAdjust(node.Parent);
+        }
+        /// <summary>
+        ///   Remove后对R树进行缩减
+        /// </summary>
+        private void CascadeCondense(RTNode start)
+        {
+            List<IShape> RemovedShapes = new List<IShape>();
+            for (RTNode? node = start; node is not null; node = node.Parent)
+                node.Condense(RemovedShapes);
+            // 将刚刚临时删除的条目重新添加
+            foreach (IShape shape in RemovedShapes)
+            {
+                if (shape is IRTreeData data)
+                    Add(data);
+                if (shape is RTNode node)
+                    AddNode(node);
+            }
+        }
         public bool Remove(IRTreeData data)
         {
-            throw new NotImplementedException();
+            if (Root.FindLeaf(data) is not RTLeafNode leaf)
+                return false;
+            leaf.Datas.Remove(data);
+            --Count;
+            CascadeCondense(leaf);
+            return true;
         }
         public void Clear()
         {
-            Root = new RTLeafNode(this, null);
+            Root = new RTLeafNode(this, null, 0);
             Count = 0;
         }
         public bool Contains(IRTreeData data)
         {
-            return true;
+            return Root.FindLeaf(data) is not null;
         }
         public void CopyTo(IRTreeData[] array, int arrayIndex)
         {

@@ -10,7 +10,7 @@ namespace GraphMoudle.DataStructureAndAlgorithm.SpatialIndexer.RTreeStructure
             public List<IRTreeData> Datas;
             public override IEnumerable<IShape> SubShapes { get => Datas; }
             public override int SubShapesCount { get => Datas.Count; }
-            public RTLeafNode(RTree rTree, RTNode? parent) : base(rTree, parent)
+            public RTLeafNode(RTree rTree, RTNode? parent, int level) : base(rTree, parent, level)
             {
                 Datas = new List<IRTreeData>();
             }
@@ -24,7 +24,7 @@ namespace GraphMoudle.DataStructureAndAlgorithm.SpatialIndexer.RTreeStructure
             protected override RTNode ClearAndSplit()
             {
                 CheckParent();
-                RTLeafNode newNode = new RTLeafNode(RTree, Parent);
+                RTLeafNode newNode = new RTLeafNode(RTree, Parent, Level);
                 (Parent as RTIntlNode)!.Children.Add(newNode);
                 Datas = new List<IRTreeData>();
                 return newNode;
@@ -38,6 +38,10 @@ namespace GraphMoudle.DataStructureAndAlgorithm.SpatialIndexer.RTreeStructure
                 foreach (IRTreeData data in Datas)
                     if (searchArea.IsOverLap(data.Rectangle))
                         result.Add(data);
+            }
+            public override RTLeafNode? FindLeaf(IRTreeData data)
+            {
+                return Datas.Contains(data) ? this : null;
             }
         }
     }

@@ -12,7 +12,7 @@ namespace GraphMoudle
     public partial class Graph
     {
         /// <summary>
-        ///   首次筛选，将所有节点当作Intermediate看待并尝试寻找合法Edge，并将最后未找到Edge的节点标记为Isolated。
+        ///   首次筛选，将所有节点当作Intermediate看待并尝试寻找合法Edge，并将最后成功找到Edge的节点标记为Intermediate。
         /// </summary>
         private void FirstTimeFilter(List<(Vertex, Vertex)> pairs, List<Edge> alternativeEdges)
         {

@@ -103,15 +103,20 @@ namespace GraphMoudle
             // 初始化RTree，并加入各个Vertex
             GISInfoStorer.Clear();
             foreach (Vertex vertex in Vertices)
-                GISInfoStorer.Add(vertex); // 此时不存在vertex无法添加的可能性，故不调用CanAdd()函数
+                if (vertex.Type != Vertex.VertexType.Isolated) // 已经确认没有连边的点不需要参与后面的运算
+                    GISInfoStorer.Add(vertex); // 此时不存在vertex无法添加的可能性，故不调用CanAdd()函数
 
             // 从初步筛出的边中选择出最终要生成的边，并生成分块信息
             BuildEdges(alternativeEdges);
 
             // 此时边已初步生成，删除此时还没有连边的点
             foreach (Vertex vertex in VerticesContainer)
+            {
+                if (vertex.Type != Vertex.VertexType.Isolated) // 删除R树中所有的vertex
+                    GISInfoStorer.Remove(vertex);
                 if (vertex.Adjacencies.Count == 0)
                     VerticesContainer.Remove(vertex);
+            }
         }
     }
 }
