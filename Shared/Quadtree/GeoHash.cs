@@ -83,6 +83,7 @@ namespace Shared.QuadTree
 
         public IEnumerable<GeoHash> Around(uint distance)
         {
+            // TODO:对阶
             int M = 0;
             for (int i = 0; i < Length; i++)
                 M |= 1 << i;

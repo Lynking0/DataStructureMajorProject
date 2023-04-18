@@ -5,12 +5,12 @@ namespace GraphMoudle
 {
     public partial class Graph
     {
-        public const double MinX = -1600;
-        public const double MaxX = 1600;
-        public const double MinY = -1200;
-        public const double MaxY = 1200;
-        public const double CtrlPointDistance = 28;
-        public const double VerticesDistance = 65;
+        public const double MinX = -5000;
+        public const double MaxX = 5000;
+        public const double MinY = -3000;
+        public const double MaxY = 3000;
+        public const double CtrlPointDistance = 24;
+        public const double VerticesDistance = 57;
         public const double MaxVertexAltitude = 0.1;
         public const double MaxSampleTryTimes = 30;
     }

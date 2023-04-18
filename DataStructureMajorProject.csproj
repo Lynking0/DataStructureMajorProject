@@ -6,6 +6,7 @@
     <EnableDynamicLoading>true</EnableDynamicLoading>
     <DefineConstants>SECURITY</DefineConstants>
     <DefineConstants>RECIPE_DEBUG</DefineConstants>
+    <DefineConstants>QUADTREE_DEBUG</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <Content Include="Topography\Topography.cs" />

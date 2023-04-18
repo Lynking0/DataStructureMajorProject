@@ -267,7 +267,8 @@ namespace Shared.QuadTree
 
             public IEnumerable<IEnumerable<T>> Nearby(QuadTreeNode? exclude = null)
             {
-                // TODO: NearBy
+                var visitedNodeSet = new HashSet<QuadTreeNode>();
+                visitedNodeSet.Add(this);
                 if (Type == QuadTreeNodeType.Leaf)
                     yield return GetItems();
                 uint distance = 1;
@@ -275,14 +276,20 @@ namespace Shared.QuadTree
                 {
                     IEnumerable<T> totalResult = Enumerable.Empty<T>();
                     var near = GeoHash.Around(distance++).ToList();
+                    if (near.Count() == 0)
+                        break;
                     foreach (var item in near)
                     {
                         var node = Query(item);
-                        if (node != exclude)
+                        if (node == exclude)
                         {
-                            var result = node.GetItems();
-                            if (result.Count() > 0)
-                                totalResult = totalResult.Concat(result);
+                            continue;
+                        }
+                        visitedNodeSet.Add(node);
+                        var result = node.GetItems();
+                        if (result.Count() > 0)
+                        {
+                            totalResult = totalResult.Concat(result);
                         }
                     }
                     yield return totalResult;

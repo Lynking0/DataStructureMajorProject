@@ -30,7 +30,7 @@ namespace TopographyMoudle
         public static void Generate()
         {
             Graph.Instance.CreateVertices();
-            Graph.Instance.CreateEdges();
+            // Graph.Instance.CreateEdges();
         }
     }
 }
