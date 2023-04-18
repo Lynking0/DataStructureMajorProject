@@ -12,9 +12,9 @@ namespace GraphMoudle.DataStructureAndAlgorithm.DisjointSet
         /// </summary>
         int DisjointSetSize { get; set; }
     }
-    public class UnionFindDisjointSet<T> where T : class, IDisjointSetElement<T>
+    public static class UnionFindDisjointSet<T> where T : class, IDisjointSetElement<T>
     {
-        public UnionFindDisjointSet(IEnumerable<T> elements)
+        public static void Init(IEnumerable<T> elements)
         {
             foreach (T ele in elements)
             {
@@ -22,23 +22,25 @@ namespace GraphMoudle.DataStructureAndAlgorithm.DisjointSet
                 ele.DisjointSetSize = 1;
             }
         }
-        public T Find(T x)
+        public static T Find(T x)
         {
             if (x.DisjointSetParent == x)
                 return x;
             return x.DisjointSetParent = Find(x.DisjointSetParent!);
         }
-        public void Union(T x, T y)
+        public static void Union(T x, T y)
         {
             T parentX = Find(x);
             T parentY = Find(y);
             if (x != y)
             {
-                if (x.DisjointSetSize > y.DisjointSetSize) {
+                if (x.DisjointSetSize > y.DisjointSetSize)
+                {
                     x.DisjointSetSize += y.DisjointSetSize;
                     y.DisjointSetParent = x;
                 }
-                else {
+                else
+                {
                     y.DisjointSetSize += x.DisjointSetSize;
                     x.DisjointSetParent = y;
                 }

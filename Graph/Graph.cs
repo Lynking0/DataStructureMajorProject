@@ -1,13 +1,12 @@
 using System;
 using Godot;
-using GraphMoudle.SpatialIndexer;
+using GraphMoudle.DataStructureAndAlgorithm.SpatialIndexer;
+using GraphMoudle.DataStructureAndAlgorithm.SpatialIndexer.RTreeStructure;
 using Shared.Extensions.DoubleVector2Extensions;
 using System.Collections.Generic;
 using TopographyMoudle;
-using GraphMoudle.DataStructureAndAlgorithm.DisjointSet;
-using GraphMoudle.DataStructureAndAlgorithm.OptimalCombinationAlgorithm;
-using static Shared.RandomMethods;
 using GraphMoudle.DataStructureAndAlgorithm.OptimalCombinationAlgorithm.ComputeShader;
+using static Shared.RandomMethods;
 
 namespace GraphMoudle
 {
@@ -15,6 +14,7 @@ namespace GraphMoudle
     {
         public static Graph Instance = new Graph();
         private VertexSpatialIndexer VerticesContainer;
+        public RTree GISInfoStorer;
         public IReadOnlyCollection<Vertex> Vertices => VerticesContainer;
         public IEnumerable<Edge> Edges
         {
@@ -30,6 +30,7 @@ namespace GraphMoudle
         public Graph()
         {
             VerticesContainer = new VertexSpatialIndexer();
+            GISInfoStorer = new RTree(5);
         }
         /// <summary>
         ///   生成各个点
@@ -37,6 +38,8 @@ namespace GraphMoudle
         public void CreateVertices()
         {
             VerticesContainer.Clear();
+
+            // 泊松圆盘采样
             List<Vector2D> options = new List<Vector2D>();
             List<Vector2D> selects = new List<Vector2D>();
             Vector2D start = new Vector2D(GD.RandRange(Graph.MinX, Graph.MaxX), GD.RandRange(Graph.MinY, Graph.MaxY));
@@ -52,21 +55,21 @@ namespace GraphMoudle
                 {
                     double length = GD.RandRange(Graph.VerticesDistance, Graph.VerticesDistance * 2);
                     double angle = GD.RandRange(0, Math.Tau);
-                    Vector2D extendedPos = new Vector2D(
+                    Vector2D expandedPos = new Vector2D(
                         basicPos.X + length * Mathf.Cos(angle), basicPos.Y + length * Mathf.Sin(angle));
-                    if (!extendedPos.IsInRect(
+                    if (!expandedPos.IsInRect(
                         Graph.MinX + Graph.CtrlPointDistance,
                         Graph.MinY + Graph.CtrlPointDistance,
                         Graph.MaxX - Graph.CtrlPointDistance,
                         Graph.MaxY - Graph.CtrlPointDistance))
                         continue;
-                    if (VerticesContainer.HasAdjacency(extendedPos))
+                    if (VerticesContainer.HasAdjacency(expandedPos))
                         continue;
-                    if (FractalNoiseGenerator.GetFractalNoise(extendedPos.X, extendedPos.Y) >= Graph.MaxVertexAltitude)
+                    if (FractalNoiseGenerator.GetFractalNoise(expandedPos.X, expandedPos.Y) >= Graph.MaxVertexAltitude)
                         continue;
-                    options.Add(extendedPos);
-                    selects.Add(extendedPos);
-                    VerticesContainer.Add(new Vertex(extendedPos));
+                    options.Add(expandedPos);
+                    selects.Add(expandedPos);
+                    VerticesContainer.Add(new Vertex(expandedPos));
                     break;
                 }
                 if (cnt == Graph.MaxSampleTryTimes)
@@ -84,35 +87,36 @@ namespace GraphMoudle
         }
         public void CreateEdges()
         {
-            // UnionFindDisjointSet<Vertex> unionFindSet = new UnionFindDisjointSet<Vertex>(Vertices);
+            // 初始化标记
+            foreach (Vertex vertex in Vertices)
+                vertex.Type = Vertex.VertexType.Isolated;
+
+            // 找出邻近点对
             List<(Vertex, Vertex)> pairs = VerticesContainer.GetNearbyPairs();
-            RandomDislocate(pairs);
-            FirstCreation(pairs);
-        }
-        /// <summary>
-        ///   首次尝试建边，将所有节点当作Intermediate看待并尝试生成Edge，并将最后未建成边的节点标记为Terminal。
-        /// </summary>
-        private void FirstCreation(List<(Vertex, Vertex)> pairs)
-        {
+ 
+            // 通过海拔高度初步筛选出可选边
+            List<Edge> alternativeEdges = new List<Edge>();
             EdgeEvaluatorInvoker.Init();
-            EdgeEvaluatorInvoker.Data = new List<(Vector2D a, Vector2D b, Vector2D c, Vector2D d)>();
-            foreach ((Vertex a, Vertex b) in pairs)
+            FirstTimeFilter(pairs, alternativeEdges);
+            SecondTimeFilter(pairs, alternativeEdges);
+
+            // 初始化RTree，并加入各个Vertex
+            GISInfoStorer.Clear();
+            foreach (Vertex vertex in Vertices)
+                if (vertex.Type != Vertex.VertexType.Isolated) // 已经确认没有连边的点不需要参与后面的运算
+                    GISInfoStorer.Add(vertex); // 此时不存在vertex无法添加的可能性，故不调用CanAdd()函数
+
+            // 从初步筛出的边中选择出最终要生成的边，并生成分块信息
+            BuildEdges(alternativeEdges);
+
+            // 此时边已初步生成，删除此时还没有连边的点
+            foreach (Vertex vertex in VerticesContainer)
             {
-                Vector2D aCtrl, bCtrl;
-                if (Mathf.Abs(a.Gradient.OrthogonalD().AngleToD(b.Position - a.Position)) < Math.PI / 2)
-                    aCtrl = a.Position + a.Gradient.OrthogonalD().NormalizedD() * Graph.CtrlPointDistance;
-                else
-                    aCtrl = a.Position - a.Gradient.OrthogonalD().NormalizedD() * Graph.CtrlPointDistance;
-                if (Mathf.Abs(b.Gradient.OrthogonalD().AngleToD(a.Position - b.Position)) < Math.PI / 2)
-                    bCtrl = b.Position + b.Gradient.OrthogonalD().NormalizedD() * Graph.CtrlPointDistance;
-                else
-                    bCtrl = b.Position - b.Gradient.OrthogonalD().NormalizedD() * Graph.CtrlPointDistance;
-                EdgeEvaluatorInvoker.Data.Add((a.Position, aCtrl, bCtrl, b.Position));
+                if (vertex.Type != Vertex.VertexType.Isolated) // 删除R树中所有的vertex
+                    GISInfoStorer.Remove(vertex);
+                if (vertex.Adjacencies.Count == 0)
+                    VerticesContainer.Remove(vertex);
             }
-            EdgeEvaluatorInvoker.Invoke();
-            bool[] isVaild = EdgeEvaluatorInvoker.Receive();
-            // foreach (Vertex v in Vertices)
-            //     v.Type = v.Adjacencies.Count == 0 ? Vertex.VertexType.Terminal : Vertex.VertexType.Intermediate;
         }
     }
 }

@@ -8,7 +8,7 @@ namespace TopographyMoudle
         /// <summary>
         ///   双三次插值
         /// </summary>
-        private static double BicubicInterpolation(int seed, double tarX, double tarY)
+        private static double BicubicInterpolation(int oct, double tarX, double tarY)
         {
             int[] x = new int[4];
             int[] y = new int[4];
@@ -20,20 +20,20 @@ namespace TopographyMoudle
             x[2] = x[1] + 1; y[2] = y[1] + 1;
             x[3] = x[1] + 2; y[3] = y[1] + 2;
             return CubicInterpolation(
-                CubicInterpolation(Pseudorandom(seed, x[0], y[0]), Pseudorandom(seed, x[1], y[0]), Pseudorandom(seed, x[2], y[0]), Pseudorandom(seed, x[3], y[0]),
+                CubicInterpolation(Pseudorandom(oct, x[0], y[0]), Pseudorandom(oct, x[1], y[0]), Pseudorandom(oct, x[2], y[0]), Pseudorandom(oct, x[3], y[0]),
                           _x),
-                CubicInterpolation(Pseudorandom(seed, x[0], y[1]), Pseudorandom(seed, x[1], y[1]), Pseudorandom(seed, x[2], y[1]), Pseudorandom(seed, x[3], y[1]),
+                CubicInterpolation(Pseudorandom(oct, x[0], y[1]), Pseudorandom(oct, x[1], y[1]), Pseudorandom(oct, x[2], y[1]), Pseudorandom(oct, x[3], y[1]),
                           _x),
-                CubicInterpolation(Pseudorandom(seed, x[0], y[2]), Pseudorandom(seed, x[1], y[2]), Pseudorandom(seed, x[2], y[2]), Pseudorandom(seed, x[3], y[2]),
+                CubicInterpolation(Pseudorandom(oct, x[0], y[2]), Pseudorandom(oct, x[1], y[2]), Pseudorandom(oct, x[2], y[2]), Pseudorandom(oct, x[3], y[2]),
                           _x),
-                CubicInterpolation(Pseudorandom(seed, x[0], y[3]), Pseudorandom(seed, x[1], y[3]), Pseudorandom(seed, x[2], y[3]), Pseudorandom(seed, x[3], y[3]),
+                CubicInterpolation(Pseudorandom(oct, x[0], y[3]), Pseudorandom(oct, x[1], y[3]), Pseudorandom(oct, x[2], y[3]), Pseudorandom(oct, x[3], y[3]),
                           _x),
                 _y) * (1 / (1.5 * 1.5));
         }
         /// <summary>
         ///   求双三次插值函数值及在x, y方向上的偏导数。
         /// </summary>
-        private static double BicubicInterpolation(int seed, double tarX, double tarY, out double gradX, out double gradY)
+        private static double BicubicInterpolation(int oct, double tarX, double tarY, out double gradX, out double gradY)
         {
             int[] x = new int[4];
             int[] y = new int[4];
@@ -45,23 +45,23 @@ namespace TopographyMoudle
             x[2] = x[1] + 1; y[2] = y[1] + 1;
             x[3] = x[1] + 2; y[3] = y[1] + 2;
             gradX = CubicDerivative(
-                    CubicInterpolation(Pseudorandom(seed, x[0], y[0]), Pseudorandom(seed, x[0], y[1]), Pseudorandom(seed, x[0], y[2]), Pseudorandom(seed, x[0], y[3]),
+                    CubicInterpolation(Pseudorandom(oct, x[0], y[0]), Pseudorandom(oct, x[0], y[1]), Pseudorandom(oct, x[0], y[2]), Pseudorandom(oct, x[0], y[3]),
                             _y),
-                    CubicInterpolation(Pseudorandom(seed, x[1], y[0]), Pseudorandom(seed, x[1], y[1]), Pseudorandom(seed, x[1], y[2]), Pseudorandom(seed, x[1], y[3]),
+                    CubicInterpolation(Pseudorandom(oct, x[1], y[0]), Pseudorandom(oct, x[1], y[1]), Pseudorandom(oct, x[1], y[2]), Pseudorandom(oct, x[1], y[3]),
                             _y),
-                    CubicInterpolation(Pseudorandom(seed, x[2], y[0]), Pseudorandom(seed, x[2], y[1]), Pseudorandom(seed, x[2], y[2]), Pseudorandom(seed, x[2], y[3]),
+                    CubicInterpolation(Pseudorandom(oct, x[2], y[0]), Pseudorandom(oct, x[2], y[1]), Pseudorandom(oct, x[2], y[2]), Pseudorandom(oct, x[2], y[3]),
                             _y),
-                    CubicInterpolation(Pseudorandom(seed, x[3], y[0]), Pseudorandom(seed, x[3], y[1]), Pseudorandom(seed, x[3], y[2]), Pseudorandom(seed, x[3], y[3]),
+                    CubicInterpolation(Pseudorandom(oct, x[3], y[0]), Pseudorandom(oct, x[3], y[1]), Pseudorandom(oct, x[3], y[2]), Pseudorandom(oct, x[3], y[3]),
                             _y),
                     _x
             ) * (1 / (1.5 * 1.5));
-            double tempA = CubicInterpolation(Pseudorandom(seed, x[0], y[0]), Pseudorandom(seed, x[1], y[0]), Pseudorandom(seed, x[2], y[0]), Pseudorandom(seed, x[3], y[0]),
+            double tempA = CubicInterpolation(Pseudorandom(oct, x[0], y[0]), Pseudorandom(oct, x[1], y[0]), Pseudorandom(oct, x[2], y[0]), Pseudorandom(oct, x[3], y[0]),
                             _x);
-            double tempB = CubicInterpolation(Pseudorandom(seed, x[0], y[1]), Pseudorandom(seed, x[1], y[1]), Pseudorandom(seed, x[2], y[1]), Pseudorandom(seed, x[3], y[1]),
+            double tempB = CubicInterpolation(Pseudorandom(oct, x[0], y[1]), Pseudorandom(oct, x[1], y[1]), Pseudorandom(oct, x[2], y[1]), Pseudorandom(oct, x[3], y[1]),
                             _x);
-            double tempC = CubicInterpolation(Pseudorandom(seed, x[0], y[2]), Pseudorandom(seed, x[1], y[2]), Pseudorandom(seed, x[2], y[2]), Pseudorandom(seed, x[3], y[2]),
+            double tempC = CubicInterpolation(Pseudorandom(oct, x[0], y[2]), Pseudorandom(oct, x[1], y[2]), Pseudorandom(oct, x[2], y[2]), Pseudorandom(oct, x[3], y[2]),
                             _x);
-            double tempD = CubicInterpolation(Pseudorandom(seed, x[0], y[3]), Pseudorandom(seed, x[1], y[3]), Pseudorandom(seed, x[2], y[3]), Pseudorandom(seed, x[3], y[3]),
+            double tempD = CubicInterpolation(Pseudorandom(oct, x[0], y[3]), Pseudorandom(oct, x[1], y[3]), Pseudorandom(oct, x[2], y[3]), Pseudorandom(oct, x[3], y[3]),
                             _x);
             gradY = CubicDerivative(tempA, tempB, tempC, tempD, _y) * (1 / (1.5 * 1.5));
             return CubicInterpolation(tempA, tempB, tempC, tempD, _y) * (1 / (1.5 * 1.5));

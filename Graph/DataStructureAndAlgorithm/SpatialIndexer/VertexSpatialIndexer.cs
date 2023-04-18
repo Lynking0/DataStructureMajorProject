@@ -4,8 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Shared.Extensions.DoubleVector2Extensions;
 
-
-namespace GraphMoudle.SpatialIndexer
+namespace GraphMoudle.DataStructureAndAlgorithm.SpatialIndexer
 {
     /// <summary>
     ///   使用网格对节点进行空间索引

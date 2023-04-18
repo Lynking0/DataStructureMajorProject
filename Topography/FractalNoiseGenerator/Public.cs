@@ -47,14 +47,13 @@ namespace TopographyMoudle
         {
             x *= Frequency;
             y *= Frequency;
-            int seed = Seed;
 
             double sum = 0;
             double amp = Amplitude;
             for (int i = 0; i < Octaves; ++i)
             {
                 // seed++ —— 改变种子以生成不同噪声
-                double singleNoise = BicubicInterpolation(seed++, x, y);
+                double singleNoise = BicubicInterpolation(i, x, y);
                 // 使用PingPong函数进行标准化
                 double normalizedNoise = PingPong((singleNoise + 1) * PingPongStrength);
                 // 叠加
@@ -76,7 +75,6 @@ namespace TopographyMoudle
         {
             x *= Frequency;
             y *= Frequency;
-            int seed = Seed;
 
             double sum = 0;
             double amp = Amplitude;
@@ -85,7 +83,7 @@ namespace TopographyMoudle
             gradY = 0;
             for (int i = 0; i < Octaves; ++i)
             {
-                double singleNoise = BicubicInterpolation(seed++, x, y, out tempGradX, out tempGradY);
+                double singleNoise = BicubicInterpolation(i, x, y, out tempGradX, out tempGradY);
                 double normalizedNoise = PingPong((singleNoise + 1) * PingPongStrength, ref tempGradX, ref tempGradY);
                 sum += (normalizedNoise - 0.5) * 2 * amp;
                 gradX += tempGradX * 2 * amp;

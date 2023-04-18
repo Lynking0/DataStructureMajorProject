@@ -8,18 +8,20 @@ namespace GraphMoudle.DataStructureAndAlgorithm.OptimalCombinationAlgorithm.Comp
 {
     public static class EdgeEvaluatorInvoker
     {
-        private static RenderingDevice? rd;
-        private static Rid shader; 
+        private static RenderingDevice? RD;
+        private static Rid Shader;
+        private static RDShaderFile? ShaderFile;
+        private static RDShaderSpirV? ShaderBytecode;
         private static Rid[]? Buffers;
         public static List<(Vector2D a, Vector2D b, Vector2D c, Vector2D d)>? Data;
         public static void Init()
         {
             // Create a local rendering device.
-            rd = RenderingServer.CreateLocalRenderingDevice();
+            RD = RenderingServer.CreateLocalRenderingDevice();
             // Load GLSL shader
-            RDShaderFile shaderFile = GD.Load<RDShaderFile>("res://NetworkGraph/DataStructureAndAlgorithm/OptimalCombinationAlgorithm/ComputeShader/EdgeEvaluator.glsl");
-            RDShaderSpirV shaderBytecode = shaderFile.GetSpirV();
-            Rid shader = rd.ShaderCreateFromSpirV(shaderBytecode);
+            ShaderFile = GD.Load<RDShaderFile>("res://Graph/DataStructureAndAlgorithm/OptimalCombinationAlgorithm/ComputeShader/EdgeEvaluator.glsl");
+            ShaderBytecode = ShaderFile.GetSpirV();
+            Shader = RD.ShaderCreateFromSpirV(ShaderBytecode);
         }
         public static void Invoke()
         {
@@ -36,7 +38,6 @@ namespace GraphMoudle.DataStructureAndAlgorithm.OptimalCombinationAlgorithm.Comp
             };
             float[] input10 = new float[]
             {
-                (float)Math.PI,
                 (float)GraphMoudle.Graph.MaxVertexAltitude,
                 (float)GraphMoudle.Graph.CtrlPointDistance,
                 (float)Data!.Count
@@ -50,7 +51,7 @@ namespace GraphMoudle.DataStructureAndAlgorithm.OptimalCombinationAlgorithm.Comp
             float[] input7 = new float[Data.Count];
             float[] input8 = new float[Data.Count];
             uint[] input9 = new uint[Data.Count];
-            bool[] input11 = new bool[Data.Count];
+            float[] input11 = new float[Data.Count];
             for (int i = 0; i < Data.Count; ++i)
             {
                 input1[i] = (float)Data[i].a.X;
@@ -77,7 +78,7 @@ namespace GraphMoudle.DataStructureAndAlgorithm.OptimalCombinationAlgorithm.Comp
                 new byte[input8.Length * sizeof(float)],
                 new byte[input9.Length * sizeof(uint)],
                 new byte[input10.Length * sizeof(float)],
-                new byte[input11.Length * sizeof(bool)]
+                new byte[input11.Length * sizeof(float)]
             };
             Buffer.BlockCopy(input0, 0, inputBytes[0], 0, inputBytes[0].Length);
             Buffer.BlockCopy(input1, 0, inputBytes[1], 0, inputBytes[1].Length);
@@ -96,7 +97,7 @@ namespace GraphMoudle.DataStructureAndAlgorithm.OptimalCombinationAlgorithm.Comp
             Array<RDUniform> uniforms = new Array<RDUniform>();
             for (int i = 0; i < inputBytes.Length; ++i)
             {
-                Buffers[i] = rd!.StorageBufferCreate((uint)inputBytes[i].Length, inputBytes[i]);
+                Buffers[i] = RD!.StorageBufferCreate((uint)inputBytes[i].Length, inputBytes[i]);
                 RDUniform uniform = new RDUniform
                 {
                     UniformType = RenderingDevice.UniformType.StorageBuffer,
@@ -105,24 +106,24 @@ namespace GraphMoudle.DataStructureAndAlgorithm.OptimalCombinationAlgorithm.Comp
                 uniform.AddId(Buffers[i]);
                 uniforms.Add(uniform);
             }
-            Rid uniformSet = rd!.UniformSetCreate(uniforms, shader, 0);
+            Rid uniformSet = RD!.UniformSetCreate(uniforms, Shader, 0);
 
             // Create a compute pipeline
-            Rid pipeline = rd.ComputePipelineCreate(shader);
-            long computeList = rd.ComputeListBegin();
-            rd.ComputeListBindComputePipeline(computeList, pipeline);
-            rd.ComputeListBindUniformSet(computeList, uniformSet, 0);
-            rd.ComputeListDispatch(computeList, xGroups: 5, yGroups: 1, zGroups: 1);
-            rd.ComputeListEnd();
+            Rid pipeline = RD.ComputePipelineCreate(Shader);
+            long computeList = RD.ComputeListBegin();
+            RD.ComputeListBindComputePipeline(computeList, pipeline);
+            RD.ComputeListBindUniformSet(computeList, uniformSet, 0);
+            RD.ComputeListDispatch(computeList, xGroups: (uint)Mathf.CeilToInt(Data.Count / 10), yGroups: 1, zGroups: 1);
+            RD.ComputeListEnd();
             // Submit to GPU and wait for sync
-            rd.Submit();
+            RD.Submit();
         }
-        public static bool[] Receive()
+        public static float[] Receive()
         {
-            rd!.Sync();
+            RD!.Sync();
             // Read back the data from the buffers
-            byte[] outputBytes = rd.BufferGetData(Buffers![11]);
-            bool[] output = new bool[Data!.Count];
+            byte[] outputBytes = RD.BufferGetData(Buffers![11]);
+            float[] output = new float[Data!.Count];
             Buffer.BlockCopy(outputBytes, 0, output, 0, outputBytes.Length);
             return output;
         }

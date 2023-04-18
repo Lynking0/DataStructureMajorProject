@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 /// <summary>
-///     提供IEnumerable<T>和ICollection<T>的扩展方法
+///   提供IEnumerable<T>和ICollection<T>的扩展方法
 /// </summary>
 namespace Shared.Extensions.ICollectionExtensions
 {
@@ -79,7 +79,7 @@ namespace Shared.Extensions.ICollectionExtensions
                 yield return (idx, it.Current);
         }
         /// <summary>
-        ///     将当前可迭代对象与其他多个可迭代对象合并成新的可迭代对象并返回（不改变原可迭代对象）
+        ///   将当前可迭代对象与其他多个可迭代对象合并成新的可迭代对象并返回（不改变原可迭代对象）
         /// </summary>
         public static IEnumerable<T> Concat<T>(this IEnumerable<T> thisEnum, params IEnumerable<T>[] enumerators)
         {
@@ -88,6 +88,22 @@ namespace Shared.Extensions.ICollectionExtensions
             foreach (IEnumerable<T> enumerator in enumerators)
                 for (IEnumerator<T> it = enumerator.GetEnumerator(); it.MoveNext();)
                     yield return it.Current;
+        }
+        /// <summary>
+        ///   返回一个新迭代器，元素是原迭代器中元素两两组成的元组
+        /// </summary>
+        public static IEnumerable<(T, T)> ToPairs<T>(this IEnumerable<T> thisEnum)
+        {
+            IEnumerator<T> it1 = thisEnum.GetEnumerator();
+            for (int i = 0; it1.MoveNext(); ++i)
+            {
+                IEnumerator<T> it2 = thisEnum.GetEnumerator();
+                for (int j = 0; j < i; ++j)
+                {
+                    it2.MoveNext();
+                    yield return (it2.Current, it1.Current);
+                }
+            }
         }
     }
 }
