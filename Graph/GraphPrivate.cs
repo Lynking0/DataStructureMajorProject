@@ -106,9 +106,8 @@ namespace GraphMoudle
         /// </summary>
         private void BuildEdges(List<Edge> alternativeEdges)
         {
-            GD.Print(Vertices.Count);
-            GD.Print(alternativeEdges.Count);
-            RandomDislocate(alternativeEdges);
+            UnionFindDisjointSet<Vertex>.Init(Vertices);
+            RandomDislocate(alternativeEdges); // 打乱
             foreach (Edge edge in alternativeEdges)
             {
                 if (GISInfoStorer.CanAdd(edge))
@@ -116,9 +115,9 @@ namespace GraphMoudle
                     GISInfoStorer.Add(edge);
                     edge.A.Adjacencies.Add(edge);
                     edge.B.Adjacencies.Add(edge);
+                    UnionFindDisjointSet<Vertex>.Union(edge.A, edge.B);
                 }
             }
-            GD.Print(GISInfoStorer.Count - Vertices.Count);
         }
     }
 }
