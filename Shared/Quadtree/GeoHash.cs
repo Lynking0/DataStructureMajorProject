@@ -84,6 +84,7 @@ namespace Shared.QuadTree
         public IEnumerable<GeoHash> Around(uint distance)
         {
             // TODO:对阶
+            // TODO:判断距离Length应该选取分裂的最小距离
             int M = 0;
             for (int i = 0; i < Length; i++)
                 M |= 1 << i;
