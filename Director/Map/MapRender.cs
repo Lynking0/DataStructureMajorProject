@@ -46,8 +46,8 @@ namespace Director
 
         public override void _Draw()
         {
-            Factory.Factories.ToList().ForEach(DrawFactor);
-            ProduceLink.Links.ForEach(DrawLink);
+            // Factory.Factories.ToList().ForEach(DrawFactor);
+            // ProduceLink.Links.ForEach(DrawLink);
         }
     }
 }
