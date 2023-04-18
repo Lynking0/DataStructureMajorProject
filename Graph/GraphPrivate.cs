@@ -106,7 +106,7 @@ namespace GraphMoudle
         /// </summary>
         private void BuildEdges(List<Edge> alternativeEdges)
         {
-            UnionFindDisjointSet<Vertex>.Init(Vertices);
+            // UnionFindDisjointSet<Vertex>.Init(Vertices);
             RandomDislocate(alternativeEdges); // 打乱
             foreach (Edge edge in alternativeEdges)
             {
@@ -115,7 +115,7 @@ namespace GraphMoudle
                     GISInfoStorer.Add(edge);
                     edge.A.Adjacencies.Add(edge);
                     edge.B.Adjacencies.Add(edge);
-                    UnionFindDisjointSet<Vertex>.Union(edge.A, edge.B);
+                    // UnionFindDisjointSet<Vertex>.Union(edge.A, edge.B);
                 }
             }
         }
