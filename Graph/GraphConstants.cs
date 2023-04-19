@@ -5,10 +5,10 @@ namespace GraphMoudle
 {
     public partial class Graph
     {
-        public const double MinX = -5000;
-        public const double MaxX = 5000;
-        public const double MinY = -3000;
-        public const double MaxY = 3000;
+        public const double MinX = -Director.Constants.Width / 2;
+        public const double MaxX = Director.Constants.Width / 2;
+        public const double MinY = -Director.Constants.Height / 2;
+        public const double MaxY = Director.Constants.Height / 2;
         public const double CtrlPointDistance = 30;
         public const double VerticesDistance = 57;
         /// <summary>
