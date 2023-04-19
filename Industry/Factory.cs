@@ -2,9 +2,10 @@ using Godot;
 using System.Collections.Generic;
 using Shared.QuadTree;
 
+using TransportMoudle;
+
 namespace IndustryMoudle
 {
-    using ItemType = System.String;
     public partial class Factory : ILocatable
     {
         public Recipe Recipe { get; }
