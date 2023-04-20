@@ -1,4 +1,5 @@
 using Godot;
+using System.Collections.Generic;
 using System.Linq;
 using IndustryMoudle;
 
@@ -8,12 +9,19 @@ namespace Director
     {
         private FontVariation? Font;
 
+        private Node2D? FactoryContainer;
+        private Dictionary<Factory, FactoryRender> FactoryToRender = new Dictionary<Factory, FactoryRender>();
+
         public override void _Ready()
         {
             Font = new FontVariation();
             Font.BaseFont = ResourceLoader.Load<Font>("res://Render/PingFang-SC-Regular.ttf");
             GetNode<MapController>("../GameViewportContainer").MapChanged += Update;
             Update(Vector2.Zero, 1);
+
+            FactoryContainer = new Node2D();
+            FactoryContainer.Name = "FactoryContainer";
+            AddChild(FactoryContainer);
         }
 
         private void Update(Vector2 transform, double scale)
@@ -35,13 +43,14 @@ namespace Director
         }
         private void DrawFactor(Factory factory)
         {
-            DrawCircle(factory.Position, 6, Colors.WebGray);
-            DrawString(Font, factory.Position, factory.Recipe, fontSize: 12);
+            var render = (FactoryRender)GD.Load<PackedScene>("res://Director/Map/FactoryRender/FactoryRender.tscn").Instantiate();
+            FactoryToRender[factory] = render;
+            FactoryContainer?.AddChild(render);
+            render.Refresh(factory);
         }
         private void DrawLink(ProduceLink link)
         {
-            DrawArrow(link.from.Position, link.to.Position, Colors.WebGray, width: 2);
-            DrawString(Font, (link.from.Position + link.to.Position) / 2, link, fontSize: 10, modulate: Colors.Red);
+            FactoryToRender[link.from].AddLink(link);
         }
 
         public override void _Draw()
