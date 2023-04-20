@@ -11,6 +11,12 @@ namespace Director
         private MapRender? MapRender;
         private MouselInput? MouselInput;
 
+        private double TickLength = 0.024; // 24ms
+        private double DeltaCount = 0;
+
+        public delegate void TickHandler();
+        public event TickHandler? Tick;
+
         public override void _Ready()
         {
             MapController = GetNode<MapController>("../MouseInput/GameViewportContainer");
@@ -31,6 +37,16 @@ namespace Director
             // factoryInitStopWatch.Stop();
             // GD.Print("Factory build in ", factoryInitStopWatch.ElapsedMilliseconds, " ms");
             // Factory.FactoriesQuadTree.Detail();
+        }
+
+        public override void _Process(double delta)
+        {
+            DeltaCount += delta;
+            while (DeltaCount > TickLength)
+            {
+                Tick!.Invoke();
+                DeltaCount -= TickLength;
+            }
         }
     }
 }
