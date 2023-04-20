@@ -40,7 +40,9 @@ namespace IndustryMoudle
         private readonly List<Item> _input;
         public readonly List<Item> _output;
         public IReadOnlyCollection<Item> Input => _input;
+        public IEnumerable<ItemType> InputTypes { get => Input.Map(i => i.Type); }
         public IReadOnlyCollection<Item> Output => _output;
+        public IEnumerable<ItemType> OutputTypes { get => Output.Map(i => i.Type); }
         public Recipe(in uint time, in string group, in List<Item> intput, in List<Item> output)
         {
             Time = time;

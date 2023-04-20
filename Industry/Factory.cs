@@ -9,15 +9,16 @@ namespace IndustryMoudle
     public partial class Factory : ILocatable
     {
         public Recipe Recipe { get; }
-        public Vector2 Position { get; }
+        public GraphMoudle.Vertex Vertex { get; }
+        public Vector2 Position { get => (Vector2)Vertex.Position; }
         private Dictionary<ItemType, uint> storage = new Dictionary<ItemType, uint>();
         private const uint BaseProduceSpeed = 100;
         public QuadTree<Factory>.Handle QuadTreeHandle;
 
-        public Factory(Recipe recipe, Vector2 position)
+        public Factory(Recipe recipe, GraphMoudle.Vertex vertex)
         {
             Recipe = recipe;
-            Position = position;
+            Vertex = vertex;
             QuadTreeHandle = FactoriesQuadTree.Insert(this);
         }
         ~Factory()
