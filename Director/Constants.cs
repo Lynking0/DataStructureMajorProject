@@ -1,7 +1,7 @@
 using Godot;
 
 
-namespace Director
+namespace DirectorMoudle
 {
     class Constants
     {

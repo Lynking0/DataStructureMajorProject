@@ -1,4 +1,4 @@
-[gd_scene load_steps=2 format=3 uid="uid://ctl6fr1k845qt"]
+[gd_scene load_steps=2 format=3 uid="uid://bolpsp03063qi"]
 
 [ext_resource type="Script" path="res://Shared/Quadtree/Tester.cs" id="1_egkwd"]
 

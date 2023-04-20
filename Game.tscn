@@ -14,7 +14,7 @@ shader_parameter/transform = null
 shader_parameter/windowSize = null
 
 [sub_resource type="LabelSettings" id="LabelSettings_m3dq6"]
-font_size = 32
+font_size = 24
 
 [node name="Main" type="Control"]
 layout_mode = 3
@@ -60,17 +60,18 @@ script = ExtResource("5_tv3h6")
 [node name="Node2D" type="Node2D" parent="MouseInput/MapRender"]
 script = ExtResource("5_fj2l2")
 
-[node name="Title" type="Label" parent="MouseInput"]
+[node name="LogicFrame" type="Label" parent="MouseInput"]
 layout_mode = 1
 anchors_preset = 5
 anchor_left = 0.5
 anchor_right = 0.5
-offset_left = -101.0
-offset_right = 101.0
-offset_bottom = 48.0
+offset_left = -80.5
+offset_right = 80.5
+offset_bottom = 37.0
 grow_horizontal = 2
-text = "This is a title."
+text = "LogicFrame: 0"
 label_settings = SubResource("LabelSettings_m3dq6")
+horizontal_alignment = 1
 
 [node name="foot" type="Label" parent="MouseInput"]
 layout_mode = 1

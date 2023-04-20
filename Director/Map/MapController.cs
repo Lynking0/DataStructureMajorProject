@@ -1,6 +1,6 @@
 using Godot;
 
-namespace Director
+namespace DirectorMoudle
 {
     public partial class MapController : SubViewportContainer
     {

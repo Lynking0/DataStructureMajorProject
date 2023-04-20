@@ -2,7 +2,7 @@ using Godot;
 using System.Collections.Generic;
 using IndustryMoudle;
 
-namespace Director
+namespace DirectorMoudle
 {
     public partial class FactoryRender : Node2D
     {

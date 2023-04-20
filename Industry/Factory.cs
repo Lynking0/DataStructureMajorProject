@@ -20,6 +20,7 @@ namespace IndustryMoudle
             Recipe = recipe;
             Vertex = vertex;
             QuadTreeHandle = FactoriesQuadTree.Insert(this);
+            Factories.Add(this);
         }
         ~Factory()
         {
@@ -65,6 +66,11 @@ namespace IndustryMoudle
             foreach (var item in Recipe.Input)
                 requirement.Add(new Item(item.Number * BaseProduceSpeed / Recipe.Time, item.Type));
             return requirement;
+        }
+
+        public void Tick()
+        {
+
         }
     }
 }

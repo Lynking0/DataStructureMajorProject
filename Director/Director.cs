@@ -1,12 +1,15 @@
 using Godot;
+using System;
 using UserControl;
 using TopographyMoudle;
 using IndustryMoudle;
 
-namespace Director
+namespace DirectorMoudle
 {
     public partial class Director : Control
     {
+        public static Director? Instance = null;
+
         private MapController? MapController;
         private MapRender? MapRender;
         private MouselInput? MouselInput;
@@ -16,6 +19,15 @@ namespace Director
 
         public delegate void TickHandler();
         public event TickHandler? Tick;
+
+        public Director()
+        {
+            if (Instance is not null)
+            {
+                throw new NotSupportedException("Director重复实例化");
+            }
+            Instance = this;
+        }
 
         public override void _Ready()
         {
@@ -37,6 +49,13 @@ namespace Director
             // factoryInitStopWatch.Stop();
             // GD.Print("Factory build in ", factoryInitStopWatch.ElapsedMilliseconds, " ms");
             // Factory.FactoriesQuadTree.Detail();
+
+            BindEverything();
+        }
+
+        private void BindEverything()
+        {
+            Factory.Factories.ForEach(f => { Director.Instance!.Tick += f.Tick; });
         }
 
         public override void _Process(double delta)
