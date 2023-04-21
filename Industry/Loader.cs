@@ -15,25 +15,59 @@ namespace IndustryMoudle
         Loader()
         {
 #if RECIPE_DEBUG
-            _recipes.Add(new Recipe(10, "", new List<Item> { }, new List<Item> { new Item(1, "A") }));
-            _recipes.Add(new Recipe(10, "", new List<Item> { }, new List<Item> { new Item(1, "B") }));
-            _recipes.Add(new Recipe(10, "", new List<Item> { }, new List<Item> { new Item(1, "C") }));
-            _recipes.Add(new Recipe(10, "", new List<Item> { }, new List<Item> { new Item(1, "D") }));
+            _recipes.Add(new Recipe(10, "",
+            new List<Item> { },
+            new List<Item> { new Item(1, "A") }));
+            _recipes.Add(new Recipe(10, "",
+            new List<Item> { },
+            new List<Item> { new Item(1, "B") }));
+            _recipes.Add(new Recipe(10, "",
+            new List<Item> { },
+            new List<Item> { new Item(1, "C") }));
+            // _recipes.Add(new Recipe(10, "",
+            // new List<Item> { },
+            // new List<Item> { new Item(1, "D") }));
 
 
-            _recipes.Add(new Recipe(10, "", new List<Item> { new Item(1, "A"), new Item(1, "B") }, new List<Item> { new Item(1, "AB") }));
-            _recipes.Add(new Recipe(10, "", new List<Item> { new Item(1, "AB"), new Item(1, "C") }, new List<Item> { new Item(1, "ABC") }));
+            _recipes.Add(new Recipe(10, "",
+            new List<Item> { new Item(1, "A"), new Item(1, "B") },
+            new List<Item> { new Item(1, "AB") }));
+            _recipes.Add(new Recipe(10, "",
+            new List<Item> { new Item(1, "AB"), new Item(1, "C") },
+            new List<Item> { new Item(1, "ABC") }));
 
-            _recipes.Add(new Recipe(10, "", new List<Item> { new Item(1, "B"), new Item(1, "C") }, new List<Item> { new Item(1, "BC") }));
-            _recipes.Add(new Recipe(10, "", new List<Item> { new Item(1, "BC"), new Item(1, "D") }, new List<Item> { new Item(1, "BCD") }));
+            _recipes.Add(new Recipe(10, "",
+            new List<Item> { new Item(1, "B"), new Item(1, "C") },
+            new List<Item> { new Item(1, "BC") }));
+            // _recipes.Add(new Recipe(10, "",
+            // new List<Item> { new Item(1, "BC"), new Item(1, "D") },
+            // new List<Item> { new Item(1, "BCD") }));
 
-            _recipes.Add(new Recipe(10, "", new List<Item> { new Item(1, "A"), new Item(1, "C") }, new List<Item> { new Item(1, "AC") }));
-            _recipes.Add(new Recipe(10, "", new List<Item> { new Item(1, "B"), new Item(1, "D") }, new List<Item> { new Item(1, "BD") }));
-            _recipes.Add(new Recipe(10, "", new List<Item> { new Item(1, "AC"), new Item(1, "BD") }, new List<Item> { new Item(1, "ABCD") }));
+            _recipes.Add(new Recipe(10, "",
+            new List<Item> { new Item(1, "A"), new Item(1, "C") },
+            new List<Item> { new Item(1, "AC") }));
+            _recipes.Add(new Recipe(10, "",
+            new List<Item> { new Item(1, "AC"), new Item(1, "B") },
+            new List<Item> { new Item(1, "ABC") }));
+            _recipes.Add(new Recipe(10, "",
+            new List<Item> { new Item(1, "BC"), new Item(1, "A") },
+            new List<Item> { new Item(1, "ABC") }));
+            // _recipes.Add(new Recipe(10, "",
+            // new List<Item> { new Item(1, "B"), new Item(1, "D") },
+            // new List<Item> { new Item(1, "BD") }));
+            // _recipes.Add(new Recipe(10, "",
+            // new List<Item> { new Item(1, "AC"), new Item(1, "BD") },
+            // new List<Item> { new Item(1, "ABCD") }));
 
-            _recipes.Add(new Recipe(10, "consumption", new List<Item> { new Item(1, "ABCD") }, new List<Item> { }));
-            _recipes.Add(new Recipe(10, "consumption", new List<Item> { new Item(1, "BCD") }, new List<Item> { }));
-            _recipes.Add(new Recipe(10, "consumption", new List<Item> { new Item(1, "ABC") }, new List<Item> { }));
+            // _recipes.Add(new Recipe(10, "consumption",
+            // new List<Item> { new Item(1, "ABCD") },
+            // new List<Item> { }));
+            // _recipes.Add(new Recipe(10, "consumption",
+            // new List<Item> { new Item(1, "BCD") },
+            // new List<Item> { }));
+            _recipes.Add(new Recipe(10, "consumption",
+            new List<Item> { new Item(1, "ABC") },
+            new List<Item> { }));
 
 #else
             var file = FileAccess.Open("res://Industry/Recipes.json", FileAccess.ModeFlags.Read);
