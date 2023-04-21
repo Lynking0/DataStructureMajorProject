@@ -9,12 +9,23 @@ namespace GraphMoudle
 {
     public class Vertex : IDisjointSetElement<Vertex>, IRTreeData
     {
+        /// <summary>
+        ///   仅在生成区块信息过程使用
+        /// </summary>
         public Vertex? DisjointSetParent { get; set; }
+        /// <summary>
+        ///   仅在生成区块信息过程使用
+        /// </summary>
         public int DisjointSetSize { get; set; }
-
         public Vector2D Position;
         public Vector2D Gradient;
         public List<Edge> Adjacencies;
+        private Block? _parentBlock;
+        public Block ParentBlock
+        {
+            get => _parentBlock!;
+            set => _parentBlock = value;
+        }
         public enum VertexType
         {
             Isolated = 0, // 孤立点，没有任何的边，在建边后将被删除

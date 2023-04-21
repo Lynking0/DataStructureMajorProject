@@ -6,7 +6,6 @@ using Shared.Extensions.DoubleVector2Extensions;
 using System.Collections.Generic;
 using TopographyMoudle;
 using GraphMoudle.DataStructureAndAlgorithm.OptimalCombinationAlgorithm.ComputeShader;
-using static Shared.RandomMethods;
 
 namespace GraphMoudle
 {
@@ -26,15 +25,28 @@ namespace GraphMoudle
                             yield return e;
             }
         }
+        public List<Block> Blocks;
 
         public Graph()
         {
             VerticesContainer = new VertexSpatialIndexer();
             GISInfoStorer = new RTree(5);
+            Blocks = new List<Block>();
         }
         /// <summary>
-        ///   生成各个点
+        ///   获取到指定节点vertex的距离最近的点
         /// </summary>
+        public Vertex GetNearestVertex(Vertex vertex)
+        {
+            return DistInfo![vertex][0];
+        }
+        /// <summary>
+        ///   获取一个节点数组，数组中的节点按到指定节点vertex的距离由近到远排列（vertex不在数组中）
+        /// </summary>
+        public Vertex[] GetNearVertices(Vertex vertex)
+        {
+            return DistInfo![vertex];
+        }
         public void CreateVertices()
         {
             VerticesContainer.Clear();
@@ -106,7 +118,7 @@ namespace GraphMoudle
                 if (vertex.Type != Vertex.VertexType.Isolated) // 已经确认没有连边的点不需要参与后面的运算
                     GISInfoStorer.Add(vertex); // 此时不存在vertex无法添加的可能性，故不调用CanAdd()函数
 
-            // 从初步筛出的边中选择出最终要生成的边，并生成分块信息
+            // 从初步筛出的边中选择出最终要生成的边
             BuildEdges(alternativeEdges);
 
             // 此时边已初步生成，删除此时还没有连边的点
@@ -117,6 +129,12 @@ namespace GraphMoudle
                 if (vertex.Adjacencies.Count == 0)
                     VerticesContainer.Remove(vertex);
             }
+
+            // 生成分块信息
+            DivideBlocks();
+
+            // 预计算并存储距离信息
+            CalcDistInfo();
         }
     }
 }
