@@ -35,20 +35,7 @@ namespace IndustryMoudle
             //         }
             //     }
             // }
-            int i = 0;
             // 使用浩哥查找
-            bool Match(ItemType type, Factory? target)
-            {
-                if (target is null)
-                {
-                    return false;
-                }
-                if (target.Recipe.Output.Any(outputItem => type == outputItem.Type))
-                {
-                    return true;
-                }
-                return false;
-            }
             foreach (var curFactory in Factory.Factories)
             {
                 var vertex = curFactory.Vertex;
@@ -84,7 +71,6 @@ namespace IndustryMoudle
                             requirements.Remove(itemType);
                             // TODO: number
                             var link = new ProduceLink(VertexToFactory[otherVertex], curFactory, new Item(0, itemType));
-                            GD.Print(i++);
                         }
                     }
                     Extend(otherVertex);
