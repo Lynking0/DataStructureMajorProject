@@ -136,6 +136,7 @@ namespace GraphMoudle
             {
                 if (block.Count >= MinBlockVerticesCount)
                 {
+                    block.Index = Blocks.Count;
                     Blocks.Add(block);
                     foreach (Vertex vertex in block.Vertices)
                         vertex.ParentBlock = block;
