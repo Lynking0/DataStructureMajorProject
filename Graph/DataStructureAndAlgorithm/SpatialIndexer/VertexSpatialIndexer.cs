@@ -78,6 +78,7 @@ namespace GraphMoudle.DataStructureAndAlgorithm.SpatialIndexer
             Vector2I vi = GetGridCoord(vertex.Position);
             if (Grid[vi.X, vi.Y] != vertex)
                 return false;
+            --Count;
             Grid[vi.X, vi.Y] = null;
             return true;
         }

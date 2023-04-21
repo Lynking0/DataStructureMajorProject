@@ -3,8 +3,8 @@ using Godot;
 using Shared.Extensions.DoubleVector2Extensions;
 using System.Collections.Generic;
 using GraphMoudle.DataStructureAndAlgorithm.OptimalCombinationAlgorithm.ComputeShader;
-using GraphMoudle.DataStructureAndAlgorithm.DisjointSet;
 using GraphMoudle.DataStructureAndAlgorithm;
+using GraphMoudle.DataStructureAndAlgorithm.DisjointSet;
 using static Shared.RandomMethods;
 
 namespace GraphMoudle
@@ -102,11 +102,10 @@ namespace GraphMoudle
             }
         }
         /// <summary>
-        ///   根据边与边的最小距离从可选边中选择实际生成的边，并通过并查集生成分块信息。
+        ///   根据边与边的最小距离从可选边中选择实际生成的边。
         /// </summary>
         private void BuildEdges(List<Edge> alternativeEdges)
         {
-            // UnionFindDisjointSet<Vertex>.Init(Vertices);
             RandomDislocate(alternativeEdges); // 打乱
             foreach (Edge edge in alternativeEdges)
             {
@@ -115,7 +114,40 @@ namespace GraphMoudle
                     GISInfoStorer.Add(edge);
                     edge.A.Adjacencies.Add(edge);
                     edge.B.Adjacencies.Add(edge);
-                    // UnionFindDisjointSet<Vertex>.Union(edge.A, edge.B);
+                }
+            }
+        }
+        // 生成分块信息
+        private void DivideBlocks()
+        {
+            UnionFindDisjointSet<Vertex>.Init(Vertices);
+            foreach (Edge edge in Edges)
+                UnionFindDisjointSet<Vertex>.Union(edge.A, edge.B);
+            Dictionary<Vertex, Block> dict = new Dictionary<Vertex, Block>();
+            foreach (Vertex vertex in Vertices)
+            {
+                Vertex representative = UnionFindDisjointSet<Vertex>.Find(vertex);
+                if (dict.ContainsKey(representative))
+                    dict[representative].Vertices.Add(vertex);
+                else
+                    dict.Add(representative, new Block(vertex));
+            }
+            foreach (Block block in dict.Values)
+            {
+                if (block.Count >= MinBlockVerticesCount)
+                {
+                    Blocks.Add(block);
+                    foreach (Vertex vertex in block.Vertices)
+                        vertex.ParentBlock = block;
+                }
+                else // 若vertex数目不够，则删除该block中的vertex和edge
+                {
+                    foreach (Vertex vertex in block.Vertices)
+                    {
+                        VerticesContainer.Remove(vertex);
+                        foreach (Edge edge in vertex.Adjacencies)
+                            GISInfoStorer.Remove(edge);
+                    }
                 }
             }
         }

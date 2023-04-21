@@ -22,5 +22,6 @@ namespace GraphMoudle
         public const double EdgeIgnoreDist = 25;
         public const double MaxVertexAltitude = 0.1;
         public const double MaxSampleTryTimes = 30;
+        public const int MinBlockVerticesCount = 5;
     }
 }
