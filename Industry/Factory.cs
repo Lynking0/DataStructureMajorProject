@@ -27,6 +27,15 @@ namespace IndustryMoudle
             FactoriesQuadTree.Remove(this);
         }
 
+        public void LoadGoods(Goods goods, Train train)
+        {
+            if (storage.ContainsKey(goods.Item.Type))
+                storage[goods.Item.Type] += goods.Item.Number;
+            else
+                storage.Add(goods.Item.Type, goods.Item.Number);
+            goods.EnterFactory(this, train);
+        }
+
         private bool CanProduce()
         {
             foreach (Item item in Recipe.Input)
@@ -48,13 +57,6 @@ namespace IndustryMoudle
         {
             if (CanProduce())
                 Produce();
-        }
-        public void AddItem(ItemType type, uint number)
-        {
-            if (storage.ContainsKey(type))
-                storage[type] += number;
-            else
-                storage.Add(type, number);
         }
         /// <summary>
         /// 获取该工厂每周期的原料需求
