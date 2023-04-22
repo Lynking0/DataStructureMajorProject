@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://cwwivbact2skh"]
+
+[ext_resource type="Script" path="res://Shared/Charts/BarChart/BarChart.cs" id="1_x3fxo"]
+
+[node name="BarChart" type="Node2D"]
+script = ExtResource("1_x3fxo")
