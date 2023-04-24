@@ -5,7 +5,6 @@ namespace GraphMoudle
 {
     public class Block
     {
-
         public int Count => Vertices.Count;
         public int Index;
         public List<Vertex> Vertices;

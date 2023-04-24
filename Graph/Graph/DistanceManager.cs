@@ -39,6 +39,8 @@ namespace GraphMoudle
                             (double, Vertex, Vertex) value = (keys[i], vertex, items[i]);
                             (double, Vertex, Vertex) oldValue;
                             mut.WaitOne();
+                            if (blockAdjInfo[vertex.ParentBlock.Index] is null)
+                                blockAdjInfo[vertex.ParentBlock.Index] = new Dictionary<Block, (double, Vertex, Vertex)>();
                             if (!blockAdjInfo[vertex.ParentBlock.Index].TryGetValue(items[i].ParentBlock, out oldValue))
                                 blockAdjInfo[vertex.ParentBlock.Index].Add(items[i].ParentBlock, value);
                             else if (keys[i] < oldValue.Item1)
