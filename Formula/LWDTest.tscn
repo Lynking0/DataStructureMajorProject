@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://5rvxfndq8no2"]
+
+[ext_resource type="Script" path="res://Formula/LWDTest.cs" id="1_q61ik"]
+
+[node name="LWDTest" type="Node2D"]
+script = ExtResource("1_q61ik")

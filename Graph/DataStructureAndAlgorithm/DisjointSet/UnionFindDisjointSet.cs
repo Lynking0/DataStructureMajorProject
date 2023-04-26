@@ -30,8 +30,8 @@ namespace GraphMoudle.DataStructureAndAlgorithm.DisjointSet
         }
         public static void Union(T x, T y)
         {
-            T parentX = Find(x);
-            T parentY = Find(y);
+            x = Find(x);
+            y = Find(y);
             if (x != y)
             {
                 if (x.DisjointSetSize > y.DisjointSetSize)
