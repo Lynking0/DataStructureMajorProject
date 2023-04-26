@@ -65,16 +65,25 @@ namespace Formula
         }
         private void GenerateResult(Factory[] dependencies)
         {
-            string[] inputMaterials = new string[dependencies.Length];
-            int[] dependenciesNos = new int[dependencies.Length];
+            int realLen = dependencies.Length;
+            for (int i = 0; i < dependencies.Length; i++)
+            {
+                if (dependencies[i] == null) realLen--;
+            }
+            // string[] inputMaterials = new string[dependencies.Length];
+            // int[] dependenciesNos = new int[dependencies.Length];
+            string[] inputMaterials = new string[realLen];
+            int[] dependenciesNos = new int[realLen];
             int h = 1;
+            int index = 0;
             for (int i = 0; i < dependencies.Length; i++)
             {
                 if (dependencies[i] == null) continue;
-                inputMaterials[i] = dependencies[i].Result;
+                inputMaterials[index] = dependencies[i].Result;
                 // dependenciesNos[i] = dependencies[i].Id + "";
-                dependenciesNos[i] = dependencies[i].Id;
+                dependenciesNos[index] = dependencies[i].Id;
                 if (dependencies[i].height + 1 > h) h = dependencies[i].height + 1;
+                index++;
             }
             Result = string.Join("", inputMaterials);
             DependenciesNos = string.Join(",", dependenciesNos);
