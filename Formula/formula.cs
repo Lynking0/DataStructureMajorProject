@@ -35,14 +35,14 @@ namespace Formula
             Type = type;
             GenerateResult(dependencies);
         }
-        IndustryMoudle.Entry.Recipe ToRecipe()
+        public IndustryMoudle.Entry.Recipe ToRecipe()
         {
             // TODO: Formula.Factory 转 IndustryMoudle.Recipe
             Dictionary<IndustryMoudle.Entry.ItemType, int> input = new Dictionary<IndustryMoudle.Entry.ItemType, int>();
             Dictionary<IndustryMoudle.Entry.ItemType, int> output = new Dictionary<IndustryMoudle.Entry.ItemType, int>();
             string[] m = new string[DependenciesNos.Length];
             m = Material.Split(",");
-            for (int i = 0; i < DependenciesNos.Length; i++)
+            for (int i = 0; i < DependenciesNos.Split(",").Length; i++)
             {
                 input[m[i]] = 1;
             }
@@ -83,10 +83,9 @@ namespace Formula
     {
         static int N = 0;
         static int nowId = 0;
-        static List<Factory> factories = new List<Factory>(); // 所有工厂的列表
+        static public List<Factory> factories = new List<Factory>(); // 所有工厂的列表
         // 创建一个字典用于存储没有被依赖的工厂
         // static Dictionary<string, List<Factory>> factoryDict = new Dictionary<string, List<Factory>>();
-        static Random random = new Random();
         private static Factory generatorRawMaterial(string res, int flag)
         {
             if (nowId >= N) return null;
@@ -97,11 +96,11 @@ namespace Formula
                 factories.Add(newf);
                 return newf;
             }
-            int r = random.Next(6); // 决定2或3输入
+            int r = GD.RandRange(0, 6); // 决定2或3输入
             if ((r >= 3 || flag == 2) && res.Length >= 3) // 当flag减小到2且要合成的长度大于3时，必须进行三输入合成，否则高度可能大于5
             { // 3输入
-                int r1 = random.Next(0, res.Length - 2); // 第一个index
-                int r2 = random.Next(r1 + 1, res.Length - 1); // 第二个index
+                int r1 = GD.RandRange(0, res.Length - 2); // 第一个index
+                int r2 = GD.RandRange(r1 + 1, res.Length - 1); // 第二个index
                 string t1 = res.Substring(0, r1 + 1);
                 string t2 = res.Substring(r1 + 1, r2 - r1);
                 string t3 = res.Substring(r2 + 1);
@@ -116,7 +115,7 @@ namespace Formula
             }
             else
             { // 2输入
-                int r1 = random.Next(res.Length - 1); // 决定子串长度
+                int r1 = GD.RandRange(0, res.Length - 1); // 决定子串长度
                 string t1 = res.Substring(0, r1 + 1);
                 string t2 = res.Substring(r1 + 1);
                 Factory[] deps = new Factory[2];
@@ -128,11 +127,18 @@ namespace Formula
                 return newf;
             }
         }
+        public static IEnumerable<IndustryMoudle.Entry.Recipe> GenerateFactories(int n)
+        {
+            for (int i = 0; i < n; i++)
+            {
+                yield return generatorRawMaterial("ABCDEF", 5).ToRecipe();
+            }
+        }
         public static void MyFun(int n)
         {
-            Stopwatch stopwatch = new Stopwatch();
-            // 开始计时
-            stopwatch.Start();
+            // Stopwatch stopwatch = new Stopwatch();
+            // // 开始计时
+            // stopwatch.Start();
 
             N = n; // 工厂数量
             while (nowId < N)
@@ -140,20 +146,20 @@ namespace Formula
                 generatorRawMaterial("ABCDEF", 5);
             }
             // 输出工厂信息
-            string result1 = @"result1.txt";
-            FileStream fs = new FileStream(result1, FileMode.Create);
-            StreamWriter wr = null;
-            wr = new StreamWriter(fs);
-            foreach (Factory factory in factories)
-            {
-                wr.WriteLine($"序号: {factory.Id}, 类型: {factory.Type}, 来源:{factory.DependenciesNos},原料: {factory.Material}, 高度 : {factory.height}, 合成结果: {factory.Result}");
-            }
-            wr.Close();
+            // string result1 = @"result1.txt";
+            // FileStream fs = new FileStream(result1, FileMode.Create);
+            // StreamWriter wr = null;
+            // wr = new StreamWriter(fs);
+            // foreach (Factory factory in factories)
+            // {
+            //     wr.WriteLine($"序号: {factory.Id}, 类型: {factory.Type}, 来源:{factory.DependenciesNos},原料: {factory.Material}, 高度 : {factory.height}, 合成结果: {factory.Result}");
+            // }
+            // wr.Close();
 
             // 打印时间
-            stopwatch.Stop();
-            TimeSpan timespan = stopwatch.Elapsed;
-            GD.Print("程序运行时间：" + timespan.TotalMilliseconds + "毫秒");
+            // stopwatch.Stop();
+            // TimeSpan timespan = stopwatch.Elapsed;
+            // GD.Print("程序运行时间：" + timespan.TotalMilliseconds + "毫秒");
         }
     }
 }
