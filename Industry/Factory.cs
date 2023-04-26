@@ -14,7 +14,7 @@ namespace IndustryMoudle
         public Vector2 Position { get => (Vector2)Vertex.Position; }
         private Dictionary<ItemType, int> storage = new Dictionary<ItemType, int>();
         // 工厂产能 固定的
-        public int BaseProduceSpeed = 100 + GD.RandRange(-20, 20);
+        public int BaseProduceSpeed = 1;
         // 工厂可用当前产能 可变的
         public ItemBox Input;
         public ItemBox Output;
