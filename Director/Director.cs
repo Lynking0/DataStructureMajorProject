@@ -3,6 +3,7 @@ using System;
 using UserControl;
 using TopographyMoudle;
 using IndustryMoudle;
+using IndustryMoudle.Link;
 
 namespace DirectorMoudle
 {
@@ -31,7 +32,10 @@ namespace DirectorMoudle
 
         public override void _Ready()
         {
-            Logger.trace(this, "Director Ready");
+            var seed = 5877ul;
+            GD.Seed(seed);
+            Logger.trace($"随机种子: {seed}");
+            Logger.trace("Director Ready");
             MapController = GetNode<MapController>("../MouseInput/GameViewportContainer");
             MapRender = GetNode<MapRender>("../MouseInput/MapRender");
             MouselInput = GetNode<MouselInput>("../MouseInput");
@@ -39,20 +43,19 @@ namespace DirectorMoudle
             MouselInput.MapMoveTo += MapController!.SetMapPosition;
             MouselInput.MapZoomIn += MapController.MapZoomIn;
             MouselInput.MapZoomOut += MapController.MapZoomOut;
-            Logger.trace(this, "Director绑定完成");
+            Logger.trace("Director绑定完成");
             Topography.InitParams();
             Topography.Generate();
-            Logger.trace(this, "Topography生成完成");
+            Logger.trace("Topography生成完成");
             // var factoryInitStopWatch = new System.Diagnostics.Stopwatch();
             // factoryInitStopWatch.Start();
             Industry.BuildFactories();
-            Logger.trace(this, "工厂生成完成");
-            Industry.BuildFactoryLinks();
-            Logger.trace(this, "产业链生成完成");
+            Logger.trace("工厂生成完成");
+            Industry.BuildFactoryChains();
+            Logger.trace("产业链生成完成");
             // factoryInitStopWatch.Stop();
             // GD.Print("Factory build in ", factoryInitStopWatch.ElapsedMilliseconds, " ms");
             // Factory.FactoriesQuadTree.Detail();
-
             BindEverything();
         }
 

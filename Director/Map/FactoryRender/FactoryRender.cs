@@ -1,6 +1,7 @@
 using Godot;
 using System.Collections.Generic;
 using IndustryMoudle;
+using IndustryMoudle.Link;
 
 namespace DirectorMoudle
 {
@@ -19,8 +20,9 @@ namespace DirectorMoudle
             var arrowHead = arrow.Normalized() * 10;
             var arrowLeft = arrowHead.Rotated(Mathf.Pi / 6);
             var arrowRight = arrowHead.Rotated(-Mathf.Pi / 6);
-            DrawLine(to, to - arrowLeft, color, width, antialiased);
-            DrawLine(to, to - arrowRight, color, width, antialiased);
+            var center = (from + to) / 2;
+            DrawLine(center, center - arrowLeft, color, width, antialiased);
+            DrawLine(center, center - arrowRight, color, width, antialiased);
         }
 
         public override void _Ready()
@@ -32,8 +34,8 @@ namespace DirectorMoudle
         private void DrawLink(ProduceLink link)
         {
             var from = Vector2.Zero;
-            var to = link.to.Position - link.from.Position;
-            DrawArrow(from, to, Colors.WebGray, width: 2);
+            var to = link.To.Position - link.From.Position;
+            DrawArrow(from, to, link.Chain.Color, width: 2);
             DrawString(Font, (from + to) / 2, link, fontSize: 10, modulate: Colors.Red);
         }
 

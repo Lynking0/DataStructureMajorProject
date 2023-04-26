@@ -1,4 +1,4 @@
-[gd_scene load_steps=2 format=3 uid="uid://cb15og2mjiqlj"]
+[gd_scene load_steps=2 format=3 uid="uid://c7wom28bjxt4u"]
 
 [ext_resource type="Script" path="res://Director/Map/FactoryRender/FactoryRender.cs" id="1_fc1p8"]
 
