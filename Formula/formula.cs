@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Collections.Generic;
 using System.Diagnostics;
+using IndustryMoudle;
 namespace Formula
 {
     enum FactoryType
@@ -16,7 +17,7 @@ namespace Formula
     {
         public int Id { get; }
         public FactoryType Type { get; }
-        public string Material { get; }
+        public string Material { get; set; }
         public string Result { get; set; }
         public string DependenciesNos { get; set; }
         public int height { get; set; } // 最大高度为5
@@ -33,28 +34,53 @@ namespace Formula
         {
             Id = id;
             Type = type;
-            Material = "";
             GenerateResult(dependencies);
         }
         IndustryMoudle.Recipe ToRecipe()
         {
             // TODO: Formula.Factory 转 IndustryMoudle.Recipe
-            
+            List<Item> input = new List<Item>();
+            List<Item> output = new List<Item>();
+            string[] m = new string[DependenciesNos.Length];
+            m = Material.Split(",");
+            for (int i = 0; i < DependenciesNos.Length; i++)
+            {
+                input[i] = new Item(1, m[i].Length == 1 ? "raw_material" : "");
+            }
+            Recipe res;
+            if (Type == FactoryType.RawMaterial)
+            {
+                output[0] = new Item(1, "raw_material");
+                res = new Recipe(1, "raw_material", input, output);
+            }
+            else if (Type == FactoryType.TopLevel)
+            {
+                res = new Recipe(1, "consumption", input, output);
+            }
+            else
+            {
+                output[0] = new Item(1, "");
+                res = new Recipe(1, "", input, output);
+            }
+            return res;
         }
         private void GenerateResult(Factory[] dependencies)
         {
             string[] inputMaterials = new string[dependencies.Length];
             string[] dependenciesNos = new string[dependencies.Length];
+            string[] materials = new string[dependencies.Length];
             int h = 1;
             for (int i = 0; i < dependencies.Length; i++)
             {
                 if (dependencies[i] == null) continue;
                 inputMaterials[i] = dependencies[i].Result;
                 dependenciesNos[i] = dependencies[i].Id + "";
+                materials[i] = dependencies[i].Result;
                 if (dependencies[i].height + 1 > h) h = dependencies[i].height + 1;
             }
             Result = string.Join("", inputMaterials);
             DependenciesNos = string.Join(",", dependenciesNos);
+            Material = string.Join(",", materials);
             height = h; // 高度
         }
     }
