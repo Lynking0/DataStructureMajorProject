@@ -84,7 +84,7 @@ namespace IndustryMoudle
                             {
                                 continue;
                             }
-                            var requirementNumber = curFactory.Input.GetItem(itemType);
+                            var requirementNumber = requirement[itemType];
                             var outputNumber = targetFactory.Output.GetItem(itemType);
 
                             var (deficit, actual) = targetFactory.Output.RequireItem(itemType, requirementNumber);
@@ -101,6 +101,8 @@ namespace IndustryMoudle
                                 requirement[itemType] = deficit;
                             }
                             var link = new ProduceLink(targetFactory, curFactory, new Item(actual, itemType), chain);
+                            targetFactory.OutputLinks.Add(link);
+                            curFactory.InputLinks.Add(link);
                             links.Add(link);
                             downstream.Add(targetFactory);
                         }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Shared.QuadTree;
 using TransportMoudle;
 using IndustryMoudle.Entry;
+using IndustryMoudle.Link;
 
 namespace IndustryMoudle
 {
@@ -18,6 +19,24 @@ namespace IndustryMoudle
         public ItemBox Input;
         public ItemBox Output;
         public QuadTree<Factory>.Handle QuadTreeHandle;
+
+        public List<ProduceLink> InputLinks = new List<ProduceLink>();
+        public List<ProduceLink> OutputLinks = new List<ProduceLink>();
+
+        public IEnumerable<ProduceLink> Links
+        {
+            get
+            {
+                foreach (var link in InputLinks)
+                {
+                    yield return link;
+                }
+                foreach (var link in OutputLinks)
+                {
+                    yield return link;
+                }
+            }
+        }
 
         public Factory(Recipe recipe, GraphMoudle.Vertex vertex)
         {

@@ -32,7 +32,7 @@ namespace DirectorMoudle
 
         public override void _Ready()
         {
-            var seed = 5877ul;
+            var seed = 58777ul;
             GD.Seed(seed);
             Logger.trace($"随机种子: {seed}");
             Logger.trace("Director Ready");

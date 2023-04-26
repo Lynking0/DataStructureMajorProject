@@ -29,6 +29,10 @@ namespace DirectorMoudle
         {
             Font = new FontVariation();
             Font.BaseFont = ResourceLoader.Load<Font>("res://Render/PingFang-SC-Regular.ttf");
+            GetNode<Button>("Button").ButtonDown += () =>
+            {
+                GetNode<FactroyView>("/root/Main/MouseInput/FactroyView").Refresh(Factory!);
+            };
         }
 
         private void DrawLink(ProduceLink link)
