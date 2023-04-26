@@ -2,6 +2,7 @@ using Godot;
 using System.Collections.Generic;
 using System.Linq;
 using IndustryMoudle;
+using IndustryMoudle.Link;
 
 namespace DirectorMoudle
 {
@@ -33,17 +34,6 @@ namespace DirectorMoudle
             Scale = new Vector2((float)scale, (float)scale);
         }
 
-        private void DrawArrow(Vector2 from, Vector2 to, Color color, float width = -1, bool antialiased = false)
-        {
-            DrawLine(from, to, color, width, antialiased);
-            var arrow = to - from;
-            var arrowLength = arrow.Length();
-            var arrowHead = arrow.Normalized() * 10;
-            var arrowLeft = arrowHead.Rotated(Mathf.Pi / 6);
-            var arrowRight = arrowHead.Rotated(-Mathf.Pi / 6);
-            DrawLine(to, to - arrowLeft, color, width, antialiased);
-            DrawLine(to, to - arrowRight, color, width, antialiased);
-        }
         private void DrawFactor(Factory factory)
         {
             var render = (FactoryRender)GD.Load<PackedScene>("res://Director/Map/FactoryRender/FactoryRender.tscn").Instantiate();
@@ -53,7 +43,7 @@ namespace DirectorMoudle
         }
         private void DrawLink(ProduceLink link)
         {
-            FactoryToRender[link.from].AddLink(link);
+            FactoryToRender[link.From].AddLink(link);
         }
 
         public override void _Draw()

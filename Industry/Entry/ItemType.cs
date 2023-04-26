@@ -1,4 +1,4 @@
-namespace IndustryMoudle
+namespace IndustryMoudle.Entry
 {
     public class ItemType
     {

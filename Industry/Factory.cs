@@ -1,8 +1,9 @@
 using Godot;
 using System.Collections.Generic;
 using Shared.QuadTree;
-
 using TransportMoudle;
+using IndustryMoudle.Entry;
+using IndustryMoudle.Link;
 
 namespace IndustryMoudle
 {
@@ -11,13 +12,37 @@ namespace IndustryMoudle
         public Recipe Recipe { get; }
         public GraphMoudle.Vertex Vertex { get; }
         public Vector2 Position { get => (Vector2)Vertex.Position; }
-        private Dictionary<ItemType, uint> storage = new Dictionary<ItemType, uint>();
-        private const uint BaseProduceSpeed = 100;
+        private Dictionary<ItemType, int> storage = new Dictionary<ItemType, int>();
+        // 工厂产能 固定的
+        public int BaseProduceSpeed = 100 + GD.RandRange(-20, 20);
+        // 工厂可用当前产能 可变的
+        public ItemBox Input;
+        public ItemBox Output;
         public QuadTree<Factory>.Handle QuadTreeHandle;
+
+        public List<ProduceLink> InputLinks = new List<ProduceLink>();
+        public List<ProduceLink> OutputLinks = new List<ProduceLink>();
+
+        public IEnumerable<ProduceLink> Links
+        {
+            get
+            {
+                foreach (var link in InputLinks)
+                {
+                    yield return link;
+                }
+                foreach (var link in OutputLinks)
+                {
+                    yield return link;
+                }
+            }
+        }
 
         public Factory(Recipe recipe, GraphMoudle.Vertex vertex)
         {
             Recipe = recipe;
+            Input = new ItemBox(Recipe.Input) * BaseProduceSpeed;
+            Output = new ItemBox(Recipe.Output) * BaseProduceSpeed;
             Vertex = vertex;
             QuadTreeHandle = FactoriesQuadTree.Insert(this);
             Factories.Add(this);
@@ -38,20 +63,20 @@ namespace IndustryMoudle
 
         private bool CanProduce()
         {
-            foreach (Item item in Recipe.Input)
-                if (!storage.ContainsKey(item.Type) || storage[item.Type] < item.Number)
+            foreach (var item in Recipe.Input)
+                if (!storage.ContainsKey(item.Key) || storage[item.Key] < item.Value)
                     return false;
             return true;
         }
         private void Produce()
         {
-            foreach (Item item in Recipe.Input)
-                storage[item.Type] -= item.Number;
-            foreach (Item item in Recipe.Output)
-                if (storage.ContainsKey(item.Type))
-                    storage[item.Type] += item.Number;
+            foreach (var item in Recipe.Input)
+                storage[item.Key] -= item.Value;
+            foreach (var item in Recipe.Output)
+                if (storage.ContainsKey(item.Key))
+                    storage[item.Key] += item.Value;
                 else
-                    storage.Add(item.Type, item.Number);
+                    storage.Add(item.Key, item.Value);
         }
         public void Update()
         {
@@ -66,7 +91,7 @@ namespace IndustryMoudle
         {
             var requirement = new List<Item>();
             foreach (var item in Recipe.Input)
-                requirement.Add(new Item(item.Number * BaseProduceSpeed / Recipe.Time, item.Type));
+                requirement.Add(new Item(item.Value * BaseProduceSpeed / Recipe.Time, item.Key));
             return requirement;
         }
 

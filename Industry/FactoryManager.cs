@@ -1,6 +1,7 @@
 using Godot;
 using System.Collections.Generic;
 using Shared.QuadTree;
+using IndustryMoudle.Entry;
 
 namespace IndustryMoudle
 {
@@ -8,5 +9,32 @@ namespace IndustryMoudle
     {
         public static QuadTree<Factory> FactoriesQuadTree = new QuadTree<Factory>(new Rect2(DirectorMoudle.Constants.OriginCoordinates, DirectorMoudle.Constants.WorldSize));
         public static List<Factory> Factories = new List<Factory>();
+
+        public static ItemBox Blanace
+        {
+            get
+            {
+                var result = new ItemBox();
+                foreach (var factory in Factories)
+                {
+                    result += factory.Input;
+                    result += factory.Output * -1;
+                }
+                return result;
+            }
+        }
+
+        public static int ConsumeCount
+        {
+            get
+            {
+                var result = 0;
+                foreach (var factory in Factories)
+                {
+                    result += factory.Output.GetItem("ABC");
+                }
+                return result;
+            }
+        }
     }
 }

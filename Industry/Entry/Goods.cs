@@ -1,10 +1,11 @@
 
 
-namespace IndustryMoudle
+namespace IndustryMoudle.Entry
 {
     /// <summary>
-    /// 货物
+    /// 货物，实体概念
     /// 工厂生产时构造，到达下一个工厂即销毁
+    /// 若仅表示抽象概念，应使用<see cref=IndustryMoudle.Item />
     /// </summary>
     public class Goods
     {

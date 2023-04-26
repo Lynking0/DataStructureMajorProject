@@ -31,12 +31,11 @@ public class Logger
         }
     }
 
-    private static string GetHeader(LogLevel level, object logee)
+    private static string GetHeader(LogLevel level)
     {
         var level_name = GetLevelName(level);
         var t = Process.GetCurrentProcess().TotalProcessorTime;
 
-#if DEBUG
         StackTrace stackTrace = new StackTrace();
         var stackFrame = stackTrace.GetFrame(3)!;
         var methodName = stackFrame.GetMethod()?.Name;
@@ -44,42 +43,35 @@ public class Logger
         return $"{t.ToString()} " +
             $"{DELIMITERS[0]}{level_name}{DELIMITERS[1]}" +
             $"{DELIMITERS[0]}{className}.{methodName}{DELIMITERS[1]}";
-
-#else
-        return $"{t.ToString()} " +
-            $"{DELIMITERS[0]}{level_name}{DELIMITERS[1]}" +
-            $"{DELIMITERS[0]}{(string)logee.GetType()}{DELIMITERS[1]}";
-#endif
-
     }
 
-    public static void log(object logee, LogLevel level, string message)
+    public static void log(LogLevel level, string message)
     {
-        Godot.GD.Print($"{GetHeader(level, logee)} {message}");
+        Godot.GD.Print($"{GetHeader(level)} {message}");
     }
 
-    public static void trace(object logee, string message)
+    public static void trace(string message)
     {
-        log(logee, LogLevel.TRACE, message);
+        log(LogLevel.TRACE, message);
     }
 
-    public static void debug(object logee, string message)
+    public static void debug(string message)
     {
-        log(logee, LogLevel.DEBUG, message);
+        log(LogLevel.DEBUG, message);
     }
 
-    public static void info(object logee, string message)
+    public static void info(string message)
     {
-        log(logee, LogLevel.INFO, message);
+        log(LogLevel.INFO, message);
     }
 
-    public static void warning(object logee, string message)
+    public static void warning(string message)
     {
-        log(logee, LogLevel.WARNING, message);
+        log(LogLevel.WARNING, message);
     }
 
-    public static void error(object logee, string message)
+    public static void error(string message)
     {
-        log(logee, LogLevel.ERROR, message);
+        log(LogLevel.ERROR, message);
     }
 }

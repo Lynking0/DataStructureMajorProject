@@ -1,5 +1,6 @@
 using Godot;
 using System.Collections.Generic;
+using IndustryMoudle.Entry;
 
 namespace IndustryMoudle
 {
@@ -15,25 +16,49 @@ namespace IndustryMoudle
         Loader()
         {
 #if RECIPE_DEBUG
-            _recipes.Add(new Recipe(10, "", new List<Item> { }, new List<Item> { new Item(1, "A") }));
-            _recipes.Add(new Recipe(10, "", new List<Item> { }, new List<Item> { new Item(1, "B") }));
-            _recipes.Add(new Recipe(10, "", new List<Item> { }, new List<Item> { new Item(1, "C") }));
-            _recipes.Add(new Recipe(10, "", new List<Item> { }, new List<Item> { new Item(1, "D") }));
+            _recipes.Add(new Recipe(10, "",
+            new Dictionary<ItemType, int>(),
+            new Dictionary<ItemType, int> { { "A", 1 } }));
+            _recipes.Add(new Recipe(10, "",
+            new Dictionary<ItemType, int>(),
+            new Dictionary<ItemType, int> { { "B", 1 } }));
+            _recipes.Add(new Recipe(10, "",
+            new Dictionary<ItemType, int>(),
+            new Dictionary<ItemType, int> { { "C", 1 } }));
+            _recipes.Add(new Recipe(10, "",
+            new Dictionary<ItemType, int>(),
+            new Dictionary<ItemType, int> { { "A", 1 } }));
+            _recipes.Add(new Recipe(10, "",
+            new Dictionary<ItemType, int>(),
+            new Dictionary<ItemType, int> { { "B", 1 } }));
+            _recipes.Add(new Recipe(10, "",
+            new Dictionary<ItemType, int>(),
+            new Dictionary<ItemType, int> { { "C", 1 } }));
 
 
-            _recipes.Add(new Recipe(10, "", new List<Item> { new Item(1, "A"), new Item(1, "B") }, new List<Item> { new Item(1, "AB") }));
-            _recipes.Add(new Recipe(10, "", new List<Item> { new Item(1, "AB"), new Item(1, "C") }, new List<Item> { new Item(1, "ABC") }));
+            _recipes.Add(new Recipe(10, "",
+            new Dictionary<ItemType, int>() { { "A", 1 }, { "B", 1 } },
+            new Dictionary<ItemType, int>() { { "AB", 1 } }));
+            _recipes.Add(new Recipe(10, "",
+            new Dictionary<ItemType, int>() { { "A", 1 }, { "C", 1 } },
+            new Dictionary<ItemType, int>() { { "AC", 1 } }));
+            _recipes.Add(new Recipe(10, "",
+            new Dictionary<ItemType, int>() { { "B", 1 }, { "C", 1 } },
+            new Dictionary<ItemType, int>() { { "BC", 1 } }));
 
-            _recipes.Add(new Recipe(10, "", new List<Item> { new Item(1, "B"), new Item(1, "C") }, new List<Item> { new Item(1, "BC") }));
-            _recipes.Add(new Recipe(10, "", new List<Item> { new Item(1, "BC"), new Item(1, "D") }, new List<Item> { new Item(1, "BCD") }));
+            _recipes.Add(new Recipe(10, "",
+            new Dictionary<ItemType, int>() { { "AB", 1 }, { "C", 1 } },
+            new Dictionary<ItemType, int>() { { "ABC", 1 } }));
+            _recipes.Add(new Recipe(10, "",
+            new Dictionary<ItemType, int>() { { "AC", 1 }, { "B", 1 } },
+            new Dictionary<ItemType, int>() { { "ABC", 1 } }));
+            _recipes.Add(new Recipe(10, "",
+            new Dictionary<ItemType, int>() { { "BC", 1 }, { "A", 1 } },
+            new Dictionary<ItemType, int>() { { "ABC", 1 } }));
 
-            _recipes.Add(new Recipe(10, "", new List<Item> { new Item(1, "A"), new Item(1, "C") }, new List<Item> { new Item(1, "AC") }));
-            _recipes.Add(new Recipe(10, "", new List<Item> { new Item(1, "B"), new Item(1, "D") }, new List<Item> { new Item(1, "BD") }));
-            _recipes.Add(new Recipe(10, "", new List<Item> { new Item(1, "AC"), new Item(1, "BD") }, new List<Item> { new Item(1, "ABCD") }));
-
-            _recipes.Add(new Recipe(10, "consumption", new List<Item> { new Item(1, "ABCD") }, new List<Item> { }));
-            _recipes.Add(new Recipe(10, "consumption", new List<Item> { new Item(1, "BCD") }, new List<Item> { }));
-            _recipes.Add(new Recipe(10, "consumption", new List<Item> { new Item(1, "ABC") }, new List<Item> { }));
+            _recipes.Add(new Recipe(10, "consumption",
+            new Dictionary<ItemType, int>() { { "ABC", 1 } },
+            new Dictionary<ItemType, int>()));
 
 #else
             var file = FileAccess.Open("res://Industry/Recipes.json", FileAccess.ModeFlags.Read);

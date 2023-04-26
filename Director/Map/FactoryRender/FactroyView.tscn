@@ -1,0 +1,80 @@
+[gd_scene load_steps=2 format=3 uid="uid://dj48cd855y4dr"]
+
+[ext_resource type="Script" path="res://Director/Map/FactoryRender/FactroyView.cs" id="1_f4kvr"]
+
+[node name="FactroyView" type="PanelContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_f4kvr")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+
+[node name="Name" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = "工厂"
+
+[node name="Recipe" type="Label" parent="VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "A + B = C"
+
+[node name="Speed" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = "速度"
+
+[node name="Label2" type="Label" parent="VBoxContainer"]
+visible = false
+layout_mode = 2
+text = "库存"
+
+[node name="storage" type="HBoxContainer" parent="VBoxContainer"]
+visible = false
+layout_mode = 2
+
+[node name="VBoxContainer2" type="VBoxContainer" parent="VBoxContainer/storage"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/storage/VBoxContainer2"]
+layout_mode = 2
+text = "A"
+
+[node name="Label2" type="Label" parent="VBoxContainer/storage/VBoxContainer2"]
+layout_mode = 2
+text = "2"
+
+[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer/storage"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/storage/VBoxContainer"]
+layout_mode = 2
+text = "A"
+
+[node name="Label2" type="Label" parent="VBoxContainer/storage/VBoxContainer"]
+layout_mode = 2
+text = "2"
+
+[node name="VBoxContainer3" type="VBoxContainer" parent="VBoxContainer/storage"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/storage/VBoxContainer3"]
+layout_mode = 2
+text = "A"
+
+[node name="Label2" type="Label" parent="VBoxContainer/storage/VBoxContainer3"]
+layout_mode = 2
+text = "2"
+
+[node name="Label3" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = "链接"
+
+[node name="links" type="VBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="VBoxContainer/links"]
+layout_mode = 2
+text = "A x 10 in"
