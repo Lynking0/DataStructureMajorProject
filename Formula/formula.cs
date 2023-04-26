@@ -66,13 +66,14 @@ namespace Formula
         private void GenerateResult(Factory[] dependencies)
         {
             string[] inputMaterials = new string[dependencies.Length];
-            string[] dependenciesNos = new string[dependencies.Length];
+            int[] dependenciesNos = new int[dependencies.Length];
             int h = 1;
             for (int i = 0; i < dependencies.Length; i++)
             {
                 if (dependencies[i] == null) continue;
                 inputMaterials[i] = dependencies[i].Result;
-                dependenciesNos[i] = dependencies[i].Id + "";
+                // dependenciesNos[i] = dependencies[i].Id + "";
+                dependenciesNos[i] = dependencies[i].Id;
                 if (dependencies[i].height + 1 > h) h = dependencies[i].height + 1;
             }
             Result = string.Join("", inputMaterials);
