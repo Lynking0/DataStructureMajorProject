@@ -40,7 +40,7 @@ namespace Formula
             // TODO: Formula.Factory 转 IndustryMoudle.Recipe
             Dictionary<IndustryMoudle.Entry.ItemType, int> input = new Dictionary<IndustryMoudle.Entry.ItemType, int>();
             Dictionary<IndustryMoudle.Entry.ItemType, int> output = new Dictionary<IndustryMoudle.Entry.ItemType, int>();
-            string[] d = DependenciesNos.Split(",");
+            // string[] d = DependenciesNos.Split(",");
             if (Type != FactoryType.RawMaterial)
             {
                 string[] m = new string[Material.Split(",").Length];
