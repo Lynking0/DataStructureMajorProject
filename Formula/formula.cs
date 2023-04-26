@@ -24,7 +24,7 @@ namespace Formula
         {
             Id = id;
             Type = FactoryType.RawMaterial;
-            Material = material;
+            Material = "";
             Result = material;
             DependenciesNos = "";
             height = 1;
@@ -40,13 +40,17 @@ namespace Formula
             // TODO: Formula.Factory 转 IndustryMoudle.Recipe
             Dictionary<IndustryMoudle.Entry.ItemType, int> input = new Dictionary<IndustryMoudle.Entry.ItemType, int>();
             Dictionary<IndustryMoudle.Entry.ItemType, int> output = new Dictionary<IndustryMoudle.Entry.ItemType, int>();
-            string[] m = new string[DependenciesNos.Length];
-            m = Material.Split(",");
-            for (int i = 0; i < DependenciesNos.Split(",").Length; i++)
+            string[] d = DependenciesNos.Split(",");
+            if (Type != FactoryType.RawMaterial)
             {
-                input[m[i]] = 1;
+                string[] m = new string[Material.Split(",").Length];
+                m = Material.Split(",");
+                for (int i = 0; i < m.Length; i++)
+                {
+                    input.Add(m[i], 1);
+                }
             }
-            output[Result] = 1;
+            if (Type != FactoryType.TopLevel) output.Add(Result, 1);
             IndustryMoudle.Entry.Recipe res;
             if (Type == FactoryType.TopLevel)
             {
@@ -63,19 +67,17 @@ namespace Formula
         {
             string[] inputMaterials = new string[dependencies.Length];
             string[] dependenciesNos = new string[dependencies.Length];
-            string[] materials = new string[dependencies.Length];
             int h = 1;
             for (int i = 0; i < dependencies.Length; i++)
             {
                 if (dependencies[i] == null) continue;
                 inputMaterials[i] = dependencies[i].Result;
                 dependenciesNos[i] = dependencies[i].Id + "";
-                materials[i] = dependencies[i].Result;
                 if (dependencies[i].height + 1 > h) h = dependencies[i].height + 1;
             }
             Result = string.Join("", inputMaterials);
             DependenciesNos = string.Join(",", dependenciesNos);
-            Material = string.Join(",", materials);
+            Material = string.Join(",", inputMaterials);
             height = h; // 高度
         }
     }
