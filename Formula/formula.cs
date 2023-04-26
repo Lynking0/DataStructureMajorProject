@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Collections.Generic;
 using System.Diagnostics;
-using IndustryMoudle;
 namespace Formula
 {
     enum FactoryType
@@ -36,32 +35,28 @@ namespace Formula
             Type = type;
             GenerateResult(dependencies);
         }
-        IndustryMoudle.Recipe ToRecipe()
+        IndustryMoudle.Entry.Recipe ToRecipe()
         {
             // TODO: Formula.Factory 转 IndustryMoudle.Recipe
-            List<Item> input = new List<Item>();
-            List<Item> output = new List<Item>();
+            Dictionary<IndustryMoudle.Entry.ItemType, int> input = new Dictionary<IndustryMoudle.Entry.ItemType, int>();
+            Dictionary<IndustryMoudle.Entry.ItemType, int> output = new Dictionary<IndustryMoudle.Entry.ItemType, int>();
             string[] m = new string[DependenciesNos.Length];
             m = Material.Split(",");
             for (int i = 0; i < DependenciesNos.Length; i++)
             {
-                input[i] = new Item(1, m[i].Length == 1 ? "raw_material" : "");
+                input[m[i]] = 1;
             }
-            Recipe res;
-            if (Type == FactoryType.RawMaterial)
+            output[Result] = 1;
+            IndustryMoudle.Entry.Recipe res;
+            if (Type == FactoryType.TopLevel)
             {
-                output[0] = new Item(1, "raw_material");
-                res = new Recipe(1, "raw_material", input, output);
+                res = new IndustryMoudle.Entry.Recipe(1, "consumption", input, output);
             }
-            else if (Type == FactoryType.TopLevel)
+            else if (Type == FactoryType.RawMaterial)
             {
-                res = new Recipe(1, "consumption", input, output);
+                res = new IndustryMoudle.Entry.Recipe(1, "raw_material", input, output);
             }
-            else
-            {
-                output[0] = new Item(1, "");
-                res = new Recipe(1, "", input, output);
-            }
+            else res = new IndustryMoudle.Entry.Recipe(1, "", input, output);
             return res;
         }
         private void GenerateResult(Factory[] dependencies)
