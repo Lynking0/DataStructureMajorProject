@@ -36,6 +36,11 @@ namespace Formula
             Material = "";
             GenerateResult(dependencies);
         }
+        IndustryMoudle.Recipe ToRecipe()
+        {
+            // TODO: Formula.Factory 转 IndustryMoudle.Recipe
+            
+        }
         private void GenerateResult(Factory[] dependencies)
         {
             string[] inputMaterials = new string[dependencies.Length];
@@ -43,7 +48,7 @@ namespace Formula
             int h = 1;
             for (int i = 0; i < dependencies.Length; i++)
             {
-                if(dependencies[i] == null) continue;
+                if (dependencies[i] == null) continue;
                 inputMaterials[i] = dependencies[i].Result;
                 dependenciesNos[i] = dependencies[i].Id + "";
                 if (dependencies[i].height + 1 > h) h = dependencies[i].height + 1;
@@ -63,7 +68,7 @@ namespace Formula
         static Random random = new Random();
         private static Factory generatorRawMaterial(string res, int flag)
         {
-            if (nowId >=N ) return null;
+            if (nowId >= N) return null;
             if (res == "") return null;
             if (res.Length == 1)
             {
@@ -72,7 +77,7 @@ namespace Formula
                 return newf;
             }
             int r = random.Next(6); // 决定2或3输入
-            if((r >= 3 || flag == 2) && res.Length >= 3) // 当flag减小到2且要合成的长度大于3时，必须进行三输入合成，否则高度可能大于5
+            if ((r >= 3 || flag == 2) && res.Length >= 3) // 当flag减小到2且要合成的长度大于3时，必须进行三输入合成，否则高度可能大于5
             { // 3输入
                 int r1 = random.Next(0, res.Length - 2); // 第一个index
                 int r2 = random.Next(r1 + 1, res.Length - 1); // 第二个index
@@ -80,10 +85,10 @@ namespace Formula
                 string t2 = res.Substring(r1 + 1, r2 - r1);
                 string t3 = res.Substring(r2 + 1);
                 Factory[] deps = new Factory[3];
-                deps[0] = generatorRawMaterial(t1, flag-1);
-                deps[1] = generatorRawMaterial(t2, flag-1);
-                deps[2] = generatorRawMaterial(t3, flag-1);
-                if (nowId >=N ) return null;
+                deps[0] = generatorRawMaterial(t1, flag - 1);
+                deps[1] = generatorRawMaterial(t2, flag - 1);
+                deps[2] = generatorRawMaterial(t3, flag - 1);
+                if (nowId >= N) return null;
                 Factory newf = new Factory(nowId++, res == "ABCDEF" ? FactoryType.TopLevel : FactoryType.Processing, deps);
                 factories.Add(newf);
                 return newf;
@@ -94,9 +99,9 @@ namespace Formula
                 string t1 = res.Substring(0, r1 + 1);
                 string t2 = res.Substring(r1 + 1);
                 Factory[] deps = new Factory[2];
-                deps[0] = generatorRawMaterial(t1, flag-1);
-                deps[1] = generatorRawMaterial(t2, flag-1);
-                if (nowId >=N ) return null;
+                deps[0] = generatorRawMaterial(t1, flag - 1);
+                deps[1] = generatorRawMaterial(t2, flag - 1);
+                if (nowId >= N) return null;
                 Factory newf = new Factory(nowId++, res == "ABCDEF" ? FactoryType.TopLevel : FactoryType.Processing, deps);
                 factories.Add(newf);
                 return newf;
