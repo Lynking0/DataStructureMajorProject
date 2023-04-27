@@ -32,9 +32,9 @@ namespace DirectorMoudle
 
         public override void _Ready()
         {
-            // var seed = 58777ul;
-            // GD.Seed(seed);
-            // Logger.trace($"随机种子: {seed}");
+            var seed = 58777ul;
+            GD.Seed(seed);
+            Logger.trace($"随机种子: {seed}");
             Logger.trace("Director Ready");
             MapController = GetNode<MapController>("../MouseInput/GameViewportContainer");
             MapRender = GetNode<MapRender>("../MouseInput/MapRender");
