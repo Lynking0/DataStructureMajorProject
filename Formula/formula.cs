@@ -138,14 +138,14 @@ namespace Formula
                 if (res == "ABCDEF")
                 {
                     newf = new Factory(nowId++, FactoryType.TopLevel, deps);
-                    if (nowId >= N) return null;
-                    factories.Add(new Factory(nowId++, FactoryType.Consumption, res, nowId - 2)); // 消费工厂
                 }
                 else
                 {
                     newf = new Factory(nowId++, FactoryType.Processing, deps);
                 }
                 factories.Add(newf);
+                if (nowId >= N) return newf;
+                factories.Add(new Factory(nowId++, FactoryType.Consumption, res, nowId - 2)); // 消费工厂
                 return newf;
             }
             else
@@ -163,14 +163,14 @@ namespace Formula
                 if (res == "ABCDEF")
                 {
                     newf = new Factory(nowId++, FactoryType.TopLevel, deps);
-                    if (nowId >= N) return null;
-                    factories.Add(new Factory(nowId++, FactoryType.Consumption, res, nowId - 2)); // 消费工厂
                 }
                 else
                 {
                     newf = new Factory(nowId++, FactoryType.Processing, deps);
                 }
                 factories.Add(newf);
+                if (nowId >= N) return newf;
+                factories.Add(new Factory(nowId++, FactoryType.Consumption, res, nowId - 2)); // 消费工厂
                 return newf;
             }
         }
