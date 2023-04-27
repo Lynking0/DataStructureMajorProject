@@ -13,6 +13,8 @@ namespace GraphMoudle
         {
             DistInfo = new ConcurrentDictionary<Vertex, Vertex[]>();
             Dictionary<Block, (double, Vertex, Vertex)>[] blockAdjInfo = new Dictionary<Block, (double, Vertex, Vertex)>[Blocks.Count];
+            for (int i = 0; i < blockAdjInfo.Length; ++i)
+                blockAdjInfo[i] = new Dictionary<Block, (double, Vertex, Vertex)>();
             Vertex[] vertices = new Vertex[Vertices.Count];
             VerticesContainer.CopyTo(vertices, 0);
             Mutex mut = new Mutex();
@@ -39,14 +41,12 @@ namespace GraphMoudle
                             (double, Vertex, Vertex) value = (keys[i], vertex, items[i]);
                             (double, Vertex, Vertex) oldValue;
                             mut.WaitOne();
-                            if (blockAdjInfo[vertex.ParentBlock.Index] is null)
-                                blockAdjInfo[vertex.ParentBlock.Index] = new Dictionary<Block, (double, Vertex, Vertex)>();
                             if (!blockAdjInfo[vertex.ParentBlock.Index].TryGetValue(items[i].ParentBlock, out oldValue))
                                 blockAdjInfo[vertex.ParentBlock.Index].Add(items[i].ParentBlock, value);
                             else if (keys[i] < oldValue.Item1)
                                 blockAdjInfo[vertex.ParentBlock.Index][items[i].ParentBlock] = value;
                             mut.ReleaseMutex();
-                            break;
+                            return;
                         }
                     }
                 }

@@ -105,7 +105,7 @@ namespace GraphMoudle
 
             // 找出邻近点对
             List<(Vertex, Vertex)> pairs = VerticesContainer.GetNearbyPairs();
- 
+
             // 通过海拔高度初步筛选出可选边
             List<Edge> alternativeEdges = new List<Edge>();
             EdgeEvaluatorInvoker.Init();
@@ -135,6 +135,25 @@ namespace GraphMoudle
 
             // 预计算并存储距离信息
             CalcDistInfo();
+        }
+        private void CreateBridge(Block a, Block b)
+        {
+            foreach (BlockAdjInfo info in a.AdjacenciesInfo!)
+            {
+                if (info.AdjBlock == b)
+                {
+                    _createBridge(info.Vertex1, info.Vertex2);
+                    return;
+                }
+            }
+            foreach (BlockAdjInfo info in b.AdjacenciesInfo!)
+            {
+                if (info.AdjBlock == a)
+                {
+                    _createBridge(info.Vertex1, info.Vertex2);
+                    return;
+                }
+            }
         }
     }
 }
