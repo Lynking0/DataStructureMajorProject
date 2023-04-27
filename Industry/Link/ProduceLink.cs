@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using GraphMoudle;
 using IndustryMoudle.Entry;
 
 namespace IndustryMoudle.Link
@@ -10,13 +11,16 @@ namespace IndustryMoudle.Link
         public Item Item;
         public readonly ProduceChain Chain;
         public static List<ProduceLink> Links = new List<ProduceLink>();
+        private List<Vertex> _vertexes;
+        public IReadOnlyCollection<Vertex> Vertexes => _vertexes;
 
-        public ProduceLink(Factory from, Factory to, Item item, ProduceChain chain)
+        public ProduceLink(Factory from, Factory to, IEnumerable<Vertex> vertexs, Item item, ProduceChain chain)
         {
             From = from;
             To = to;
             Item = item;
             Chain = chain;
+            _vertexes = new List<Vertex>(vertexs);
             Links.Add(this);
         }
 

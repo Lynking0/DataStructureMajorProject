@@ -48,15 +48,14 @@ namespace IndustryMoudle
 
             (List<Factory> downstream, List<ProduceLink> links) linkFactory(Factory curFactory, ProduceChain chain)
             {
-                var vertex = curFactory.Vertex;
-                var queue = new Queue<Vertex>();
+                var queue = new List<(Vertex cur, int parIndex)>();
                 var set = new HashSet<Vertex>();
                 // var requirement = new Dictionary<ItemType, int>(curFactory.Recipe.Input);
                 var requirement = curFactory.Input.ToDictionary();
                 var requirementTypes = curFactory.Recipe.InputTypes.ToList();
                 var downstream = new List<Factory>();
                 var links = new List<ProduceLink>();
-                void Extend(Vertex vertex)
+                void Extend(Vertex vertex, int index)
                 {
                     set.Add(vertex);
                     foreach (var edge in vertex.Adjacencies)
@@ -67,16 +66,28 @@ namespace IndustryMoudle
                             {
                                 continue;
                             }
-                            queue!.Enqueue(otherVertex);
+                            queue!.Add((otherVertex, index));
                             set.Add(otherVertex);
                         }
                     }
                 }
-
-                Extend(vertex);
-                while (queue.Count > 0 && requirementTypes.Count > 0)
+                List<Vertex> GetPath(int i)
                 {
-                    var otherVertex = queue.Dequeue();
+                    var index = i;
+                    var result = new List<Vertex>();
+                    while (index != 0)
+                    {
+                        result.Add(queue[index].cur);
+                        index = queue[index].parIndex;
+                    }
+                    return result;
+                }
+
+                Extend(curFactory.Vertex, 0);
+                int i = 0;
+                while (i < queue.Count && requirementTypes.Count > 0)
+                {
+                    var (otherVertex, parIndex) = queue[i];
                     var targetFactory = VertexToFactory[otherVertex];
                     var intersect = targetFactory.Recipe.OutputTypes.Intersect(requirementTypes);
                     if (intersect is not null)
@@ -103,14 +114,15 @@ namespace IndustryMoudle
                             {
                                 requirement[itemType] = deficit;
                             }
-                            var link = new ProduceLink(targetFactory, curFactory, new Item(actual, itemType), chain);
+                            var link = new ProduceLink(targetFactory, curFactory, GetPath(i), new Item(actual, itemType), chain);
                             targetFactory.OutputLinks.Add(link);
                             curFactory.InputLinks.Add(link);
                             links.Add(link);
                             downstream.Add(targetFactory);
                         }
                     }
-                    Extend(otherVertex);
+                    Extend(otherVertex, i);
+                    i++;
                 }
                 foreach (var (type, number) in requirement)
                 {
@@ -119,12 +131,12 @@ namespace IndustryMoudle
                 return (downstream, links);
             }
 
-            var consumptionFactories = Factory.Factories.Where(f => f.Recipe.Group == "consumption");
+            // var consumptionFactories = Factory.Factories.Where(f => f.Recipe.Group == "consumption");
 
-            foreach (var consumptionFactory in consumptionFactories)
+            foreach (var consumptionFactory in Factory.Factories.Where(f => f.Recipe.Group == "consumption"))
             {
                 // Build industrial chain
-                var chain = new ProduceChain("ABC");
+                var chain = new ProduceChain("ABC", consumptionFactory.Vertex.ParentBlock);
                 chain.AddFactory(consumptionFactory);
                 var factoryQueue = new Queue<Factory>();
                 var (downstream, links) = linkFactory(consumptionFactory, chain);
@@ -140,11 +152,11 @@ namespace IndustryMoudle
                     downstream.ForEach(factoryQueue.Enqueue);
                 }
             }
+
             Logger.trace($"生成产业链 {ProduceChain.Chains.Count} 条");
             Logger.trace($"完整产业链 {ProduceChain.Chains.Where(c => c.Deficit.Empty).Count()} 条");
             Logger.trace($"产业链平衡情况 {(string)ProduceChain.AllDeficit}");
             Logger.trace($"产业链实际消费品产能 {ProduceChain.ConsumeCount}");
-
         }
     }
 }

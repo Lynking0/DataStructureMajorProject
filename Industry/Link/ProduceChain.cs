@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using IndustryMoudle.Entry;
 using System.Linq;
+using GraphMoudle;
 
 namespace IndustryMoudle.Link
 {
@@ -10,6 +11,7 @@ namespace IndustryMoudle.Link
         public IReadOnlyCollection<Factory> Factories => _factories;
         private List<ProduceLink> _links = new List<ProduceLink>();
         public IReadOnlyCollection<ProduceLink> Links => _links;
+        public readonly Block Block;
 
         public readonly ItemBox Deficit = new ItemBox();
         public readonly ItemType OutputType;
@@ -27,9 +29,10 @@ namespace IndustryMoudle.Link
         public readonly Godot.Color Color;
 #endif
 
-        public ProduceChain(ItemType itemType)
+        public ProduceChain(ItemType itemType, Block block)
         {
             OutputType = itemType;
+            Block = block;
             _chains.Add(this);
 #if DEBUG
             Godot.Color[] colors = {
