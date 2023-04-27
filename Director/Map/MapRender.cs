@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using IndustryMoudle;
 using IndustryMoudle.Link;
+using GraphMoudle;
 
 namespace DirectorMoudle
 {
@@ -12,6 +13,7 @@ namespace DirectorMoudle
 
         private Node2D? FactoryContainer;
         private Dictionary<Factory, FactoryRender> FactoryToRender = new Dictionary<Factory, FactoryRender>();
+        private Dictionary<Vertex, FactoryRender> VertexToRender = new Dictionary<Vertex, FactoryRender>();
 
         private int LogicFrameCount = 0;
 
@@ -38,6 +40,7 @@ namespace DirectorMoudle
         {
             var render = (FactoryRender)GD.Load<PackedScene>("res://Director/Map/FactoryRender/FactoryRender.tscn").Instantiate();
             FactoryToRender[factory] = render;
+            VertexToRender[factory.Vertex] = render;
             FactoryContainer?.AddChild(render);
             render.Refresh(factory);
         }
@@ -46,10 +49,16 @@ namespace DirectorMoudle
             FactoryToRender[link.From].AddLink(link);
         }
 
+        private void DrawRoad(Edge edge)
+        {
+            VertexToRender[edge.A].AddRoad(edge);
+        }
+
         public override void _Draw()
         {
             Factory.Factories.ToList().ForEach(DrawFactor);
             ProduceLink.Links.ForEach(DrawLink);
+            Graph.Instance.Edges.ToList().ForEach(DrawRoad);
         }
     }
 }

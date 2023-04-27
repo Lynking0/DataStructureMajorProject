@@ -58,7 +58,8 @@ render_target_update_mode = 4
 [node name="MapRender" type="Node2D" parent="MouseInput"]
 script = ExtResource("5_tv3h6")
 
-[node name="Node2D" type="Node2D" parent="MouseInput/MapRender"]
+[node name="deprecated" type="Node2D" parent="MouseInput/MapRender"]
+visible = false
 script = ExtResource("5_fj2l2")
 
 [node name="LogicFrame" type="Label" parent="MouseInput"]

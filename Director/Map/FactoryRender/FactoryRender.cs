@@ -2,6 +2,7 @@ using Godot;
 using System.Collections.Generic;
 using IndustryMoudle;
 using IndustryMoudle.Link;
+using GraphMoudle;
 
 namespace DirectorMoudle
 {
@@ -11,6 +12,7 @@ namespace DirectorMoudle
         private FontVariation? Font;
 
         private List<ProduceLink> Links = new List<ProduceLink>();
+        private List<Edge> Edges = new List<Edge>();
 
         private void DrawArrow(Vector2 from, Vector2 to, Color color, float width = -1, bool antialiased = false)
         {
@@ -43,6 +45,18 @@ namespace DirectorMoudle
             DrawString(Font, (from + to) / 2, link, fontSize: 10, modulate: Colors.Red);
         }
 
+        private void DrawRoad(Edge edge)
+        {
+            Vector2? lastP = null;
+            var start = (Vector2)edge.A.Position;
+            foreach (Vector2 p in edge.Points)
+            {
+                if (lastP is Vector2 p_)
+                    DrawLine(p_ - start, p - start, new Color(0.5f, 0.5f, 0.5f, 1), 1);
+                lastP = p;
+            }
+        }
+
         public void Refresh(Factory factory)
         {
             Factory = factory;
@@ -52,6 +66,12 @@ namespace DirectorMoudle
         public void AddLink(ProduceLink link)
         {
             Links.Add(link);
+            QueueRedraw();
+        }
+
+        public void AddRoad(Edge edge)
+        {
+            Edges.Add(edge);
             QueueRedraw();
         }
 
@@ -66,6 +86,7 @@ namespace DirectorMoudle
             DrawString(Font, Vector2.Zero, Factory.Recipe, fontSize: 12);
 
             Links.ForEach(DrawLink);
+            Edges.ForEach(DrawRoad);
         }
     }
 }

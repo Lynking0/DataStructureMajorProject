@@ -14,8 +14,6 @@ namespace IndustryMoudle
         public static void BuildFactories()
         {
             Formula.Program.MyFun(Graph.Instance.Vertices.Count);
-            GD.Print("需求点数", Graph.Instance.Vertices.Count);
-            GD.Print("实际生成数", Formula.Program.factories.Count);
             var recipeEnumerator = Formula.Program.factories.GetEnumerator();
             foreach (Vertex vertex in Graph.Instance.Vertices)
             {
