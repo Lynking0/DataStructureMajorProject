@@ -16,10 +16,11 @@ namespace IndustryMoudle
         // 工厂产能 固定的
         public int BaseProduceSpeed = 100 + GD.RandRange(-4, 4);
         public QuadTree<Factory>.Handle QuadTreeHandle;
-        // public FactorySchedule Schedule;
 
-        public List<ProduceLink> InputLinks = new List<ProduceLink>();
-        public List<ProduceLink> OutputLinks = new List<ProduceLink>();
+        private List<ProduceLink> _inputLinks = new List<ProduceLink>();
+        private List<ProduceLink> _outputLinks = new List<ProduceLink>();
+        public IReadOnlyCollection<ProduceLink> InputLinks => _inputLinks;
+        public IReadOnlyCollection<ProduceLink> OutputLinks => _outputLinks;
 
         public ItemBox IdealInput;
         public ItemBox IdealOutput;
@@ -29,19 +30,19 @@ namespace IndustryMoudle
 
         public void AddInputLink(ProduceLink link)
         {
-            InputLinks.Add(link);
+            _inputLinks.Add(link);
         }
         public void RemoveInputLink(ProduceLink link)
         {
-            InputLinks.Remove(link);
+            _inputLinks.Remove(link);
         }
         public void AddOutputLink(ProduceLink link)
         {
-            OutputLinks.Add(link);
+            _outputLinks.Add(link);
         }
         public void RemoveOutputLink(ProduceLink link)
         {
-            OutputLinks.Remove(link);
+            _outputLinks.Remove(link);
         }
 
         public IEnumerable<ProduceLink> Links

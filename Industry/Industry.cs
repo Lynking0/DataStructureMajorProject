@@ -205,9 +205,9 @@ namespace IndustryMoudle
                         var requirementNumber = rate * outputNumber;
                         var supplyCount = 0;
                         var enough = false;
-                        for (int i = 0; i < factory.InputLinks.Count; i++)
+
+                        foreach (var link in factory.InputLinks.ToArray())
                         {
-                            var link = factory.InputLinks[i];
                             if (link.Item.Type != type)
                             {
                                 continue;
@@ -243,7 +243,7 @@ namespace IndustryMoudle
                     }
                 }
 
-                ShirkChain(chain);
+                // ShirkChain(chain);
             }
 
             Logger.trace($"生成产业链 {ProduceChain.Chains.Count} 条");
