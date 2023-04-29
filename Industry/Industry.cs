@@ -13,12 +13,17 @@ namespace IndustryMoudle
         private static Dictionary<Vertex, Factory> VertexToFactory = new Dictionary<Vertex, Factory>();
         public static void BuildFactories()
         {
-            Formula.Program.MyFun(Graph.Instance.Vertices.Count);
-            var recipeEnumerator = Formula.Program.factories.GetEnumerator();
+            // Formula.Program.MyFun(Graph.Instance.Vertices.Count);
+            // var recipeEnumerator = Formula.Program.factories.GetEnumerator();
+            // foreach (Vertex vertex in Graph.Instance.Vertices)
+            // {
+            //     recipeEnumerator.MoveNext();
+            //     var factory = new Factory(recipeEnumerator.Current.ToRecipe(), vertex);
+            //     VertexToFactory[vertex] = factory;
+            // }
             foreach (Vertex vertex in Graph.Instance.Vertices)
             {
-                recipeEnumerator.MoveNext();
-                var factory = new Factory(recipeEnumerator.Current.ToRecipe(), vertex);
+                var factory = new Factory(Loader.Instance.GetRandomRecipe(), vertex);
                 VertexToFactory[vertex] = factory;
             }
             Logger.trace($"生成工厂 {Factory.Factories.Count} 座");
@@ -51,10 +56,11 @@ namespace IndustryMoudle
                 var queue = new List<(Vertex cur, int parIndex)>();
                 var set = new HashSet<Vertex>();
                 // var requirement = new Dictionary<ItemType, int>(curFactory.Recipe.Input);
-                var requirement = curFactory.Input.ToDictionary();
+                var requirement = curFactory.IdealInput.ToDictionary();
                 var requirementTypes = curFactory.Recipe.InputTypes.ToList();
                 var downstream = new List<Factory>();
                 var links = new List<ProduceLink>();
+                // for BFS
                 void Extend(Vertex vertex, int index)
                 {
                     set.Add(vertex);
@@ -99,9 +105,9 @@ namespace IndustryMoudle
                                 continue;
                             }
                             var requirementNumber = requirement[itemType];
-                            var outputNumber = targetFactory.Output.GetItem(itemType);
+                            var outputNumber = targetFactory.IdealOutput.GetItem(itemType);
 
-                            var (deficit, actual) = targetFactory.Output.RequireItem(itemType, requirementNumber);
+                            var (deficit, actual) = targetFactory.IdealOutput.RequireItem(itemType, requirementNumber);
                             if (actual == 0)
                             {
                                 continue;
@@ -115,8 +121,8 @@ namespace IndustryMoudle
                                 requirement[itemType] = deficit;
                             }
                             var link = new ProduceLink(targetFactory, curFactory, GetPath(i), new Item(actual, itemType), chain);
-                            targetFactory.OutputLinks.Add(link);
-                            curFactory.InputLinks.Add(link);
+                            targetFactory.AddOutputLink(link);
+                            curFactory.AddInputLink(link);
                             links.Add(link);
                             downstream.Add(targetFactory);
                         }
@@ -131,12 +137,10 @@ namespace IndustryMoudle
                 return (downstream, links);
             }
 
-            // var consumptionFactories = Factory.Factories.Where(f => f.Recipe.Group == "consumption");
-
             foreach (var consumptionFactory in Factory.Factories.Where(f => f.Recipe.Group == "consumption"))
             {
                 // Build industrial chain
-                var chain = new ProduceChain("ABC", consumptionFactory.Vertex.ParentBlock);
+                var chain = new ProduceChain("ABC", consumptionFactory.Vertex.ParentBlock, consumptionFactory);
                 chain.AddFactory(consumptionFactory);
                 var factoryQueue = new Queue<Factory>();
                 var (downstream, links) = linkFactory(consumptionFactory, chain);
@@ -151,12 +155,101 @@ namespace IndustryMoudle
                     chain.AddLinkRange(links);
                     downstream.ForEach(factoryQueue.Enqueue);
                 }
+                // 定性链路构建完成，开始定量收缩
+                void ShirkChain(ProduceChain chain)
+                {
+                    // 目前只考虑最终工厂为消费工厂
+                    if (chain.OutputFactory.Recipe.Group != "consumption")
+                    {
+                        Logger.error("目前只考虑最终工厂为消费工厂");
+                        throw new Exception("目前只考虑最终工厂为消费工厂");
+                    }
+                    var consumerFactory = chain.OutputFactory;
+                    var consumption = GetActualOutput(consumerFactory);
+                    AdjustLink(consumerFactory, consumption);
+                }
+
+                // 根据上游输入，获取该工厂实际产出
+                int GetActualOutput(Factory factory)
+                {
+                    // 原材料工厂
+                    if (factory.Recipe.Input.Count == 0)
+                        return factory.CapacityOutput.ToList()[0].number;
+                    var outputNumber = 0;
+                    // 消费工厂
+                    if (factory.CapacityOutput.ToList().Count == 0)
+                        outputNumber = int.MaxValue;
+                    else
+                        outputNumber = factory.CapacityOutput.ToList()[0].number;
+                    foreach (var type in factory.Recipe.Input.Keys)
+                    {
+                        // 该原料的消耗比例
+                        var rate = factory.Recipe.Input[type];
+                        var supplyCount = 0;
+                        foreach (var link in factory.InputLinks.Where(l => l.Item.Type == type))
+                        {
+                            supplyCount += GetActualOutput(link.From);
+                        }
+                        outputNumber = Math.Min(outputNumber, supplyCount / rate);
+                    }
+                    return outputNumber;
+                }
+
+                // 根据实际产出，调整上游链路
+                void AdjustLink(Factory factory, int outputNumber)
+                {
+                    // 缩减输入，释放过量的输入
+                    foreach (var type in factory.Recipe.Input.Keys)
+                    {
+                        var rate = factory.Recipe.Input[type];
+                        var requirementNumber = rate * outputNumber;
+                        var supplyCount = 0;
+                        var enough = false;
+                        for (int i = 0; i < factory.InputLinks.Count; i++)
+                        {
+                            var link = factory.InputLinks[i];
+                            if (link.Item.Type != type)
+                            {
+                                continue;
+                            }
+                            if (enough || outputNumber == 0)
+                            {
+                                // 释放该link
+                                link.From.IdealOutput.AddItem(new Item(link.Item.Number, type));
+                                link.Destroy();
+                                // 释放下游需求
+                                AdjustLink(link.From, 0);
+                                continue;
+                            }
+                            supplyCount += link.Item.Number;
+                            // 上游供应溢出
+                            if (supplyCount > requirementNumber)
+                            {
+                                enough = true;
+                                var overflow = supplyCount - requirementNumber;
+                                link.Item.Number -= overflow;
+                                link.From.IdealOutput.AddItem(new Item(overflow, type));
+                                // 释放下游需求
+                                AdjustLink(link.From, link.Item.Number);
+                            }
+                            // 上游供应恰好满足
+                            else if (supplyCount == requirementNumber)
+                            {
+                                enough = true;
+                                // 释放下游需求
+                                AdjustLink(link.From, link.Item.Number);
+                            }
+                        }
+                    }
+                }
+
+                ShirkChain(chain);
             }
 
             Logger.trace($"生成产业链 {ProduceChain.Chains.Count} 条");
             Logger.trace($"完整产业链 {ProduceChain.Chains.Where(c => c.Deficit.Empty).Count()} 条");
             Logger.trace($"产业链平衡情况 {(string)ProduceChain.AllDeficit}");
-            Logger.trace($"产业链实际消费品产能 {ProduceChain.ConsumeCount}");
+            Logger.trace($"产业链计划消费品产能 {ProduceChain.ConsumeCount}");
         }
     }
 }

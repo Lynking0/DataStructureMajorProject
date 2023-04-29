@@ -17,8 +17,8 @@ namespace IndustryMoudle
                 var result = new ItemBox();
                 foreach (var factory in Factories)
                 {
-                    result += factory.Input;
-                    result += factory.Output * -1;
+                    result += factory.IdealInput;
+                    result += factory.IdealOutput * -1;
                 }
                 return result;
             }
@@ -31,7 +31,7 @@ namespace IndustryMoudle
                 var result = 0;
                 foreach (var factory in Factories)
                 {
-                    result += factory.Output.GetItem("ABC");
+                    result += factory.IdealOutput.GetItem("ABCDEF");
                 }
                 return result;
             }

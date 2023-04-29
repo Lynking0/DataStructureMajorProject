@@ -10,12 +10,14 @@ namespace DirectorMoudle
         private HBoxContainer? Storage;
         private VBoxContainer? Links;
         private Label? Recipe;
-        private Label? Speed;
+        private Label? MaximumCapacity;
+        private Label? AvailableCapacity;
 
         public override void _Ready()
         {
             Recipe = GetNode<Label>("VBoxContainer/Recipe");
-            Speed = GetNode<Label>("VBoxContainer/Speed");
+            MaximumCapacity = GetNode<Label>("VBoxContainer/MaximumCapacity");
+            AvailableCapacity = GetNode<Label>("VBoxContainer/AvailableCapacity");
             Storage = GetNode<HBoxContainer>("VBoxContainer/storage");
             Links = GetNode<VBoxContainer>("VBoxContainer/links");
 
@@ -29,7 +31,8 @@ namespace DirectorMoudle
         public void Refresh(Factory factory)
         {
             Recipe!.Text = factory.Recipe;
-            Speed!.Text = $"速度: {factory.BaseProduceSpeed.ToString()}";
+            MaximumCapacity!.Text = $"最大产能: {factory.BaseProduceSpeed.ToString()}";
+            AvailableCapacity!.Text = $"可用产能: {((factory.IdealOutput.ToList().Count > 0) ? factory.IdealOutput.ToList()[0].number.ToString() : "0")}";
 
             foreach (var child in Links!.GetChildren())
             {

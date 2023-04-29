@@ -24,6 +24,14 @@ namespace IndustryMoudle.Link
             Links.Add(this);
         }
 
+        // 销毁此产线并解除两端工厂绑定
+        public void Destroy()
+        {
+            Links.Remove(this);
+            From.RemoveOutputLink(this);
+            To.RemoveInputLink(this);
+        }
+
         public static implicit operator string(ProduceLink link)
         {
             return $"{(string)link.Item.Type} x {link.Item.Number}";
