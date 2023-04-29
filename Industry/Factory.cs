@@ -9,6 +9,8 @@ namespace IndustryMoudle
 {
     public partial class Factory : ILocatable
     {
+        private static int IDCount = 0;
+        public readonly int ID = IDCount++;
         public Recipe Recipe { get; }
         public GraphMoudle.Vertex Vertex { get; }
         public Vector2 Position { get => (Vector2)Vertex.Position; }

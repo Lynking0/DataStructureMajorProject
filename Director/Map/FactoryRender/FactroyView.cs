@@ -9,12 +9,14 @@ namespace DirectorMoudle
         // Called when the node enters the scene tree for the first time.
         private HBoxContainer? Storage;
         private VBoxContainer? Links;
+        private Label? NameLabel;
         private Label? Recipe;
         private Label? MaximumCapacity;
         private Label? AvailableCapacity;
 
         public override void _Ready()
         {
+            NameLabel = GetNode<Label>("VBoxContainer/Name");
             Recipe = GetNode<Label>("VBoxContainer/Recipe");
             MaximumCapacity = GetNode<Label>("VBoxContainer/MaximumCapacity");
             AvailableCapacity = GetNode<Label>("VBoxContainer/AvailableCapacity");
@@ -30,6 +32,7 @@ namespace DirectorMoudle
 
         public void Refresh(Factory factory)
         {
+            NameLabel!.Text = $"工厂: {factory.ID}";
             Recipe!.Text = factory.Recipe;
             MaximumCapacity!.Text = $"最大产能: {factory.BaseProduceSpeed.ToString()}";
             AvailableCapacity!.Text = $"可用产能: {((factory.IdealOutput.ToList().Count > 0) ? factory.IdealOutput.ToList()[0].number.ToString() : "0")}";
@@ -41,13 +44,13 @@ namespace DirectorMoudle
             foreach (var link in factory.InputLinks)
             {
                 var laben = new Label();
-                laben.Text = link + " in";
+                laben.Text = $"{(string)link} in from {link.From.ID}";
                 Links.AddChild(laben);
             }
             foreach (var link in factory.OutputLinks)
             {
                 var laben = new Label();
-                laben.Text = link + " out";
+                laben.Text = $"{(string)link} out to {link.To.ID}";
                 Links.AddChild(laben);
             }
         }

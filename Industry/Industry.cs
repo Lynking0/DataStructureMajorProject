@@ -51,14 +51,13 @@ namespace IndustryMoudle
             // }
             // 使用浩哥查找
 
-            (List<Factory> downstream, List<ProduceLink> links) linkFactory(Factory curFactory, ProduceChain chain)
+            (List<(Factory factory, int outputNumber)> downstream, List<ProduceLink> links) linkFactory(Factory curFactory, int requirementNumber, ProduceChain chain)
             {
                 var queue = new List<(Vertex cur, int parIndex)>();
                 var set = new HashSet<Vertex>();
-                // var requirement = new Dictionary<ItemType, int>(curFactory.Recipe.Input);
-                var requirement = curFactory.IdealInput.ToDictionary();
-                var requirementTypes = curFactory.Recipe.InputTypes.ToList();
-                var downstream = new List<Factory>();
+                var requirement = (new ItemBox(curFactory.Recipe.Input) * requirementNumber).ToDictionary();
+                var requirementTypes = requirement.Keys.ToList();
+                var downstream = new List<(Factory factory, int outputNumber)>();
                 var links = new List<ProduceLink>();
                 // for BFS
                 void Extend(Vertex vertex, int index)
@@ -89,6 +88,33 @@ namespace IndustryMoudle
                     return result;
                 }
 
+                // 尝试复用已有的链接
+                foreach (var (type, number) in requirement)
+                {
+                    foreach (var link in curFactory.InputLinks)
+                    {
+                        if (link.Item.Type != type)
+                        {
+                            continue;
+                        }
+                        var (deficit, actual) = link.From.IdealOutput.RequireItem(type, number);
+                        if (actual == 0)
+                        {
+                            continue;
+                        }
+                        if (deficit == 0)
+                        {
+                            requirement.Remove(type);
+
+                        }
+                        else
+                        {
+                            requirement[type] = deficit;
+                        }
+                        link.Item.Number += actual;
+                    }
+                }
+
                 Extend(curFactory.Vertex, 0);
                 int i = 0;
                 while (i < queue.Count && requirementTypes.Count > 0)
@@ -104,10 +130,9 @@ namespace IndustryMoudle
                             {
                                 continue;
                             }
-                            var requirementNumber = requirement[itemType];
                             var outputNumber = targetFactory.IdealOutput.GetItem(itemType);
 
-                            var (deficit, actual) = targetFactory.IdealOutput.RequireItem(itemType, requirementNumber);
+                            var (deficit, actual) = targetFactory.IdealOutput.RequireItem(itemType, requirement[itemType]);
                             if (actual == 0)
                             {
                                 continue;
@@ -124,7 +149,7 @@ namespace IndustryMoudle
                             targetFactory.AddOutputLink(link);
                             curFactory.AddInputLink(link);
                             links.Add(link);
-                            downstream.Add(targetFactory);
+                            downstream.Add((factory: targetFactory, outputNumber: actual));
                         }
                     }
                     Extend(otherVertex, i);
@@ -142,16 +167,17 @@ namespace IndustryMoudle
                 // Build industrial chain
                 var chain = new ProduceChain("ABC", consumptionFactory.Vertex.ParentBlock, consumptionFactory);
                 chain.AddFactory(consumptionFactory);
-                var factoryQueue = new Queue<Factory>();
-                var (downstream, links) = linkFactory(consumptionFactory, chain);
-                chain.AddFactoryRange(downstream);
+                var factoryQueue = new Queue<(Factory factory, int outputNumber)>();
+                var (downstream, links) = linkFactory(consumptionFactory, consumptionFactory.BaseProduceSpeed, chain);
+                chain.AddFactoryRange(downstream.Select(t => t.factory));
                 chain.AddLinkRange(links);
                 downstream.ForEach(factoryQueue.Enqueue);
 
                 while (factoryQueue.Count > 0)
                 {
-                    (downstream, links) = linkFactory(factoryQueue.Dequeue(), chain);
-                    chain.AddFactoryRange(downstream);
+                    var (factory, outputNumber) = factoryQueue.Dequeue();
+                    (downstream, links) = linkFactory(factory, outputNumber, chain);
+                    chain.AddFactoryRange(downstream.Select(t => t.factory));
                     chain.AddLinkRange(links);
                     downstream.ForEach(factoryQueue.Enqueue);
                 }
