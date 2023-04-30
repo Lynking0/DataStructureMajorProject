@@ -13,19 +13,19 @@ namespace IndustryMoudle
         private static Dictionary<Vertex, Factory> VertexToFactory = new Dictionary<Vertex, Factory>();
         public static void BuildFactories()
         {
-            // Formula.Program.MyFun(Graph.Instance.Vertices.Count);
-            // var recipeEnumerator = Formula.Program.factories.GetEnumerator();
-            // foreach (Vertex vertex in Graph.Instance.Vertices)
-            // {
-            //     recipeEnumerator.MoveNext();
-            //     var factory = new Factory(recipeEnumerator.Current.ToRecipe(), vertex);
-            //     VertexToFactory[vertex] = factory;
-            // }
+            Formula.Program.MyFun(Graph.Instance.Vertices.Count);
+            var recipeEnumerator = Formula.Program.factories.GetEnumerator();
             foreach (Vertex vertex in Graph.Instance.Vertices)
             {
-                var factory = new Factory(Loader.Instance.GetRandomRecipe(), vertex);
+                recipeEnumerator.MoveNext();
+                var factory = new Factory(recipeEnumerator.Current.ToRecipe(), vertex);
                 VertexToFactory[vertex] = factory;
             }
+            // foreach (Vertex vertex in Graph.Instance.Vertices)
+            // {
+            //     var factory = new Factory(Loader.Instance.GetRandomRecipe(), vertex);
+            //     VertexToFactory[vertex] = factory;
+            // }
             Logger.trace($"生成工厂 {Factory.Factories.Count} 座");
             Logger.trace($"工厂理想平衡情况 {(string)Factory.Blanace}");
             Logger.trace($"工厂理想消费品产能 {Factory.ConsumeCount}");
