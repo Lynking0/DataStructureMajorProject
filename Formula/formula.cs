@@ -145,7 +145,7 @@ namespace Formula
                 }
                 factories.Add(newf);
                 if (nowId >= N) return newf;
-                factories.Add(new Factory(nowId++, FactoryType.Consumption, res, nowId - 2)); // 消费工厂
+                if (res == "ABCDEF") factories.Add(new Factory(nowId++, FactoryType.Consumption, res, nowId - 2)); // 消费工厂
                 return newf;
             }
             else
@@ -170,7 +170,7 @@ namespace Formula
                 }
                 factories.Add(newf);
                 if (nowId >= N) return newf;
-                factories.Add(new Factory(nowId++, FactoryType.Consumption, res, nowId - 2)); // 消费工厂
+                if (res == "ABCDEF") factories.Add(new Factory(nowId++, FactoryType.Consumption, res, nowId - 2)); // 消费工厂
                 return newf;
             }
         }
