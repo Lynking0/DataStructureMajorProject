@@ -11,10 +11,13 @@ namespace IndustryMoudle.Link
         public IReadOnlyCollection<Factory> Factories => _factories;
         private List<ProduceLink> _links = new List<ProduceLink>();
         public IReadOnlyCollection<ProduceLink> Links => _links;
+        // 所属区块
         public readonly Block Block;
-
+        // 亏空
         public readonly ItemBox Deficit = new ItemBox();
+        // 输出类型
         public readonly ItemType OutputType;
+        public readonly Factory OutputFactory;
         public Item Output
         {
             get
@@ -24,15 +27,15 @@ namespace IndustryMoudle.Link
                 .Sum(link => link.Item.Number), OutputType);
             }
         }
-
 #if DEBUG
         public readonly Godot.Color Color;
 #endif
 
-        public ProduceChain(ItemType itemType, Block block)
+        public ProduceChain(ItemType itemType, Block block, Factory outputFactory)
         {
             OutputType = itemType;
             Block = block;
+            OutputFactory = outputFactory;
             _chains.Add(this);
 #if DEBUG
             Godot.Color[] colors = {

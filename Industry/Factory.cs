@@ -9,19 +9,43 @@ namespace IndustryMoudle
 {
     public partial class Factory : ILocatable
     {
+        private static int IDCount = 0;
+        public readonly int ID = IDCount++;
         public Recipe Recipe { get; }
         public GraphMoudle.Vertex Vertex { get; }
         public Vector2 Position { get => (Vector2)Vertex.Position; }
         private Dictionary<ItemType, int> storage = new Dictionary<ItemType, int>();
         // 工厂产能 固定的
-        public int BaseProduceSpeed = 1;
-        // 工厂可用当前产能 可变的
-        public ItemBox Input;
-        public ItemBox Output;
+        public int BaseProduceSpeed = 100 + GD.RandRange(-4, 4);
         public QuadTree<Factory>.Handle QuadTreeHandle;
 
-        public List<ProduceLink> InputLinks = new List<ProduceLink>();
-        public List<ProduceLink> OutputLinks = new List<ProduceLink>();
+        private List<ProduceLink> _inputLinks = new List<ProduceLink>();
+        private List<ProduceLink> _outputLinks = new List<ProduceLink>();
+        public IReadOnlyCollection<ProduceLink> InputLinks => _inputLinks;
+        public IReadOnlyCollection<ProduceLink> OutputLinks => _outputLinks;
+
+        public ItemBox IdealInput;
+        public ItemBox IdealOutput;
+
+        public ItemBox CapacityInput { get => new ItemBox(Recipe.Input) * BaseProduceSpeed; }
+        public ItemBox CapacityOutput { get => new ItemBox(Recipe.Output) * BaseProduceSpeed; }
+
+        public void AddInputLink(ProduceLink link)
+        {
+            _inputLinks.Add(link);
+        }
+        public void RemoveInputLink(ProduceLink link)
+        {
+            _inputLinks.Remove(link);
+        }
+        public void AddOutputLink(ProduceLink link)
+        {
+            _outputLinks.Add(link);
+        }
+        public void RemoveOutputLink(ProduceLink link)
+        {
+            _outputLinks.Remove(link);
+        }
 
         public IEnumerable<ProduceLink> Links
         {
@@ -41,11 +65,11 @@ namespace IndustryMoudle
         public Factory(Recipe recipe, GraphMoudle.Vertex vertex)
         {
             Recipe = recipe;
-            Input = new ItemBox(Recipe.Input) * BaseProduceSpeed;
-            Output = new ItemBox(Recipe.Output) * BaseProduceSpeed;
             Vertex = vertex;
             QuadTreeHandle = FactoriesQuadTree.Insert(this);
             Factories.Add(this);
+            IdealInput = new ItemBox(Recipe.Input) * BaseProduceSpeed;
+            IdealOutput = new ItemBox(Recipe.Output) * BaseProduceSpeed;
         }
         ~Factory()
         {

@@ -22,9 +22,13 @@ unique_name_in_owner = true
 layout_mode = 2
 text = "A + B = C"
 
-[node name="Speed" type="Label" parent="VBoxContainer"]
+[node name="MaximumCapacity" type="Label" parent="VBoxContainer"]
 layout_mode = 2
-text = "速度"
+text = "最大产能"
+
+[node name="AvailableCapacity" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = "可用产能"
 
 [node name="Label2" type="Label" parent="VBoxContainer"]
 visible = false

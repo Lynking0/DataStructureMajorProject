@@ -25,6 +25,17 @@ namespace IndustryMoudle.Entry
         public bool Empty => Content.Count == 0;
         public IEnumerable<ItemType> Types => Content.Keys;
 
+        public List<(ItemType type, int number)> ToList()
+        {
+            var result = new List<(ItemType, int)>();
+            var enumerator = Content.GetEnumerator();
+            while (enumerator.MoveNext())
+            {
+                result.Add((enumerator.Current.Key, enumerator.Current.Value));
+            }
+            return result;
+        }
+
         public static implicit operator string(ItemBox self)
         {
             var result = string.Empty;

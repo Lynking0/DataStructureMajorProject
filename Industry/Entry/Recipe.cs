@@ -21,6 +21,27 @@ namespace IndustryMoudle.Entry
             _input = intput;
         }
 
+        public string DEBUG_OUTPUT()
+        {
+            var result = "";
+            result += Input.Count;
+            result += "[";
+            foreach (var item in Input)
+            {
+                result += item.Key + ":" + item.Value + ",";
+            }
+            result += "]";
+            result += " => ";
+            result += Output.Count;
+            result += "[";
+            foreach (var item in Output)
+            {
+                result += item.Key + ":" + item.Value + ",";
+            }
+            result += "]";
+            return result;
+        }
+
         public static implicit operator string(Recipe r)
         {
             var input = string.Join(',', r.Input.Map(item => (string)item.Key));

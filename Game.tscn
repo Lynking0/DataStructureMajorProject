@@ -6,7 +6,7 @@
 [ext_resource type="Script" path="res://Director/Map/MapController.cs" id="4_b7hkw"]
 [ext_resource type="Script" path="res://Graph/TestVertexDrawer.cs" id="5_fj2l2"]
 [ext_resource type="Script" path="res://Director/Map/MapRender.cs" id="5_tv3h6"]
-[ext_resource type="PackedScene" path="res://Director/Map/FactoryRender/FactroyView.tscn" id="7_j73ru"]
+[ext_resource type="PackedScene" uid="uid://dj48cd855y4dr" path="res://Director/Map/FactoryRender/FactroyView.tscn" id="7_j73ru"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_88xvb"]
 shader = ExtResource("1_eyknh")

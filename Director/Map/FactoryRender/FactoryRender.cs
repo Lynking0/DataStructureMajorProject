@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using IndustryMoudle;
 using IndustryMoudle.Link;
 using GraphMoudle;
+using Shared.Extensions.ICollectionExtensions;
 
 namespace DirectorMoudle
 {
@@ -34,6 +35,7 @@ namespace DirectorMoudle
             GetNode<Button>("Button").ButtonDown += () =>
             {
                 GetNode<FactroyView>("/root/Main/MouseInput/FactroyView").Refresh(Factory!);
+                GD.Print(Factory.Recipe.DEBUG_OUTPUT());
             };
         }
 
