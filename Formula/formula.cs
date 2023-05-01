@@ -79,8 +79,6 @@ namespace Formula
             {
                 if (dependencies[i] == null) realLen--;
             }
-            // string[] inputMaterials = new string[dependencies.Length];
-            // int[] dependenciesNos = new int[dependencies.Length];
             string[] inputMaterials = new string[realLen];
             int[] dependenciesNos = new int[realLen];
             int h = 1;
@@ -89,14 +87,19 @@ namespace Formula
             {
                 if (dependencies[i] == null) continue;
                 inputMaterials[index] = dependencies[i].Result;
-                // dependenciesNos[i] = dependencies[i].Id + "";
                 dependenciesNos[index] = dependencies[i].Id;
                 if (dependencies[i].height + 1 > h) h = dependencies[i].height + 1;
                 index++;
             }
-            Result = string.Join("", inputMaterials);
-            DependenciesNos = string.Join(",", dependenciesNos);
             Material = string.Join(",", inputMaterials);
+
+            string strInput = string.Join("", inputMaterials);
+            char[] arrInput = new char[strInput.Length];
+            arrInput = strInput.ToCharArray();
+            Array.Sort(arrInput);
+            Result = string.Join("", arrInput);
+
+            DependenciesNos = string.Join(",", dependenciesNos);
             height = h; // 高度
         }
     }
@@ -105,8 +108,6 @@ namespace Formula
         static int N = 0;
         static int nowId = 0;
         static public List<Factory> factories = new List<Factory>(); // 所有工厂的列表
-        // 创建一个字典用于存储没有被依赖的工厂
-        // static Dictionary<string, List<Factory>> factoryDict = new Dictionary<string, List<Factory>>();
         private static Factory generatorRawMaterial(string res, int flag)
         {
             if (nowId >= N) return null;
@@ -117,23 +118,42 @@ namespace Formula
                 factories.Add(newf);
                 return newf;
             }
-            // int r = GD.RandRange(0, 6); // 决定2或3输入
             int r = GD.RandRange(0, 5); // 决定2或3输入
             if ((r >= 3 || flag == 2) && res.Length >= 3) // 当flag减小到2且要合成的长度大于3时，必须进行三输入合成，否则高度可能大于5
             { // 3输入
-                // int r1 = GD.RandRange(0, res.Length - 2); // 第一个index
-                // int r2 = GD.RandRange(r1 + 1, res.Length - 1); // 第二个index
                 int r1 = GD.RandRange(0, res.Length - 3); // 第一个index
                 int r2 = GD.RandRange(r1 + 1, res.Length - 2); // 第二个index
-                string t1 = res.Substring(0, r1 + 1);
-                string t2 = res.Substring(r1 + 1, r2 - r1);
-                string t3 = res.Substring(r2 + 1);
+                // string t1 = res.Substring(0, r1 + 1);
+                // string t2 = res.Substring(r1 + 1, r2 - r1);
+                // string t3 = res.Substring(r2 + 1);
+                string t1 = "", t2 = "", t3 = "";
+                char[] arrt1 = new char[r1 + 1];
+                char[] arrt2 = new char[r2 - r1];
+                string temp = res;
+                int index = 0;
+                for (int i = 0; i < r1 + 1; i++)
+                {
+                    index = GD.RandRange(0, temp.Length - 1);
+                    arrt1[i] = temp[index];
+                    temp = temp.Replace(arrt1[i].ToString(), "");
+                }
+                for (int i = 0; i < r2 - r1; i++)
+                {
+                    index = GD.RandRange(0, temp.Length - 1);
+                    arrt2[i] = temp[index];
+                    temp = temp.Replace(arrt2[i].ToString(), "");
+                }
+                Array.Sort(arrt1);
+                Array.Sort(arrt2);
+                t1 = string.Join("", arrt1);
+                t2 = string.Join("", arrt2);
+                t3 = temp;
+                GD.Print(res + "," + t1 + "," + t2 + "," + t3);
                 Factory[] deps = new Factory[3];
                 deps[0] = generatorRawMaterial(t1, flag - 1);
                 deps[1] = generatorRawMaterial(t2, flag - 1);
                 deps[2] = generatorRawMaterial(t3, flag - 1);
                 if (nowId >= N) return null;
-                // Factory newf = new Factory(nowId++, res == "ABCDEF" ? FactoryType.TopLevel : FactoryType.Processing, deps);
                 Factory newf;
                 if (res == "ABCDEF")
                 {
@@ -150,15 +170,28 @@ namespace Formula
             }
             else
             { // 2输入
-                // int r1 = GD.RandRange(0, res.Length - 1); // 决定子串长度
                 int r1 = GD.RandRange(0, res.Length - 2); // 决定子串长度
-                string t1 = res.Substring(0, r1 + 1);
-                string t2 = res.Substring(r1 + 1);
+                // string t1 = res.Substring(0, r1 + 1);
+                // string t2 = res.Substring(r1 + 1);
+                string t1 = "", t2 = "";
+                char[] arrt1 = new char[r1 + 1];
+                string temp = res;
+                int index = 0;
+                for (int i = 0; i < r1 + 1; i++)
+                {
+                    index = GD.RandRange(0, temp.Length - 1);
+                    arrt1[i] = temp[index];
+                    temp = temp.Replace(arrt1[i].ToString(), "");
+                }
+                Array.Sort(arrt1);
+                t1 = string.Join("", arrt1);
+                t2 = temp;
+                GD.Print(res + "," + t1 + "," + t2);
+
                 Factory[] deps = new Factory[2];
                 deps[0] = generatorRawMaterial(t1, flag - 1);
                 deps[1] = generatorRawMaterial(t2, flag - 1);
                 if (nowId >= N) return null;
-                // Factory newf = new Factory(nowId++, res == "ABCDEF" ? FactoryType.TopLevel : FactoryType.Processing, deps);
                 Factory newf;
                 if (res == "ABCDEF")
                 {
