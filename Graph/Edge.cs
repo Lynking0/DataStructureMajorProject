@@ -8,14 +8,13 @@ using GraphMoudle.DataStructureAndAlgorithm;
 using GraphMoudle.DataStructureAndAlgorithm.SpatialIndexer.RTreeStructure;
 namespace GraphMoudle
 {
-    using VEDC = VertexEdgeDistCalculator;
-    using EEDC = EdgeEdgeDistCalculator;
     public class Edge : IRTreeData, IBrokenLineLike
     {
-        public Vertex A;
-        public Vertex B;
-        public Curve2D Curve;
-        public Edge(Vertex a, Vertex b, Curve2D curve)
+        public readonly Vertex A;
+        public readonly Vertex B;
+        public readonly Curve2D Curve;
+        public bool IsBridge => A.ParentBlock != B.ParentBlock;
+        public Edge(Vertex a, Vertex b, Curve2D curve, int pMaxDepth = 4, double pAngle = Math.PI * 5 / 180)
         {
             A = a;
             B = b;
@@ -38,8 +37,8 @@ namespace GraphMoudle
         private List<Vector2D>? _points = null;
         public List<Vector2D> Points { get => _points ??= _getBrokenLinePoints(); }
 
-        const int PMaxDepth = 4;
-        const double PAngle = Math.PI * 5 / 180;
+        private readonly int PMaxDepth;
+        private readonly double PAngle;
 
         private List<Vector2D> _getBrokenLinePoints()
         {

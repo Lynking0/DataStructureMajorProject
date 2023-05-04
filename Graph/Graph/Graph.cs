@@ -105,7 +105,7 @@ namespace GraphMoudle
 
             // 找出邻近点对
             List<(Vertex, Vertex)> pairs = VerticesContainer.GetNearbyPairs();
- 
+
             // 通过海拔高度初步筛选出可选边
             List<Edge> alternativeEdges = new List<Edge>();
             EdgeEvaluatorInvoker.Init();
@@ -135,6 +135,57 @@ namespace GraphMoudle
 
             // 预计算并存储距离信息
             CalcDistInfo();
+        }
+        /// <summary>
+        ///   在指定的两区块间建桥
+        /// </summary>
+        public void CreateBridge(Block a, Block b)
+        {
+            foreach (BlockAdjInfo info in a.AdjacenciesInfo!)
+            {
+                if (info.AdjBlock == b)
+                {
+                    CreateBridge(info.Vertex1, info.Vertex2);
+                    return;
+                }
+            }
+            foreach (BlockAdjInfo info in b.AdjacenciesInfo!)
+            {
+                if (info.AdjBlock == a)
+                {
+                    CreateBridge(info.Vertex1, info.Vertex2);
+                    return;
+                }
+            }
+        }
+        /// <summary>
+        ///   在指定的两点间建桥
+        /// </summary>
+        public void CreateBridge(Vertex a, Vertex b)
+        {
+            Vector2D aCtrl, bCtrl;
+            if (a.Type == Vertex.VertexType.Intermediate)
+            {
+                if (Mathf.Abs(a.Gradient.OrthogonalD().AngleToD(b.Position - a.Position)) < Math.PI / 2)
+                    aCtrl = a.Position + a.Gradient.OrthogonalD().NormalizedD() * Graph.CtrlPointDistance;
+                else
+                    aCtrl = a.Position - a.Gradient.OrthogonalD().NormalizedD() * Graph.CtrlPointDistance;
+            }
+            else
+                aCtrl = a.Position - a.Gradient.NormalizedD() * 15;
+            if (b.Type == Vertex.VertexType.Intermediate)
+            {
+                if (Mathf.Abs(b.Gradient.OrthogonalD().AngleToD(a.Position - b.Position)) < Math.PI / 2)
+                    bCtrl = b.Position + b.Gradient.OrthogonalD().NormalizedD() * Graph.CtrlPointDistance;
+                else
+                    bCtrl = b.Position - b.Gradient.OrthogonalD().NormalizedD() * Graph.CtrlPointDistance;
+            }
+            else
+                bCtrl = b.Position - b.Gradient.NormalizedD() * 15;
+            Edge edge = new Edge(a, b, new Curve2D());
+            edge.Curve.AddPoint((Vector2)a.Position, @out: (Vector2)(aCtrl - a.Position));
+            edge.Curve.AddPoint((Vector2)b.Position, @in: (Vector2)(bCtrl - b.Position));
+            GISInfoStorer.Add(edge);
         }
     }
 }

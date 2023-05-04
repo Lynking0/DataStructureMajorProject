@@ -5,8 +5,8 @@ namespace DirectorMoudle
 {
     class Constants
     {
-        public const float Width = 1000;
-        public const float Height = 1000;
+        public const float Width = 10000;
+        public const float Height = 6000;
 
         public static Vector2 WorldSize = new Vector2(Width, Height);
 

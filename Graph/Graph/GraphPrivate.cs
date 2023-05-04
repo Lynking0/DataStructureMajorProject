@@ -117,7 +117,9 @@ namespace GraphMoudle
                 }
             }
         }
-        // 生成分块信息
+        /// <summary>
+        ///   生成分块信息
+        /// </summary>
         private void DivideBlocks()
         {
             UnionFindDisjointSet<Vertex>.Init(Vertices);
@@ -136,6 +138,7 @@ namespace GraphMoudle
             {
                 if (block.Count >= MinBlockVerticesCount)
                 {
+                    block.Index = Blocks.Count;
                     Blocks.Add(block);
                     foreach (Vertex vertex in block.Vertices)
                         vertex.ParentBlock = block;
