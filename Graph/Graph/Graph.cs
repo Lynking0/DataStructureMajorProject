@@ -184,6 +184,8 @@ namespace GraphMoudle
             Edge edge = new Edge(a, b, new Curve2D());
             edge.Curve.AddPoint((Vector2)a.Position, @out: (Vector2)(aCtrl - a.Position));
             edge.Curve.AddPoint((Vector2)b.Position, @in: (Vector2)(bCtrl - b.Position));
+            a.Adjacencies.Add(edge);
+            b.Adjacencies.Add(edge);
             GISInfoStorer.Add(edge);
             return true;
         }

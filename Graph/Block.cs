@@ -26,7 +26,7 @@ namespace GraphMoudle
             AdjacenciesInfo = new BlockAdjInfo[info.Count];
             int idx = 0;
             foreach ((Block block, (double distSquared, Vertex vertex1, Vertex vertex2)) in info)
-                AdjacenciesInfo[idx] = new BlockAdjInfo(block, vertex1, vertex2, Math.Sqrt(distSquared));
+                AdjacenciesInfo[idx++] = new BlockAdjInfo(block, vertex1, vertex2, Math.Sqrt(distSquared));
             Array.Sort(AdjacenciesInfo);
         }
     }
