@@ -14,6 +14,7 @@ namespace GraphMoudle
         public readonly Vertex B;
         public readonly Curve2D Curve;
         public bool IsBridge => A.ParentBlock != B.ParentBlock;
+        public float Length => Curve.GetBakedLength();
         public Edge(Vertex a, Vertex b, Curve2D curve, int pMaxDepth = 4, double pAngle = Math.PI * 5 / 180)
         {
             A = a;
