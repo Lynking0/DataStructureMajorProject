@@ -118,7 +118,7 @@ namespace GraphMoudle
             }
         }
         /// <summary>
-        ///   生成分块信息
+        ///   生成分块信息。
         /// </summary>
         private void DivideBlocks()
         {
@@ -155,7 +155,7 @@ namespace GraphMoudle
             }
         }
         /// <summary>
-        ///   在指定的两区块间建桥
+        ///   在指定的两区块间建桥。
         /// </summary>
         private void CreateBridges()
         {
@@ -169,7 +169,7 @@ namespace GraphMoudle
             }
         }
         /// <summary>
-        ///   在指定的两点间建桥
+        ///   在指定的两点间建桥。
         /// </summary>
         private bool _createBridge(Vertex a, Vertex b)
         {

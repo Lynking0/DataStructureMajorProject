@@ -1,5 +1,6 @@
 using Godot;
 using GraphMoudle;
+using Shared.Extensions.ICollectionExtensions;
 
 namespace TopographyMoudle
 {
@@ -31,6 +32,10 @@ namespace TopographyMoudle
         {
             Graph.Instance.CreateVertices();
             Graph.Instance.CreateEdges();
+            // foreach (Block block in Graph.Instance.Blocks)
+            // {
+
+            // }
         }
     }
 }
