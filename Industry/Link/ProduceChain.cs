@@ -15,6 +15,7 @@ namespace IndustryMoudle.Link
         public readonly Block Block;
         // 亏空
         public readonly ItemBox Deficit = new ItemBox();
+        public readonly Dictionary<Factory, ItemBox> DeficitPortion = new Dictionary<Factory, ItemBox>();
         // 输出类型
         public readonly ItemType OutputType;
         public readonly Factory OutputFactory;
@@ -74,9 +75,12 @@ namespace IndustryMoudle.Link
             _links.AddRange(links);
         }
 
-        public void AddDeficit(ItemType type, int number)
+        public void AddDeficit(Factory factory, Item item)
         {
-            Deficit.AddItem(type, number);
+            Deficit.AddItem(item);
+            if (!DeficitPortion.ContainsKey(factory))
+                DeficitPortion.Add(factory, new ItemBox());
+            DeficitPortion[factory].AddItem(item);
         }
     }
 }

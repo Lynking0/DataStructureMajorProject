@@ -15,6 +15,13 @@ namespace DirectorMoudle
         private List<ProduceLink> Links = new List<ProduceLink>();
         private List<Edge> Edges = new List<Edge>();
 
+        public void Clear()
+        {
+            Factory = null;
+            Links.Clear();
+            Edges.Clear();
+        }
+
         private void DrawArrow(Vector2 from, Vector2 to, Color color, float width = -1, bool antialiased = false)
         {
             DrawLine(from, to, color, width, antialiased);
@@ -54,7 +61,15 @@ namespace DirectorMoudle
             foreach (Vector2 p in edge.Points)
             {
                 if (lastP is Vector2 p_)
-                    DrawLine(p_ - start, p - start, new Color(0.5f, 0.5f, 0.5f, 1), 1);
+                    if (edge.IsBridge)
+                    {
+                        DrawString(Font, (Vector2)(edge.A.Position + edge.B.Position) / 2 - start, "桥", fontSize: 10, modulate: Colors.Red);
+                        DrawLine(p_ - start, p - start, new Color(1.0f, 0.0f, 0.0f, 1), 4);
+                    }
+                    else
+                    {
+                        DrawLine(p_ - start, p - start, new Color(0.5f, 0.5f, 0.5f, 1), 1);
+                    }
                 lastP = p;
             }
         }
