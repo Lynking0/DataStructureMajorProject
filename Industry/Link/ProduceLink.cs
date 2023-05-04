@@ -11,16 +11,33 @@ namespace IndustryMoudle.Link
         public Item Item;
         public readonly ProduceChain Chain;
         public static List<ProduceLink> Links = new List<ProduceLink>();
+        private static readonly Dictionary<Edge, List<ProduceLink>> _edgeToLinks = new Dictionary<Edge, List<ProduceLink>>();
+        public static IReadOnlyDictionary<Edge, List<ProduceLink>> EdgeToLinks => _edgeToLinks;
+
         private List<Vertex> _vertexes;
         public IReadOnlyCollection<Vertex> Vertexes => _vertexes;
+        private List<(Edge edge, bool reverse)> _edgeInfos;
+        public IReadOnlyCollection<(Edge edge, bool reverse)> EdgeInfos => _edgeInfos;
 
-        public ProduceLink(Factory from, Factory to, IEnumerable<Vertex> vertexs, Item item, ProduceChain chain)
+        public ProduceLink(Factory from, Factory to, IEnumerable<Vertex> vertexs, IEnumerable<(Edge edge, bool reverse)> edges, Item item, ProduceChain chain)
         {
             From = from;
             To = to;
             Item = item;
             Chain = chain;
             _vertexes = new List<Vertex>(vertexs);
+            _edgeInfos = new List<(Edge edge, bool reverse)>(edges);
+            foreach (var edgeIfno in edges)
+            {
+                if (_edgeToLinks.ContainsKey(edgeIfno.edge))
+                {
+                    _edgeToLinks[edgeIfno.edge].Add(this);
+                }
+                else
+                {
+                    _edgeToLinks.Add(edgeIfno.edge, new List<ProduceLink>() { this });
+                }
+            }
             Links.Add(this);
         }
 

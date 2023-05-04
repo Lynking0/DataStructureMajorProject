@@ -34,7 +34,8 @@ namespace IndustryMoudle
         // 按照所需输出，建立该工厂所需原料供应
         private static (List<(Factory factory, int outputNumber)> downstream, List<ProduceLink> links) linkFactory(Factory curFactory, int requirementNumber, ProduceChain chain)
         {
-            var factoryBFSList = new List<(Vertex cur, int parIndex)>();
+            var factoryBFSList
+                = new List<(Vertex cur, (Edge? edge, bool reverse) edgeInfo, int parIndex)>();
             var set = new HashSet<Vertex>();
             var requirement = (new ItemBox(curFactory.Recipe.Input) * requirementNumber).ToDictionary();
             var requirementTypes = requirement.Keys.ToList();
@@ -52,18 +53,30 @@ namespace IndustryMoudle
                         {
                             continue;
                         }
-                        factoryBFSList!.Add((otherVertex, index));
+                        factoryBFSList!.Add((otherVertex, (edge, vertex == edge.A), index));
                         set.Add(otherVertex);
                     }
                 }
             }
-            List<Vertex> GetPath(int i)
+            List<Vertex> GetVertexes(int i)
             {
                 var index = i;
                 var result = new List<Vertex>();
                 while (index != 0)
                 {
                     result.Add(factoryBFSList[index].cur);
+                    index = factoryBFSList[index].parIndex;
+                }
+                result.Add(factoryBFSList[0].cur);
+                return result;
+            }
+            List<(Edge edge, bool reverse)> GetEdges(int i)
+            {
+                var index = i;
+                var result = new List<(Edge edge, bool reverse)>();
+                while (index != 0)
+                {
+                    result.Add(factoryBFSList[index].edgeInfo!);
                     index = factoryBFSList[index].parIndex;
                 }
                 return result;
@@ -96,11 +109,12 @@ namespace IndustryMoudle
                 }
             }
 
+            factoryBFSList.Add((curFactory.Vertex, (null, default), 0));
             Extend(curFactory.Vertex, 0);
             int i = 0;
             while (i < factoryBFSList.Count && requirementTypes.Count > 0)
             {
-                var (otherVertex, parIndex) = factoryBFSList[i];
+                var (otherVertex, edge, parIndex) = factoryBFSList[i];
                 var targetFactory = VertexToFactory[otherVertex];
                 var intersect = targetFactory.Recipe.OutputTypes.Intersect(requirementTypes);
                 if (intersect is not null)
@@ -126,7 +140,7 @@ namespace IndustryMoudle
                         {
                             requirement[itemType] = deficit;
                         }
-                        var link = new ProduceLink(targetFactory, curFactory, GetPath(i), new Item(actual, itemType), chain);
+                        var link = new ProduceLink(targetFactory, curFactory, GetVertexes(i), GetEdges(i), new Item(actual, itemType), chain);
                         targetFactory.AddOutputLink(link);
                         curFactory.AddInputLink(link);
                         links.Add(link);
@@ -274,24 +288,9 @@ namespace IndustryMoudle
                     downstream.ForEach(factoryQueue.Enqueue);
                 }
 
-                // TODO:建桥补充缺口
-                var curBlock = consumptionFactory.Vertex.ParentBlock;
-                if (curBlock.AdjacenciesInfo is not null)
-                {
-                    foreach (var info in curBlock.AdjacenciesInfo)
-                    {
-                        
-                        GD.Print(Graph.Instance.CreateBridge(curBlock, info.AdjBlock));
-                        foreach (var vertex in info.AdjBlock.Vertices)
-                        {
-
-                        }
-                    }
-                }
                 // 定性链路构建完成，开始定量收缩
                 ShirkChain(chain);
             }
-            GD.Print(222);
             DirectorMoudle.MapRender.Instance?.QueueRedraw();
 
             Logger.trace($"生成产业链 {ProduceChain.Chains.Count} 条");

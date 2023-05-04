@@ -18,6 +18,14 @@ namespace DirectorMoudle
         private Dictionary<Factory, FactoryRender> FactoryToRender = new Dictionary<Factory, FactoryRender>();
         private Dictionary<Vertex, FactoryRender> VertexToRender = new Dictionary<Vertex, FactoryRender>();
 
+        private bool RoadDisplay = true;
+        private bool FactoryDisplay = true;
+        private bool LinkDisplay = true;
+
+        private bool MaxEdgeLoadDirty = true;
+        public int MaxEdgeLoad { get; private set; } = 0;
+        public const int MaxRoadWidth = 6;
+
         private int LogicFrameCount = 0;
 
         public MapRender()
@@ -28,6 +36,22 @@ namespace DirectorMoudle
                 throw new System.Exception("MapRender is a singleton class.");
             }
             Instance = this;
+        }
+
+        public void RoadDisplayChange(bool status)
+        {
+            RoadDisplay = status;
+            QueueRedraw();
+        }
+        public void FactoryDisplayChange(bool status)
+        {
+            FactoryDisplay = status;
+            QueueRedraw();
+        }
+        public void LinkDisplayChange(bool status)
+        {
+            LinkDisplay = status;
+            QueueRedraw();
         }
 
         public override void _Ready()
@@ -58,12 +82,48 @@ namespace DirectorMoudle
             FactoryContainer?.AddChild(render);
             render.Refresh(factory);
         }
-        private void DrawLink(ProduceLink link)
+
+        public float GetRoadWidth(Edge edge)
         {
-            FactoryToRender[link.From].AddLink(link);
+            if (MaxEdgeLoadDirty)
+            {
+                var edgeLoad = new Dictionary<Edge, int>();
+                foreach (var link in ProduceLink.Links)
+                {
+                    foreach (var (curEdge, _) in link.EdgeInfos)
+                    {
+                        if (!edgeLoad.ContainsKey(curEdge))
+                        {
+                            edgeLoad[curEdge] = 0;
+                        }
+                        edgeLoad[curEdge] += link.Item.Number;
+                    }
+                }
+                MaxEdgeLoad = edgeLoad.Values.Max();
+                MaxEdgeLoadDirty = false;
+            }
+
+            // by Exp
+            if (!ProduceLink.EdgeToLinks.TryGetValue(edge, out var links))
+            {
+                return 0;
+            }
+            var load = links.Sum(link => link.Item.Number);
+            if (load == 0)
+                return 0;
+            var a = Mathf.Exp((double)load / MaxEdgeLoad);
+            var b = a * MaxRoadWidth;
+            var c = b / Mathf.E;
+            return (float)Mathf.Exp((double)load / MaxEdgeLoad) * MaxRoadWidth / Mathf.E;
         }
 
-        private void DrawRoad(Edge edge)
+        private void AddLink(ProduceLink link)
+        {
+            FactoryToRender[link.From].AddLink(link);
+            MaxEdgeLoadDirty = true;
+        }
+
+        private void AddRoad(Edge edge)
         {
             VertexToRender[edge.A].AddRoad(edge);
         }
@@ -74,9 +134,12 @@ namespace DirectorMoudle
             {
                 render.Clear();
             }
-            Factory.Factories.ToList().ForEach(DrawFactor);
-            ProduceLink.Links.ForEach(DrawLink);
-            Graph.Instance.Edges.ToList().ForEach(DrawRoad);
+            if (FactoryDisplay)
+                Factory.Factories.ToList().ForEach(DrawFactor);
+            if (RoadDisplay)
+                Graph.Instance.Edges.ToList().ForEach(AddRoad);
+            if (LinkDisplay)
+                ProduceLink.Links.ForEach(AddLink);
             foreach (var render in Renders)
             {
                 render.QueueRedraw();

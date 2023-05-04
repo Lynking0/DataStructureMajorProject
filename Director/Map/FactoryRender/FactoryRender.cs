@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using IndustryMoudle;
 using IndustryMoudle.Link;
 using GraphMoudle;
-using Shared.Extensions.ICollectionExtensions;
 
 namespace DirectorMoudle
 {
@@ -64,11 +63,11 @@ namespace DirectorMoudle
                     if (edge.IsBridge)
                     {
                         DrawString(Font, (Vector2)(edge.A.Position + edge.B.Position) / 2 - start, "桥", fontSize: 10, modulate: Colors.Red);
-                        DrawLine(p_ - start, p - start, new Color(1.0f, 0.0f, 0.0f, 1), 4);
+                        DrawLine(p_ - start, p - start, new Color(1.0f, 0.0f, 0.0f, 1), MapRender.Instance!.GetRoadWidth(edge));
                     }
                     else
                     {
-                        DrawLine(p_ - start, p - start, new Color(0.5f, 0.5f, 0.5f, 1), 1);
+                        DrawLine(p_ - start, p - start, new Color(0.5f, 0.5f, 0.5f, 1), MapRender.Instance!.GetRoadWidth(edge));
                     }
                 lastP = p;
             }

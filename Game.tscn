@@ -108,20 +108,33 @@ layout_mode = 2
 
 [node name="Label" type="Label" parent="MouseInput/VBoxContainer/HBoxContainer2"]
 layout_mode = 2
-text = "ABCABC"
+text = "路儿"
 
 [node name="CheckButton" type="CheckButton" parent="MouseInput/VBoxContainer/HBoxContainer2"]
 layout_mode = 2
+button_pressed = true
 
-[node name="HBoxContainer" type="HBoxContainer" parent="MouseInput/VBoxContainer"]
+[node name="HBoxContainer3" type="HBoxContainer" parent="MouseInput/VBoxContainer"]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="MouseInput/VBoxContainer/HBoxContainer"]
+[node name="Label" type="Label" parent="MouseInput/VBoxContainer/HBoxContainer3"]
 layout_mode = 2
-text = "ABCABC"
+text = "工厂"
 
-[node name="CheckButton" type="CheckButton" parent="MouseInput/VBoxContainer/HBoxContainer"]
+[node name="CheckButton" type="CheckButton" parent="MouseInput/VBoxContainer/HBoxContainer3"]
 layout_mode = 2
+button_pressed = true
+
+[node name="HBoxContainer4" type="HBoxContainer" parent="MouseInput/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MouseInput/VBoxContainer/HBoxContainer4"]
+layout_mode = 2
+text = "链接"
+
+[node name="CheckButton" type="CheckButton" parent="MouseInput/VBoxContainer/HBoxContainer4"]
+layout_mode = 2
+button_pressed = true
 
 [node name="FactroyView" parent="MouseInput" instance=ExtResource("7_j73ru")]
 layout_mode = 1
@@ -133,3 +146,7 @@ offset_top = -71.5
 offset_right = 67.0
 offset_bottom = 71.5
 grow_horizontal = 1
+
+[connection signal="toggled" from="MouseInput/VBoxContainer/HBoxContainer2/CheckButton" to="MouseInput/MapRender" method="RoadDisplayChange"]
+[connection signal="toggled" from="MouseInput/VBoxContainer/HBoxContainer3/CheckButton" to="MouseInput/MapRender" method="FactoryDisplayChange"]
+[connection signal="toggled" from="MouseInput/VBoxContainer/HBoxContainer4/CheckButton" to="MouseInput/MapRender" method="LinkDisplayChange"]
