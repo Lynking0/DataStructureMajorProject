@@ -36,6 +36,19 @@ namespace GraphMoudle
         ///   控制生成Edge时控制点方向的选择，仅在生成Edge时使用。
         /// </summary>
         public VertexType Type;
+        /// <summary>
+        ///   度中心性
+        /// </summary>
+        public float DegreeCentrality;
+        /// <summary>
+        ///   接近中心性
+        /// </summary>
+        public float ClosenessCentrality;
+        /// <summary>
+        ///   中介中心性
+        /// </summary>
+        public float BetweennessCentrality;
+        
         public Vertex(double x, double y)
         {
             Position.X = (float)x;
