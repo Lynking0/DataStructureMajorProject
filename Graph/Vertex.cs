@@ -48,6 +48,17 @@ namespace GraphMoudle
             Adjacencies = new List<Edge>();
         }
 
+        /// <summary>
+        ///   查询当前Vertex与另一Vertex是否有一条Edge直接相连
+        /// </summary>
+        public bool IsDirectlyConnected(Vertex other)
+        {
+            foreach (Edge e in Adjacencies)
+                if (e.GetOtherEnd(this) == other)
+                    return true;
+            return false;
+        }
+
         #region IRTreeDataImplementation
 
         public bool IsOverlap(IRTreeData other)

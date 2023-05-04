@@ -19,6 +19,8 @@ namespace GraphMoudle
             A = a;
             B = b;
             Curve = curve;
+            PMaxDepth = pMaxDepth;
+            PAngle = pAngle;
         }
         /// <summary>
         ///   获取另一头的节点，若v不是该边的端点，则返回null。

@@ -28,7 +28,11 @@ namespace GraphMoudle.DataStructureAndAlgorithm.DisjointSet
                 return x;
             return x.DisjointSetParent = Find(x.DisjointSetParent!);
         }
-        public static void Union(T x, T y)
+        /// <summary>
+        ///   若两元素不在一个集合中，则进行合并
+        /// </summary>
+        /// <returns>是否进行了合并</returns>
+        public static bool Union(T x, T y)
         {
             x = Find(x);
             y = Find(y);
@@ -44,7 +48,9 @@ namespace GraphMoudle.DataStructureAndAlgorithm.DisjointSet
                     y.DisjointSetSize += x.DisjointSetSize;
                     x.DisjointSetParent = y;
                 }
+                return true;
             }
+            return false;
         }
     }
 }
