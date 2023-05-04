@@ -139,29 +139,28 @@ namespace GraphMoudle
         /// <summary>
         ///   在指定的两区块间建桥
         /// </summary>
-        public void CreateBridge(Block a, Block b)
+        public bool CreateBridge(Block a, Block b)
         {
             foreach (BlockAdjInfo info in a.AdjacenciesInfo!)
             {
                 if (info.AdjBlock == b)
                 {
-                    CreateBridge(info.Vertex1, info.Vertex2);
-                    return;
+                    return CreateBridge(info.Vertex1, info.Vertex2);
                 }
             }
             foreach (BlockAdjInfo info in b.AdjacenciesInfo!)
             {
                 if (info.AdjBlock == a)
                 {
-                    CreateBridge(info.Vertex1, info.Vertex2);
-                    return;
+                    return CreateBridge(info.Vertex1, info.Vertex2);
                 }
             }
+            return false;
         }
         /// <summary>
         ///   在指定的两点间建桥
         /// </summary>
-        public void CreateBridge(Vertex a, Vertex b)
+        public bool CreateBridge(Vertex a, Vertex b)
         {
             Vector2D aCtrl, bCtrl;
             if (a.Type == Vertex.VertexType.Intermediate)
@@ -186,6 +185,7 @@ namespace GraphMoudle
             edge.Curve.AddPoint((Vector2)a.Position, @out: (Vector2)(aCtrl - a.Position));
             edge.Curve.AddPoint((Vector2)b.Position, @in: (Vector2)(bCtrl - b.Position));
             GISInfoStorer.Add(edge);
+            return true;
         }
     }
 }
