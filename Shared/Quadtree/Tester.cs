@@ -117,7 +117,7 @@ namespace Shared.QuadTree
             {
                 GD.Print(item.Position);
             }
-            GD.Print(Points[8].Handle.Node.Bounds);
+            GD.Print(Points[8]!.Handle!.Node.Bounds);
             GD.Print(Points[8]!.Handle!.Nearby(Points[8]).Count());
         }
 

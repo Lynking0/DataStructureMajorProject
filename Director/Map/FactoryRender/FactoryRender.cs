@@ -35,7 +35,7 @@ namespace DirectorMoudle
             GetNode<Button>("Button").ButtonDown += () =>
             {
                 GetNode<FactroyView>("/root/Main/MouseInput/FactroyView").Refresh(Factory!);
-                GD.Print(Factory.Recipe.DEBUG_OUTPUT());
+                GD.Print(Factory!.Recipe.DEBUG_OUTPUT());
             };
         }
 
