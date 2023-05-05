@@ -92,6 +92,8 @@ namespace DirectorMoudle
                 {
                     foreach (var (curEdge, _) in link.EdgeInfos)
                     {
+                        if (curEdge is null)
+                            continue;
                         if (!edgeLoad.ContainsKey(curEdge))
                         {
                             edgeLoad[curEdge] = 0;
