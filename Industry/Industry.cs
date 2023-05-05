@@ -322,7 +322,7 @@ namespace IndustryMoudle
             foreach (var consumptionFactory in Factory.Factories.Where(f => f.Recipe.Group == "consumption"))
             {
                 // Build industrial chain
-                var chain = new ProduceChain("ABC", consumptionFactory.Vertex.ParentBlock, consumptionFactory);
+                var chain = new ProduceChain("ABCDEF", consumptionFactory.Vertex.ParentBlock, consumptionFactory);
                 chain.AddFactory(consumptionFactory);
                 var factoryQueue = new Queue<(Factory factory, int outputNumber)>();
                 var (downstream, links) = linkFactory(consumptionFactory, consumptionFactory.BaseProduceSpeed, chain);
@@ -346,7 +346,6 @@ namespace IndustryMoudle
 
             Logger.trace($"生成产业链 {ProduceChain.Chains.Count} 条");
             Logger.trace($"完整产业链 {ProduceChain.Chains.Where(c => c.Deficit.Empty).Count()} 条");
-            Logger.trace($"产业链平衡情况 {(string)ProduceChain.AllDeficit}");
             Logger.trace($"产业链计划消费品产能 {ProduceChain.ConsumeCount}");
         }
     }
