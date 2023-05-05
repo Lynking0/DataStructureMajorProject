@@ -57,7 +57,7 @@ namespace DirectorMoudle
         {
             Vector2? lastP = null;
             var start = (Vector2)edge.A.Position;
-            foreach (Vector2 p in edge.Points)
+            foreach (Vector2 p in edge.Curve.Tessellate())
             {
                 if (lastP is Vector2 p_)
                     if (edge.IsBridge)

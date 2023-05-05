@@ -8,6 +8,45 @@ using IndustryMoudle.Link;
 
 namespace IndustryMoudle
 {
+    public class EdgeInfo
+    {
+        public EdgeInfo(Edge? edge, bool reverse)
+        {
+            Edge = edge;
+            Reverse = reverse;
+        }
+
+        public Edge? Edge;
+        public bool Reverse;
+
+        internal void Deconstruct(out Edge? edge, out bool reverse)
+        {
+            edge = Edge;
+            reverse = Reverse;
+        }
+    }
+
+    public class VertexInfo
+    {
+        public VertexInfo(Vertex vertex, EdgeInfo edgeInfo, VertexInfo? parent)
+        {
+            Vertex = vertex;
+            EdgeInfo = edgeInfo;
+            Parent = parent;
+        }
+
+        public Vertex Vertex;
+        public EdgeInfo EdgeInfo;
+        public VertexInfo? Parent;
+
+        internal void Deconstruct(out Vertex vertex, out EdgeInfo edgeInfo, out VertexInfo? parent)
+        {
+            vertex = Vertex;
+            edgeInfo = EdgeInfo;
+            parent = Parent;
+        }
+    }
+
     public partial class Industry
     {
         private static Dictionary<Vertex, Factory> VertexToFactory = new Dictionary<Vertex, Factory>();
@@ -34,50 +73,52 @@ namespace IndustryMoudle
         // 按照所需输出，建立该工厂所需原料供应
         private static (List<(Factory factory, int outputNumber)> downstream, List<ProduceLink> links) linkFactory(Factory curFactory, int requirementNumber, ProduceChain chain)
         {
-            var factoryBFSList
-                = new List<(Vertex cur, (Edge? edge, bool reverse) edgeInfo, int parIndex)>();
+            var root = new VertexInfo(curFactory.Vertex, new EdgeInfo(null, default), null);
+            var factoryQueue = new MiniPriorityQueue<VertexInfo>(2);
             var set = new HashSet<Vertex>();
             var requirement = (new ItemBox(curFactory.Recipe.Input) * requirementNumber).ToDictionary();
             var requirementTypes = requirement.Keys.ToList();
             var downstream = new List<(Factory factory, int outputNumber)>();
             var links = new List<ProduceLink>();
             // for BFS
-            void Extend(Vertex vertex, int index)
+            void Extend(VertexInfo vertexInfo)
             {
-                set.Add(vertex);
-                foreach (var edge in vertex.Adjacencies)
+                set.Add(vertexInfo.Vertex);
+                foreach (var edge in vertexInfo.Vertex.Adjacencies)
                 {
-                    if (edge.GetOtherEnd(vertex) is Vertex otherVertex)
+                    if (edge.GetOtherEnd(vertexInfo.Vertex) is Vertex otherVertex)
                     {
                         if (set.Contains(otherVertex))
                         {
                             continue;
                         }
-                        factoryBFSList!.Add((otherVertex, (edge, vertex == edge.A), index));
+                        factoryQueue!.Enqueue(new VertexInfo(otherVertex,
+                            new EdgeInfo(edge, vertexInfo.Vertex == edge.A), vertexInfo),
+                            vertexInfo.Vertex.ParentBlock == otherVertex.ParentBlock ? 0 : 1);
                         set.Add(otherVertex);
                     }
                 }
             }
-            List<Vertex> GetVertexes(int i)
+            List<Vertex> GetVertexes(VertexInfo vertexInfo)
             {
-                var index = i;
                 var result = new List<Vertex>();
-                while (index != 0)
+                var info = vertexInfo;
+                while (info.Parent is not null)
                 {
-                    result.Add(factoryBFSList[index].cur);
-                    index = factoryBFSList[index].parIndex;
+                    result.Add(info.Vertex);
+                    info = info.Parent;
                 }
-                result.Add(factoryBFSList[0].cur);
+                result.Add(root.Vertex);
                 return result;
             }
-            List<(Edge edge, bool reverse)> GetEdges(int i)
+            List<EdgeInfo> GetEdges(VertexInfo vertexInfo)
             {
-                var index = i;
-                var result = new List<(Edge edge, bool reverse)>();
-                while (index != 0)
+                var result = new List<EdgeInfo>();
+                var info = vertexInfo;
+                while (info.Parent is not null)
                 {
-                    result.Add(factoryBFSList[index].edgeInfo!);
-                    index = factoryBFSList[index].parIndex;
+                    result.Add(info.EdgeInfo);
+                    info = info.Parent;
                 }
                 return result;
             }
@@ -109,12 +150,11 @@ namespace IndustryMoudle
                 }
             }
 
-            factoryBFSList.Add((curFactory.Vertex, (null, default), 0));
-            Extend(curFactory.Vertex, 0);
-            int i = 0;
-            while (i < factoryBFSList.Count && requirementTypes.Count > 0)
+            Extend(new VertexInfo(curFactory.Vertex, new EdgeInfo(null, default), null));
+            while (factoryQueue.Count > 0 && requirementTypes.Count > 0)
             {
-                var (otherVertex, edge, parIndex) = factoryBFSList[i];
+                var vertexInfo = factoryQueue.Dequeue();
+                var (otherVertex, edge, parIndex) = vertexInfo;
                 var targetFactory = VertexToFactory[otherVertex];
                 var intersect = targetFactory.Recipe.OutputTypes.Intersect(requirementTypes);
                 if (intersect is not null)
@@ -140,19 +180,28 @@ namespace IndustryMoudle
                         {
                             requirement[itemType] = deficit;
                         }
-                        var link = new ProduceLink(targetFactory, curFactory, GetVertexes(i), GetEdges(i), new Item(actual, itemType), chain);
+                        var link = new ProduceLink(targetFactory, curFactory, GetVertexes(vertexInfo),
+                            GetEdges(vertexInfo), new Item(actual, itemType), chain);
                         targetFactory.AddOutputLink(link);
                         curFactory.AddInputLink(link);
                         links.Add(link);
                         downstream.Add((factory: targetFactory, outputNumber: actual));
                     }
                 }
-                Extend(otherVertex, i);
-                i++;
+                Extend(vertexInfo);
             }
             foreach (var (type, number) in requirement)
             {
                 chain.AddDeficit(curFactory, new Item(number, type));
+            }
+            var l = factoryQueue.Count;
+            if (test.ContainsKey(l))
+            {
+                test[l]++;
+            }
+            else
+            {
+                test[l] = 1;
             }
             return (downstream, links);
         }
@@ -247,6 +296,8 @@ namespace IndustryMoudle
             }
         }
 
+
+        private static Dictionary<int, int> test = new Dictionary<int, int>();
         public static void BuildFactoryChains()
         {
             {

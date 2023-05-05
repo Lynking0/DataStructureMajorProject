@@ -16,26 +16,28 @@ namespace IndustryMoudle.Link
 
         private List<Vertex> _vertexes;
         public IReadOnlyCollection<Vertex> Vertexes => _vertexes;
-        private List<(Edge edge, bool reverse)> _edgeInfos;
-        public IReadOnlyCollection<(Edge edge, bool reverse)> EdgeInfos => _edgeInfos;
+        private List<EdgeInfo> _edgeInfos;
+        public IReadOnlyCollection<EdgeInfo> EdgeInfos => _edgeInfos;
 
-        public ProduceLink(Factory from, Factory to, IEnumerable<Vertex> vertexs, IEnumerable<(Edge edge, bool reverse)> edges, Item item, ProduceChain chain)
+        public ProduceLink(Factory from, Factory to, IEnumerable<Vertex> vertexs, IEnumerable<EdgeInfo> edges, Item item, ProduceChain chain)
         {
             From = from;
             To = to;
             Item = item;
             Chain = chain;
             _vertexes = new List<Vertex>(vertexs);
-            _edgeInfos = new List<(Edge edge, bool reverse)>(edges);
+            _edgeInfos = new List<EdgeInfo>(edges);
             foreach (var edgeIfno in edges)
             {
-                if (_edgeToLinks.ContainsKey(edgeIfno.edge))
+                if (edgeIfno.Edge == null)
+                    continue;
+                if (_edgeToLinks.ContainsKey(edgeIfno.Edge))
                 {
-                    _edgeToLinks[edgeIfno.edge].Add(this);
+                    _edgeToLinks[edgeIfno.Edge].Add(this);
                 }
                 else
                 {
-                    _edgeToLinks.Add(edgeIfno.edge, new List<ProduceLink>() { this });
+                    _edgeToLinks.Add(edgeIfno.Edge, new List<ProduceLink>() { this });
                 }
             }
             Links.Add(this);
