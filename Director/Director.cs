@@ -36,9 +36,9 @@ namespace DirectorMoudle
             GD.Seed(seed);
             Logger.trace($"随机种子: {seed}");
             Logger.trace("Director Ready");
-            MapController = GetNode<MapController>("../MouseInput/GameViewportContainer");
-            MapRender = GetNode<MapRender>("../MouseInput/MapRender");
-            MouselInput = GetNode<MouselInput>("../MouseInput");
+            MapController = GetNode<MapController>("%GameViewportContainer");
+            MapRender = GetNode<MapRender>("%MapRender");
+            MouselInput = GetNode<MouselInput>("%MouseInput");
 
             MouselInput.MapMoveTo += MapController!.SetMapPosition;
             MouselInput.MapZoomIn += MapController.MapZoomIn;
