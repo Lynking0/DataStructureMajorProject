@@ -20,6 +20,7 @@ namespace UserControl
             {
                 switch (mouseEvent.ButtonIndex)
                 {
+                    case MouseButton.Left:
                     case MouseButton.Middle:
                         if (!MapDragging && mouseEvent.Pressed)
                         {
