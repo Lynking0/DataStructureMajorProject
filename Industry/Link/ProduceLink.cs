@@ -1,9 +1,23 @@
 using System.Collections.Generic;
+using System.Linq;
 using GraphMoudle;
 using IndustryMoudle.Entry;
 
 namespace IndustryMoudle.Link
 {
+    public struct LoadInfo
+    {
+        public int ForwardLoad { get; }
+        public int ReverseLoad { get; }
+        public int TotalLoad => ForwardLoad + ReverseLoad;
+
+        public LoadInfo(int forwardLoad, int reverseLoad)
+        {
+            ForwardLoad = forwardLoad;
+            ReverseLoad = reverseLoad;
+        }
+    }
+
     public struct ProduceLink
     {
         public Factory From;
@@ -11,13 +25,24 @@ namespace IndustryMoudle.Link
         public Item Item;
         public readonly ProduceChain Chain;
         public static List<ProduceLink> Links = new List<ProduceLink>();
-        private static readonly Dictionary<Edge, List<ProduceLink>> _edgeToLinks = new Dictionary<Edge, List<ProduceLink>>();
-        public static IReadOnlyDictionary<Edge, List<ProduceLink>> EdgeToLinks => _edgeToLinks;
+        private static readonly Dictionary<Edge, List<(ProduceLink link, bool reverse)>> _edgeToLinks = new Dictionary<Edge, List<(ProduceLink link, bool reverse)>>();
+        public static IReadOnlyDictionary<Edge, List<(ProduceLink link, bool reverse)>> EdgeToLinks => _edgeToLinks;
 
         private List<Vertex> _vertexes;
         public IReadOnlyCollection<Vertex> Vertexes => _vertexes;
         private List<EdgeInfo> _edgeInfos;
         public IReadOnlyCollection<EdgeInfo> EdgeInfos => _edgeInfos;
+
+        public static LoadInfo GetEdgeLoad(Edge edge)
+        {
+            if (!EdgeToLinks.TryGetValue(edge, out var linkInfos))
+            {
+                return new LoadInfo(0, 0);
+            }
+            var reverseLoad = linkInfos.Where(info => info.reverse).Sum(info => info.link.Item.Number);
+            var forwardLoad = linkInfos.Where(info => !info.reverse).Sum(info => info.link.Item.Number);
+            return new LoadInfo(forwardLoad, reverseLoad);
+        }
 
         public ProduceLink(Factory from, Factory to, IEnumerable<Vertex> vertexs, IEnumerable<EdgeInfo> edges, Item item, ProduceChain chain)
         {
@@ -33,11 +58,11 @@ namespace IndustryMoudle.Link
                     continue;
                 if (_edgeToLinks.ContainsKey(edgeIfno.Edge))
                 {
-                    _edgeToLinks[edgeIfno.Edge].Add(this);
+                    _edgeToLinks[edgeIfno.Edge].Add((this, edgeIfno.Reverse));
                 }
                 else
                 {
-                    _edgeToLinks.Add(edgeIfno.Edge, new List<ProduceLink>() { this });
+                    _edgeToLinks.Add(edgeIfno.Edge, new List<(ProduceLink link, bool reverse)>() { (this, edgeIfno.Reverse) });
                 }
             }
             Links.Add(this);

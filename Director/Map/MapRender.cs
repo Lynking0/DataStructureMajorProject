@@ -83,7 +83,7 @@ namespace DirectorMoudle
             render.Refresh(factory);
         }
 
-        public float GetRoadWidth(Edge edge)
+        public float GetRoadWidth(int load)
         {
             if (MaxEdgeLoadDirty)
             {
@@ -106,17 +106,9 @@ namespace DirectorMoudle
             }
 
             // by Exp
-            if (!ProduceLink.EdgeToLinks.TryGetValue(edge, out var links))
-            {
-                return 0;
-            }
-            var load = links.Sum(link => link.Item.Number);
             if (load == 0)
                 return 0;
-            var a = Mathf.Exp((double)load / MaxEdgeLoad);
-            var b = a * MaxRoadWidth;
-            var c = b / Mathf.E;
-            return (float)Mathf.Exp((double)load / MaxEdgeLoad) * MaxRoadWidth / Mathf.E;
+            return (Mathf.Exp((float)load / MaxEdgeLoad) * MaxRoadWidth / Mathf.E);
         }
 
         private void AddLink(ProduceLink link)

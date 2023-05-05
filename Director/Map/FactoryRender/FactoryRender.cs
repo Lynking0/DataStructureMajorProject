@@ -1,5 +1,6 @@
 using Godot;
 using System.Collections.Generic;
+using System.Linq;
 using IndustryMoudle;
 using IndustryMoudle.Link;
 using GraphMoudle;
@@ -61,26 +62,25 @@ namespace DirectorMoudle
 
         private void DrawRoad(Edge edge)
         {
-            var path = new Path2D();
-            path.Curve = edge.Curve;
-            path.Position = -(Vector2)edge.A.Position;
-            PathContainer!.AddChild(path);
-            // Vector2? lastP = null;
-            // var start = (Vector2)edge.A.Position;
-            // foreach (Vector2 p in edge.Curve.Tessellate())
-            // {
-            //     if (lastP is Vector2 p_)
-            //         if (edge.IsBridge)
-            //         {
-            //             DrawString(Font, (Vector2)(edge.A.Position + edge.B.Position) / 2 - start, "桥", fontSize: 10, modulate: Colors.Red);
-            //             DrawLine(p_ - start, p - start, new Color(1.0f, 0.0f, 0.0f, 1), MapRender.Instance!.GetRoadWidth(edge));
-            //         }
-            //         else
-            //         {
-            //             DrawLine(p_ - start, p - start, new Color(0.5f, 0.5f, 0.5f, 1), MapRender.Instance!.GetRoadWidth(edge));
-            //         }
-            //     lastP = p;
-            // }
+            var start = (Vector2)edge.A.Position;
+            var loadInfo = ProduceLink.GetEdgeLoad(edge);
+            if (loadInfo.TotalLoad == 0)
+            {
+                return;
+            }
+            var width = MapRender.Instance!.GetRoadWidth(loadInfo.TotalLoad);
+            var color = edge.IsBridge ? Colors.Red : Colors.Gray;
+            var points = edge.Curve.Tessellate().Select(v => v - start).ToArray();
+            DrawPolyline(points, color, width);
+            var arrow = (points.Last() - points.First()).Normalized().Rotated(Mathf.Pi / 2);
+            var center = (points.First() + points.Last()) / 2;
+            var nearestPoint = points.Aggregate((a, b) => a.DistanceSquaredTo(center) < b.DistanceSquaredTo(center) ? a : b);
+
+            DrawString(Font, nearestPoint + arrow * -10,
+                loadInfo.ForwardLoad.ToString(), fontSize: 10, modulate: Colors.Blue);
+
+            DrawString(Font, nearestPoint + arrow * 10,
+                loadInfo.ReverseLoad.ToString(), fontSize: 10, modulate: Colors.Blue);
         }
 
         public void Refresh(Factory factory)
