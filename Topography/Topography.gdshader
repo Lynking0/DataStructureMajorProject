@@ -9,6 +9,7 @@ global uniform float Lacunarity;
 global uniform float Gain;
 global uniform float BottomNumber;
 global uniform int LevelCnt;
+global uniform vec4 DefaultClearColor;
 
 const int primeX = 501125321;
 const int primeY = 1136930381;
@@ -16,6 +17,8 @@ const int primeY = 1136930381;
 uniform float scale;
 uniform vec2 transform;
 uniform vec2 windowSize;
+
+uniform sampler2D vp;
 
 int primedHash(int seed, int xPrimed, int yPrimed) {
 	int hash = seed ^ xPrimed ^ yPrimed;
@@ -99,6 +102,11 @@ float discretize(float x) {
 	return float(int(x * float(LevelCnt))) / float(LevelCnt);
 }
 
+float crCalculateBlend(float a1, float a2, float c1, float c2)
+{
+	return (c1 * a1 * (1.0 - a2) + c2 * a2) / (a1 + a2 - a1 * a2);
+}
+
 void fragment() {
 	// Place fragment code here.
 	vec2 pos = (VERTEX - transform - windowSize / 2.0) / scale;
@@ -128,9 +136,26 @@ void fragment() {
 		/ (BottomNumber - 1.0 / BottomNumber);
 	if (LevelCnt > 0) 
 		result = discretize(result);
-	COLOR = vec4(
-		linearInterpolation(205.0, 255.0, result) / 256.0, 
+	vec4 cam = texture(vp, UV).rgba;
+	vec4 bg = vec4(linearInterpolation(205.0, 255.0, result) / 256.0, 
 		linearInterpolation(218.0, 123.0, result) / 256.0, 
-		linearInterpolation(134.0, 0.0, result) / 256.0, 
-	1.0);
+		linearInterpolation(134.0, 0.0, result) / 256.0, 1.0);
+
+	float fAlp1 = bg.a;
+	float fAlp2 = cam.a;
+	float fAlpBlend = fAlp1 + fAlp2 - fAlp1 * fAlp2;
+	
+	float fRed1 = bg.r;
+	float fRed2 = cam.r;
+	float fRedBlend = crCalculateBlend(fAlp1, fAlp2, fRed1, fRed2);
+	
+	float fGreen1 = bg.g;
+	float fGreen2 = cam.g;
+	float fGreenBlend = crCalculateBlend(fAlp1, fAlp2, fGreen1, fGreen2);
+ 
+	float fBlue1 = bg.b;
+	float fBlue2 = cam.b;
+	float fBlueBlend = crCalculateBlend(fAlp1, fAlp2, fBlue1, fBlue2);
+ 
+	COLOR = vec4(fRedBlend , fGreenBlend, fBlueBlend,fAlpBlend);
 }

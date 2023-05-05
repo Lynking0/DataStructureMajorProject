@@ -58,20 +58,20 @@ namespace DirectorMoudle
         {
             Font = new FontVariation();
             Font.BaseFont = ResourceLoader.Load<Font>("res://Render/PingFang-SC-Regular.ttf");
-            GetNode<MapController>("%GameViewportContainer").MapChanged += Update;
+            // GetNode<MapController>("%GameViewportContainer").MapChanged += Update;
             GetNode<Director>("%Director").Tick += () => { GetNode<Label>("%LogicFrame").Text = "LogicFrame: " + (LogicFrameCount++).ToString(); };
-            Update(Vector2.Zero, 1);
+            // Update(Vector2.Zero, 1);
 
             FactoryContainer = new Node2D();
             FactoryContainer.Name = "FactoryContainer";
             AddChild(FactoryContainer);
         }
 
-        private void Update(Vector2 transform, double scale)
-        {
-            Position = transform + GetWindow().Size / 2;
-            Scale = new Vector2((float)scale, (float)scale);
-        }
+        // private void Update(Vector2 transform, double scale)
+        // {
+        //     Position = transform + GetWindow().Size / 2;
+        //     Scale = new Vector2((float)scale, (float)scale);
+        // }
 
         private void DrawFactor(Factory factory)
         {

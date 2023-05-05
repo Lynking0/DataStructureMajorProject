@@ -40,7 +40,7 @@ namespace DirectorMoudle
             MapRender = GetNode<MapRender>("%MapRender");
             MouselInput = GetNode<MouselInput>("%MouseInput");
 
-            MouselInput.MapMoveTo += MapController!.SetMapPosition;
+            MouselInput.MapMoveTo += MapController.SetMapPosition;
             MouselInput.MapZoomIn += MapController.MapZoomIn;
             MouselInput.MapZoomOut += MapController.MapZoomOut;
             Logger.trace("Director绑定完成");

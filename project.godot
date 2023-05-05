@@ -65,3 +65,7 @@ BottomNumber={
 "type": "float",
 "value": 2.0
 }
+DefaultClearColor={
+"type": "vec4",
+"value": Quaternion(0, 0, 0, 1)
+}

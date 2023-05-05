@@ -40,8 +40,11 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("2_x3ccx")
 
+[node name="下面这个东西运行之后会自动显示！✌" type="Node" parent="MouseInput"]
+
 [node name="GameViewportContainer" type="SubViewportContainer" parent="MouseInput"]
 unique_name_in_owner = true
+visible = false
 material = SubResource("ShaderMaterial_88xvb")
 layout_mode = 1
 anchors_preset = 15
@@ -53,15 +56,20 @@ stretch = true
 script = ExtResource("4_b7hkw")
 
 [node name="SubViewport" type="SubViewport" parent="MouseInput/GameViewportContainer"]
+unique_name_in_owner = true
+transparent_bg = true
 handle_input_locally = false
 size = Vector2i(1152, 648)
-render_target_update_mode = 4
+render_target_update_mode = 0
 
-[node name="MapRender" type="Node2D" parent="MouseInput"]
+[node name="MainCamera" type="Camera2D" parent="MouseInput/GameViewportContainer/SubViewport"]
+unique_name_in_owner = true
+
+[node name="MapRender" type="Node2D" parent="MouseInput/GameViewportContainer/SubViewport"]
 unique_name_in_owner = true
 script = ExtResource("5_tv3h6")
 
-[node name="deprecated" type="Node2D" parent="MouseInput/MapRender"]
+[node name="deprecated" type="Node2D" parent="MouseInput/GameViewportContainer/SubViewport/MapRender"]
 visible = false
 script = ExtResource("5_fj2l2")
 
@@ -151,6 +159,6 @@ offset_right = 67.0
 offset_bottom = 71.5
 grow_horizontal = 1
 
-[connection signal="toggled" from="MouseInput/VBoxContainer/HBoxContainer2/CheckButton" to="MouseInput/MapRender" method="RoadDisplayChange"]
-[connection signal="toggled" from="MouseInput/VBoxContainer/HBoxContainer3/CheckButton" to="MouseInput/MapRender" method="FactoryDisplayChange"]
-[connection signal="toggled" from="MouseInput/VBoxContainer/HBoxContainer4/CheckButton" to="MouseInput/MapRender" method="LinkDisplayChange"]
+[connection signal="toggled" from="MouseInput/VBoxContainer/HBoxContainer2/CheckButton" to="MouseInput/GameViewportContainer/SubViewport/MapRender" method="RoadDisplayChange"]
+[connection signal="toggled" from="MouseInput/VBoxContainer/HBoxContainer3/CheckButton" to="MouseInput/GameViewportContainer/SubViewport/MapRender" method="FactoryDisplayChange"]
+[connection signal="toggled" from="MouseInput/VBoxContainer/HBoxContainer4/CheckButton" to="MouseInput/GameViewportContainer/SubViewport/MapRender" method="LinkDisplayChange"]

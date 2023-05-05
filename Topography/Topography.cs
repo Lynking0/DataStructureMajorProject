@@ -25,6 +25,8 @@ namespace TopographyMoudle
             RenderingServer.GlobalShaderParameterSet("Gain", FractalNoiseGenerator.Gain);
             RenderingServer.GlobalShaderParameterSet("BottomNumber", FractalNoiseGenerator.BottomNumber);
             RenderingServer.GlobalShaderParameterSet("LevelCnt", 10);
+            var c = (Color)ProjectSettings.GetSetting("rendering/environment/defaults/default_clear_color");
+            RenderingServer.GlobalShaderParameterSet("DefaultClearColor", new Vector4(c.R, c.G, c.B, c.A));
         }
 
         public static void Generate()
