@@ -10,6 +10,7 @@ namespace DirectorMoudle
     {
         private Factory? Factory;
         private FontVariation? Font;
+        private Node2D? PathContainer;
 
         private List<ProduceLink> Links = new List<ProduceLink>();
         private List<Edge> Edges = new List<Edge>();
@@ -19,6 +20,10 @@ namespace DirectorMoudle
             Factory = null;
             Links.Clear();
             Edges.Clear();
+            foreach (var child in PathContainer!.GetChildren())
+            {
+                PathContainer.RemoveChild(child);
+            }
         }
 
         private void DrawArrow(Vector2 from, Vector2 to, Color color, float width = -1, bool antialiased = false)
@@ -38,6 +43,7 @@ namespace DirectorMoudle
         {
             Font = new FontVariation();
             Font.BaseFont = ResourceLoader.Load<Font>("res://Render/PingFang-SC-Regular.ttf");
+            PathContainer = GetNode<Node2D>("PathContainer");
             GetNode<Button>("Button").ButtonDown += () =>
             {
                 GetNode<FactroyView>("/root/Main/MouseInput/FactroyView").Refresh(Factory!);
@@ -55,22 +61,26 @@ namespace DirectorMoudle
 
         private void DrawRoad(Edge edge)
         {
-            Vector2? lastP = null;
-            var start = (Vector2)edge.A.Position;
-            foreach (Vector2 p in edge.Curve.Tessellate())
-            {
-                if (lastP is Vector2 p_)
-                    if (edge.IsBridge)
-                    {
-                        DrawString(Font, (Vector2)(edge.A.Position + edge.B.Position) / 2 - start, "桥", fontSize: 10, modulate: Colors.Red);
-                        DrawLine(p_ - start, p - start, new Color(1.0f, 0.0f, 0.0f, 1), MapRender.Instance!.GetRoadWidth(edge));
-                    }
-                    else
-                    {
-                        DrawLine(p_ - start, p - start, new Color(0.5f, 0.5f, 0.5f, 1), MapRender.Instance!.GetRoadWidth(edge));
-                    }
-                lastP = p;
-            }
+            var path = new Path2D();
+            path.Curve = edge.Curve;
+            path.Position = -(Vector2)edge.A.Position;
+            PathContainer!.AddChild(path);
+            // Vector2? lastP = null;
+            // var start = (Vector2)edge.A.Position;
+            // foreach (Vector2 p in edge.Curve.Tessellate())
+            // {
+            //     if (lastP is Vector2 p_)
+            //         if (edge.IsBridge)
+            //         {
+            //             DrawString(Font, (Vector2)(edge.A.Position + edge.B.Position) / 2 - start, "桥", fontSize: 10, modulate: Colors.Red);
+            //             DrawLine(p_ - start, p - start, new Color(1.0f, 0.0f, 0.0f, 1), MapRender.Instance!.GetRoadWidth(edge));
+            //         }
+            //         else
+            //         {
+            //             DrawLine(p_ - start, p - start, new Color(0.5f, 0.5f, 0.5f, 1), MapRender.Instance!.GetRoadWidth(edge));
+            //         }
+            //     lastP = p;
+            // }
         }
 
         public void Refresh(Factory factory)

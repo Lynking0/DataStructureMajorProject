@@ -8,3 +8,5 @@ script = ExtResource("1_fc1p8")
 [node name="Button" type="Button" parent="."]
 offset_right = 8.0
 offset_bottom = 8.0
+
+[node name="PathContainer" type="Node2D" parent="."]
