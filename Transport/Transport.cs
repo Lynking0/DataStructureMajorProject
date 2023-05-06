@@ -40,18 +40,14 @@ namespace TransportMoudle
                 // curVertex后移
                 curVertex = curEdge.GetOtherEnd(curVertex)!;
                 visitedVertex.Add(curVertex);
-                try
-                {
-                    curEdge = curVertex.Adjacencies
+                var l = curVertex.Adjacencies
                     .Where(e => !visitedVertex.Contains(e.GetOtherEnd(curVertex)!))
-                    .Where(e => ProduceLink.GetEdgeLoad(e).TotalLoad / (double)maxLoad > 0.5)
-                    .Aggregate((a, b) => ProduceLink.GetEdgeLoad(a).TotalLoad > ProduceLink.GetEdgeLoad(b).TotalLoad ? a : b);
-                }
-                catch (System.InvalidOperationException)
-                {
+                    .Where(e => ProduceLink.GetEdgeLoad(e).TotalLoad / (double)maxLoad > 0.5);
+                if (l.Count() > 0)
+                    curEdge = l.Aggregate((a, b) => ProduceLink.GetEdgeLoad(a).TotalLoad > ProduceLink.GetEdgeLoad(b).TotalLoad ? a : b);
+                else
                     // 到头了
                     break;
-                }
             }
             return result;
         }
