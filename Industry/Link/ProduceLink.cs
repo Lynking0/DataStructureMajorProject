@@ -71,6 +71,12 @@ namespace IndustryMoudle.Link
         // 销毁此产线并解除两端工厂绑定
         public void Destroy()
         {
+            foreach (var (edge, reverse) in _edgeInfos)
+            {
+                if (edge is null)
+                    return;
+                _edgeToLinks[edge].Remove((this, reverse));
+            }
             Links.Remove(this);
             From.RemoveOutputLink(this);
             To.RemoveInputLink(this);
