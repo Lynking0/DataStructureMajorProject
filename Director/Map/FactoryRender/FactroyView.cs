@@ -70,7 +70,7 @@ namespace DirectorMoudle
                 label.LabelSettings.FontColor = line.Color;
                 label.LabelSettings.OutlineSize = 4;
                 label.LabelSettings.OutlineColor = Colors.White;
-                Links.AddChild(label);
+                TrainLines.AddChild(label);
             }
         }
     }
