@@ -82,3 +82,10 @@ layout_mode = 2
 [node name="Label" type="Label" parent="VBoxContainer/links"]
 layout_mode = 2
 text = "A x 10 in"
+
+[node name="Label4" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = "TrainLine"
+
+[node name="TrainLines" type="VBoxContainer" parent="VBoxContainer"]
+layout_mode = 2

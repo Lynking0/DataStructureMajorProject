@@ -1,6 +1,7 @@
 using Godot;
-using System;
+using System.Linq;
 using IndustryMoudle;
+using TransportMoudle;
 
 namespace DirectorMoudle
 {
@@ -9,6 +10,7 @@ namespace DirectorMoudle
         // Called when the node enters the scene tree for the first time.
         private HBoxContainer? Storage;
         private VBoxContainer? Links;
+        private VBoxContainer? TrainLines;
         private Label? NameLabel;
         private Label? Recipe;
         private Label? MaximumCapacity;
@@ -22,7 +24,7 @@ namespace DirectorMoudle
             AvailableCapacity = GetNode<Label>("VBoxContainer/AvailableCapacity");
             Storage = GetNode<HBoxContainer>("VBoxContainer/storage");
             Links = GetNode<VBoxContainer>("VBoxContainer/links");
-
+            TrainLines = GetNode<VBoxContainer>("VBoxContainer/TrainLines");
         }
 
         // Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -41,17 +43,34 @@ namespace DirectorMoudle
             {
                 Links.RemoveChild(child);
             }
+            foreach (var child in TrainLines!.GetChildren())
+            {
+                TrainLines.RemoveChild(child);
+            }
             foreach (var link in factory.InputLinks)
             {
-                var laben = new Label();
-                laben.Text = $"{(string)link} in from {link.From.ID}";
-                Links.AddChild(laben);
+                var label = new Label();
+                label.Text = $"{(string)link} in from {link.From.ID}";
+                Links.AddChild(label);
             }
             foreach (var link in factory.OutputLinks)
             {
-                var laben = new Label();
-                laben.Text = $"{(string)link} out to {link.To.ID}";
-                Links.AddChild(laben);
+                var label = new Label();
+                label.Text = $"{(string)link} out to {link.To.ID}";
+                Links.AddChild(label);
+            }
+            var lines = TrainLine.TrainLines
+                .Where(line => line.Edges.Any(edge => edge.A == factory.Vertex || edge.B == factory.Vertex));
+
+            foreach (var line in lines)
+            {
+                var label = new Label();
+                label.Text = $"{line.ID}";
+                label.LabelSettings = new LabelSettings();
+                label.LabelSettings.FontColor = line.Color;
+                label.LabelSettings.OutlineSize = 4;
+                label.LabelSettings.OutlineColor = Colors.White;
+                Links.AddChild(label);
             }
         }
     }
