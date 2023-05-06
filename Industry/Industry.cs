@@ -50,6 +50,7 @@ namespace IndustryMoudle
     public partial class Industry
     {
         private static Dictionary<Vertex, Factory> VertexToFactory = new Dictionary<Vertex, Factory>();
+        private const int MaxBlockSpan = 2;
         public static void BuildFactories()
         {
             Formula.Program.MyFun(Graph.Instance.Vertices.Count);
@@ -74,15 +75,17 @@ namespace IndustryMoudle
         private static (List<(Factory factory, int outputNumber)> downstream, List<ProduceLink> links) linkFactory(Factory curFactory, int requirementNumber, ProduceChain chain)
         {
             var root = new VertexInfo(curFactory.Vertex, new EdgeInfo(null, default), null);
-            var factoryQueue = new MiniPriorityQueue<VertexInfo>(2);
+            var factoryQueue = new MiniPriorityQueue<VertexInfo>();
             var set = new HashSet<Vertex>();
             var requirement = (new ItemBox(curFactory.Recipe.Input) * requirementNumber).ToDictionary();
             var requirementTypes = requirement.Keys.ToList();
             var downstream = new List<(Factory factory, int outputNumber)>();
             var links = new List<ProduceLink>();
             // for BFS
-            void Extend(VertexInfo vertexInfo)
+            void Extend(VertexInfo vertexInfo, int priority)
             {
+                if (priority >= MaxBlockSpan)
+                    return;
                 set.Add(vertexInfo.Vertex);
                 foreach (var edge in vertexInfo.Vertex.Adjacencies)
                 {
@@ -92,9 +95,9 @@ namespace IndustryMoudle
                         {
                             continue;
                         }
-                        factoryQueue!.Enqueue(new VertexInfo(otherVertex,
+                        factoryQueue.Enqueue(new VertexInfo(otherVertex,
                             new EdgeInfo(edge, vertexInfo.Vertex == edge.A), vertexInfo),
-                            vertexInfo.Vertex.ParentBlock == otherVertex.ParentBlock ? 0 : 1);
+                            priority + (vertexInfo.Vertex.ParentBlock != otherVertex.ParentBlock ? 1 : 0));
                         set.Add(otherVertex);
                     }
                 }
@@ -150,10 +153,10 @@ namespace IndustryMoudle
                 }
             }
 
-            Extend(new VertexInfo(curFactory.Vertex, new EdgeInfo(null, default), null));
+            Extend(new VertexInfo(curFactory.Vertex, new EdgeInfo(null, default), null), 0);
             while (factoryQueue.Count > 0 && requirementTypes.Count > 0)
             {
-                var vertexInfo = factoryQueue.Dequeue();
+                var (vertexInfo, priority) = factoryQueue.DequeueWithPriority();
                 var (otherVertex, edge, parIndex) = vertexInfo;
                 var targetFactory = VertexToFactory[otherVertex];
                 var intersect = targetFactory.Recipe.OutputTypes.Intersect(requirementTypes);
@@ -188,7 +191,7 @@ namespace IndustryMoudle
                         downstream.Add((factory: targetFactory, outputNumber: actual));
                     }
                 }
-                Extend(vertexInfo);
+                Extend(vertexInfo, priority);
             }
             foreach (var (type, number) in requirement)
             {
@@ -344,6 +347,11 @@ namespace IndustryMoudle
             }
             DirectorMoudle.MapRender.Instance?.QueueRedraw();
 
+            var lengths = ProduceLink.Links.Select(l => l.EdgeInfos.Sum(e => e.Edge?.Length ?? 0));
+
+            Logger.trace($"产业链接平均长度 {lengths.Average()}");
+            Logger.trace($"产业链接最小长度 {lengths.Min()}");
+            Logger.trace($"产业链接最大长度 {lengths.Max()}");
             Logger.trace($"生成产业链 {ProduceChain.Chains.Count} 条");
             Logger.trace($"完整产业链 {ProduceChain.Chains.Where(c => c.Deficit.Empty).Count()} 条");
             Logger.trace($"产业链计划消费品产能 {ProduceChain.ConsumeCount}");
