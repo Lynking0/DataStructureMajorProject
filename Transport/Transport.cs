@@ -7,7 +7,11 @@ namespace TransportMoudle
 {
     public class Transport
     {
+        // 主干道占边的比例
         private const double MainLineRate = 0.2;
+        // 最小负载比例
+        private const double MinLoadRate = 0.4;
+        private static HashSet<Edge> visitedEdges = new HashSet<Edge>();
         private class IntReverseComparer : IComparer<int>
         {
             public int Compare(int p1, int p2)
@@ -23,7 +27,7 @@ namespace TransportMoudle
         }
 
         /// <returns>从edge的vertex到端点的边集，不包含edge</returns>
-        private static List<Edge> ExtendedAnEnd(Edge edge, Vertex vertex, int maxLoad, HashSet<Vertex> visitedVertex)
+        private static List<Edge> ExtendedAnEnd(Edge edge, Vertex vertex, int maxLoad)
         {
             var result = new List<Edge>();
             if (vertex != edge.A && vertex != edge.B)
@@ -33,34 +37,45 @@ namespace TransportMoudle
             }
             var curEdge = edge;
             var curVertex = vertex;
-            visitedVertex.Add(curVertex);
             while (true)
             {
-                result.Add(curEdge);
-                // curVertex后移
-                curVertex = curEdge.GetOtherEnd(curVertex)!;
-                visitedVertex.Add(curVertex);
                 var l = curVertex.Adjacencies
-                    .Where(e => !visitedVertex.Contains(e.GetOtherEnd(curVertex)!))
-                    .Where(e => ProduceLink.GetEdgeLoad(e).TotalLoad / (double)maxLoad > 0.5);
+                    .Where(e => !visitedEdges.Contains(e))
+                    .Where(e => ProduceLink.GetEdgeLoad(e).TotalLoad / (double)maxLoad > MinLoadRate);
                 if (l.Count() > 0)
+                {
+                    // curEdeg前进
                     curEdge = l.Aggregate((a, b) => ProduceLink.GetEdgeLoad(a).TotalLoad > ProduceLink.GetEdgeLoad(b).TotalLoad ? a : b);
+                    // curVertex前进
+                    curVertex = curEdge.GetOtherEnd(curVertex)!;
+                    result.Add(curEdge);
+                    visitedEdges.Add(curEdge);
+                }
                 else
                     // 到头了
                     break;
             }
             return result;
         }
-        private static TrainLine BuildMainTrainLine(Edge edge, int maxLoad)
+        private static void BuildMainTrainLine(Edge edge, int maxLoad)
         {
-            var visitedVertex = new HashSet<Vertex>();
-            var line = new TrainLine(TrainLineLevel.MainLine);
-            var left = ExtendedAnEnd(edge, edge.A, maxLoad, visitedVertex);
+            var edges = new List<Edge>();
+            var left = ExtendedAnEnd(edge, edge.A, maxLoad);
             left.Reverse();
-            line.AddEdgeRange(left);
-            line.AddEdge(edge);
-            line.AddEdgeRange(ExtendedAnEnd(edge, edge.B, maxLoad, visitedVertex));
-            return line;
+            edges.AddRange(left);
+            edges.Add(edge);
+            visitedEdges.Add(edge);
+            edges.AddRange(ExtendedAnEnd(edge, edge.B, maxLoad));
+            if (edges.Count < 8)
+            {
+                foreach (var e in edges)
+                {
+                    visitedEdges.Remove(e);
+                }
+                return;
+            }
+            var line = new TrainLine(TrainLineLevel.MainLine);
+            line.AddEdgeRange(edges);
         }
 
         public static void BuildTrainLines()
@@ -86,11 +101,7 @@ namespace TransportMoudle
                 }
                 if (mainEdge is null)
                     return;
-                var line = BuildMainTrainLine(mainEdge, load);
-                foreach (var edge in line.Edges)
-                {
-                    visitedEdges.Add(edge);
-                }
+                BuildMainTrainLine(mainEdge, load);
             }
         }
     }

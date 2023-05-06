@@ -44,21 +44,21 @@ namespace IndustryMoudle.Entry
         /// TODO: 未实现
         /// 当货物装载到火车时触发
         /// </summary>
-        public event GoodsLoadHandler? GoodsLoad;
+        // public event GoodsLoadHandler? GoodsLoad;
 
         public delegate void GoodsUnloadHandler(Goods goods);
         /// <summary>
         /// TODO: 未实现
         /// 当货物从火车卸载时触发
         /// </summary>
-        public event GoodsUnloadHandler? GoodsUnload;
+        // public event GoodsUnloadHandler? GoodsUnload;
 
         public delegate void GoodsTranformHandler(ItemType from, ItemType to, Factory factory);
         /// <summary>
         /// TODO: 未实现
         /// 当货物生产为其他货物时触发
         /// </summary>
-        public event GoodsTranformHandler? GoodsTranform;
+        // public event GoodsTranformHandler? GoodsTranform;
 
         public readonly Item Item;
 
