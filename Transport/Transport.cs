@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using GraphMoudle;
 using IndustryMoudle.Link;
+using IndustryMoudle.Extensions;
 namespace TransportMoudle
 {
     public class Transport
@@ -27,7 +28,7 @@ namespace TransportMoudle
         }
 
         /// <returns>从edge的vertex到端点的边集，不包含edge</returns>
-        private static List<Edge> ExtendedAnEnd(Edge edge, Vertex vertex, int maxLoad)
+        private static List<Edge> ExtendedAnEnd(Edge edge, Vertex vertex, int maxLoad, HashSet<Vertex> visitedVertexes)
         {
             var result = new List<Edge>();
             if (vertex != edge.A && vertex != edge.B)
@@ -37,19 +38,22 @@ namespace TransportMoudle
             }
             var curEdge = edge;
             var curVertex = vertex;
+            visitedVertexes.Add(curVertex);
             while (true)
             {
-                var l = curVertex.Adjacencies
+                var edges = curVertex.Adjacencies
                     .Where(e => !visitedEdges.Contains(e))
+                    .Where(e => !visitedVertexes.Contains(e.GetOtherEnd(curVertex)!))
                     .Where(e => ProduceLink.GetEdgeLoad(e).TotalLoad / (double)maxLoad > MinLoadRate);
-                if (l.Count() > 0)
+                if (edges.Count() > 0)
                 {
                     // curEdeg前进
-                    curEdge = l.Aggregate((a, b) => ProduceLink.GetEdgeLoad(a).TotalLoad > ProduceLink.GetEdgeLoad(b).TotalLoad ? a : b);
+                    curEdge = edges.Aggregate((a, b) => ProduceLink.GetEdgeLoad(a).TotalLoad > ProduceLink.GetEdgeLoad(b).TotalLoad ? a : b);
                     // curVertex前进
                     curVertex = curEdge.GetOtherEnd(curVertex)!;
                     result.Add(curEdge);
                     visitedEdges.Add(curEdge);
+                    visitedVertexes.Add(curVertex);
                 }
                 else
                     // 到头了
@@ -59,13 +63,14 @@ namespace TransportMoudle
         }
         private static void BuildMainTrainLine(Edge edge, int maxLoad)
         {
+            var visitedVertexes = new HashSet<Vertex>();
             var edges = new List<Edge>();
-            var left = ExtendedAnEnd(edge, edge.A, maxLoad);
+            visitedEdges.Add(edge);
+            var left = ExtendedAnEnd(edge, edge.A, maxLoad, visitedVertexes);
             left.Reverse();
             edges.AddRange(left);
             edges.Add(edge);
-            visitedEdges.Add(edge);
-            edges.AddRange(ExtendedAnEnd(edge, edge.B, maxLoad));
+            edges.AddRange(ExtendedAnEnd(edge, edge.B, maxLoad, visitedVertexes));
             if (edges.Count < 8)
             {
                 foreach (var e in edges)
@@ -81,7 +86,6 @@ namespace TransportMoudle
         public static void BuildTrainLines()
         {
             // 确定主干道
-            var visitedEdges = new HashSet<Edge>();
             var edgeLoad = new PriorityQueue<Edge, int>(new IntReverseComparer());
 
             foreach (var edge in Graph.Instance.Edges)
