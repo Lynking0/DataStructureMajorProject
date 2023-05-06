@@ -1,4 +1,5 @@
 using GraphMoudle;
+using IndustryMoudle.Link;
 
 namespace IndustryMoudle.Extensions
 {
@@ -9,6 +10,14 @@ namespace IndustryMoudle.Extensions
             if (!Factory.VertexToFactory.ContainsKey(vertex))
                 return null;
             return Factory.VertexToFactory[vertex];
+        }
+    }
+
+    public static class _Edge
+    {
+        public static LoadInfo GetLoadInfo(this Edge edge)
+        {
+            return ProduceLink.GetEdgeLoad(edge);
         }
     }
 }

@@ -12,6 +12,10 @@ namespace TransportMoudle
         private const double MainLineRate = 0.2;
         // 最小负载比例
         private const double MinLoadRate = 0.4;
+        // 主干道最大边数
+        private const int MainLineMaxEdgeCount = 16;
+        // 主干道最小边数
+        private const int MainLineMinEdgeCount = 8;
         private static HashSet<Edge> visitedEdges = new HashSet<Edge>();
         private class IntReverseComparer : IComparer<int>
         {
@@ -71,13 +75,19 @@ namespace TransportMoudle
             edges.AddRange(left);
             edges.Add(edge);
             edges.AddRange(ExtendedAnEnd(edge, edge.B, maxLoad, visitedVertexes));
-            if (edges.Count < 8)
+            if (edges.Count < MainLineMinEdgeCount)
             {
                 foreach (var e in edges)
                 {
                     visitedEdges.Remove(e);
                 }
                 return;
+            }
+            while (edges.Count > MainLineMaxEdgeCount)
+            {
+                var minLoadEdge = edges.First().GetLoadInfo().TotalLoad > edges.Last().GetLoadInfo().TotalLoad ? edges.Last() : edges.First();
+                edges.Remove(minLoadEdge);
+                visitedEdges.Remove(minLoadEdge);
             }
             var line = new TrainLine(TrainLineLevel.MainLine);
             line.AddEdgeRange(edges);
