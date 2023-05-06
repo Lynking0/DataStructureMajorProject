@@ -7,7 +7,7 @@ namespace IndustryMoudle.Entry
         private Dictionary<ItemType, int> Content = new Dictionary<ItemType, int>();
 
         public ItemBox() { }
-        public ItemBox(IReadOnlyCollection<Item> items)
+        public ItemBox(IEnumerable<Item> items)
         {
             foreach (var item in items)
             {

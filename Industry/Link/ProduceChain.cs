@@ -8,9 +8,9 @@ namespace IndustryMoudle.Link
     public partial class ProduceChain
     {
         private List<Factory> _factories = new List<Factory>();
-        public IReadOnlyCollection<Factory> Factories => _factories;
+        public IReadOnlyList<Factory> Factories => _factories;
         private List<ProduceLink> _links = new List<ProduceLink>();
-        public IReadOnlyCollection<ProduceLink> Links => _links;
+        public IReadOnlyList<ProduceLink> Links => _links;
         // 所属区块
         public readonly Block Block;
         // 亏空

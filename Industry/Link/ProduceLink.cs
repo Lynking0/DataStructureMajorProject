@@ -29,9 +29,9 @@ namespace IndustryMoudle.Link
         public static IReadOnlyDictionary<Edge, List<(ProduceLink link, bool reverse)>> EdgeToLinks => _edgeToLinks;
 
         private List<Vertex> _vertexes;
-        public IReadOnlyCollection<Vertex> Vertexes => _vertexes;
+        public IReadOnlyList<Vertex> Vertexes => _vertexes;
         private List<EdgeInfo> _edgeInfos;
-        public IReadOnlyCollection<EdgeInfo> EdgeInfos => _edgeInfos;
+        public IReadOnlyList<EdgeInfo> EdgeInfos => _edgeInfos;
 
         public static LoadInfo GetEdgeLoad(Edge edge)
         {

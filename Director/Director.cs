@@ -3,7 +3,7 @@ using System;
 using UserControl;
 using TopographyMoudle;
 using IndustryMoudle;
-using IndustryMoudle.Link;
+using TransportMoudle;
 
 namespace DirectorMoudle
 {
@@ -56,6 +56,11 @@ namespace DirectorMoudle
             // factoryInitStopWatch.Stop();
             // GD.Print("Factory build in ", factoryInitStopWatch.ElapsedMilliseconds, " ms");
             // Factory.FactoriesQuadTree.Detail();
+
+            Logger.trace("开始生成交通网络");
+            Transport.BuildTrainLines();
+            Logger.trace("交通网络生成完成");
+
             BindEverything();
         }
 

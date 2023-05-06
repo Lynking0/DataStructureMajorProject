@@ -21,8 +21,8 @@ namespace IndustryMoudle
 
         private List<ProduceLink> _inputLinks = new List<ProduceLink>();
         private List<ProduceLink> _outputLinks = new List<ProduceLink>();
-        public IReadOnlyCollection<ProduceLink> InputLinks => _inputLinks;
-        public IReadOnlyCollection<ProduceLink> OutputLinks => _outputLinks;
+        public IReadOnlyList<ProduceLink> InputLinks => _inputLinks;
+        public IReadOnlyList<ProduceLink> OutputLinks => _outputLinks;
 
         public ItemBox IdealInput;
         public ItemBox IdealOutput;

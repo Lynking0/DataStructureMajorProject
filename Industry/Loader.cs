@@ -9,7 +9,7 @@ namespace IndustryMoudle
         public static Loader Instance = new Loader();
 
         private List<Recipe> _recipes = new List<Recipe>();
-        public IReadOnlyCollection<Recipe> Recipes => _recipes;
+        public IReadOnlyList<Recipe> Recipes => _recipes;
 
         // Just for DEBUG
 
