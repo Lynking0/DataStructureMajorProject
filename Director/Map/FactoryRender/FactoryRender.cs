@@ -4,6 +4,7 @@ using System.Linq;
 using IndustryMoudle;
 using IndustryMoudle.Link;
 using GraphMoudle;
+using TransportMoudle;
 
 namespace DirectorMoudle
 {
@@ -60,27 +61,66 @@ namespace DirectorMoudle
             DrawString(Font, (from + to) / 2, link, fontSize: 10, modulate: Colors.Red);
         }
 
-        private void DrawRoad(Edge edge)
+        private void DrawEdge(Edge edge, float width, Color color, string? text = null)
         {
             var start = (Vector2)edge.A.Position;
+            var points = edge.Curve.Tessellate().Select(v => v - start).ToArray();
+            DrawPolyline(points, (Color)color, width);
+            var arrow = (points.Last() - points.First()).Normalized().Rotated(Mathf.Pi / 2);
+            var center = (points.First() + points.Last()) / 2;
+            var nearestPoint = points.Aggregate((a, b) => a.DistanceSquaredTo(center) < b.DistanceSquaredTo(center) ? a : b);
+
+            // DrawString(Font, nearestPoint + arrow * -10,
+            //     loadInfo.ForwardLoad.ToString(), fontSize: 10, modulate: Colors.Blue);
+
+            // DrawString(Font, nearestPoint + arrow * 10,
+            //     loadInfo.ReverseLoad.ToString(), fontSize: 10, modulate: Colors.Blue);
+            if (text is not null)
+            {
+                DrawString(Font, nearestPoint, text, fontSize: 10, modulate: Colors.Blue);
+            }
+        }
+
+        private void DrawRoad(Edge edge)
+        {
+            var mapRender = GetParent().GetParent<MapRender>();
+            var color = edge.IsBridge ? Colors.Red : Colors.Gray;
+            if (mapRender.TrainLine1Display)
+            {
+                var trainLine = TrainLine.TrainLines
+                    .Where(line => line.Level == TrainLineLevel.MainLine)
+                    .Where(line => line.Edges.Contains(edge))
+                    .FirstOrDefault();
+                if (trainLine is not null)
+                {
+                    color = trainLine.Color;
+                }
+                else if (!mapRender.RoadDisplay)
+                {
+                    return;
+                }
+            }
             var loadInfo = ProduceLink.GetEdgeLoad(edge);
             if (loadInfo.TotalLoad == 0)
             {
                 return;
             }
             var width = MapRender.Instance!.GetRoadWidth(loadInfo.TotalLoad);
-            var color = edge.IsBridge ? Colors.Red : Colors.Gray;
-            var points = edge.Curve.Tessellate().Select(v => v - start).ToArray();
-            DrawPolyline(points, color, width);
-            var arrow = (points.Last() - points.First()).Normalized().Rotated(Mathf.Pi / 2);
-            var center = (points.First() + points.Last()) / 2;
-            var nearestPoint = points.Aggregate((a, b) => a.DistanceSquaredTo(center) < b.DistanceSquaredTo(center) ? a : b);
+            DrawEdge(edge, width, color, loadInfo.TotalLoad.ToString());
+        }
 
-            DrawString(Font, nearestPoint + arrow * -10,
-                loadInfo.ForwardLoad.ToString(), fontSize: 10, modulate: Colors.Blue);
-
-            DrawString(Font, nearestPoint + arrow * 10,
-                loadInfo.ReverseLoad.ToString(), fontSize: 10, modulate: Colors.Blue);
+        private void DrawLine(TrainLine line)
+        {
+            foreach (var edge in line.Edges)
+            {
+                var loadInfo = ProduceLink.GetEdgeLoad(edge);
+                if (loadInfo.TotalLoad == 0)
+                {
+                    continue;
+                }
+                var width = MapRender.Instance!.GetRoadWidth(loadInfo.TotalLoad);
+                DrawEdge(edge, width, line.Color);
+            }
         }
 
         public void Refresh(Factory factory)
@@ -108,11 +148,23 @@ namespace DirectorMoudle
                 return;
             }
             Position = Factory.Position;
-            DrawCircle(Vector2.Zero, 6, Colors.WebGray);
-            DrawString(Font, Vector2.Zero, Factory.Recipe, fontSize: 12);
-
-            Links.ForEach(DrawLink);
-            Edges.ForEach(DrawRoad);
+            var mapRender = GetParent().GetParent<MapRender>();
+            if (mapRender.FactoryDisplay)
+            {
+                DrawCircle(Vector2.Zero, 6, Colors.WebGray);
+                DrawString(Font, Vector2.Zero, Factory.Recipe, fontSize: 12);
+            }
+            if (mapRender.LinkDisplay)
+            {
+                Links.ForEach(DrawLink);
+            }
+            if (mapRender.RoadDisplay || mapRender.TrainLine1Display || mapRender.TrainLine2Display || mapRender.TrainLine3Display)
+            {
+                foreach (var edge in Edges)
+                {
+                    DrawRoad(edge);
+                }
+            }
         }
     }
 }

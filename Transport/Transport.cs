@@ -51,10 +51,10 @@ namespace TransportMoudle
             }
             return result;
         }
-        private static TrainLine BuildTrainLine(Edge edge, int maxLoad)
+        private static TrainLine BuildMainTrainLine(Edge edge, int maxLoad)
         {
             var visitedVertex = new HashSet<Vertex>();
-            var line = new TrainLine();
+            var line = new TrainLine(TrainLineLevel.MainLine);
             var left = ExtendedAnEnd(edge, edge.A, maxLoad, visitedVertex);
             left.Reverse();
             line.AddEdgeRange(left);
@@ -86,7 +86,7 @@ namespace TransportMoudle
                 }
                 if (mainEdge is null)
                     return;
-                var line = BuildTrainLine(mainEdge, load);
+                var line = BuildMainTrainLine(mainEdge, load);
                 foreach (var edge in line.Edges)
                 {
                     visitedEdges.Add(edge);

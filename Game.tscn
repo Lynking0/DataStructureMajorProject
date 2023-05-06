@@ -140,6 +140,39 @@ text = "链接"
 layout_mode = 2
 button_pressed = true
 
+[node name="HBoxContainer5" type="HBoxContainer" parent="MouseInput/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MouseInput/VBoxContainer/HBoxContainer5"]
+layout_mode = 2
+text = "路一"
+
+[node name="CheckButton" type="CheckButton" parent="MouseInput/VBoxContainer/HBoxContainer5"]
+layout_mode = 2
+button_pressed = true
+
+[node name="HBoxContainer6" type="HBoxContainer" parent="MouseInput/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MouseInput/VBoxContainer/HBoxContainer6"]
+layout_mode = 2
+text = "路二"
+
+[node name="CheckButton" type="CheckButton" parent="MouseInput/VBoxContainer/HBoxContainer6"]
+layout_mode = 2
+toggle_mode = false
+
+[node name="HBoxContainer7" type="HBoxContainer" parent="MouseInput/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MouseInput/VBoxContainer/HBoxContainer7"]
+layout_mode = 2
+text = "路三"
+
+[node name="CheckButton" type="CheckButton" parent="MouseInput/VBoxContainer/HBoxContainer7"]
+layout_mode = 2
+toggle_mode = false
+
 [node name="FactroyView" parent="MouseInput" instance=ExtResource("7_j73ru")]
 layout_mode = 1
 anchors_preset = 4
@@ -154,3 +187,6 @@ grow_horizontal = 1
 [connection signal="toggled" from="MouseInput/VBoxContainer/HBoxContainer2/CheckButton" to="MouseInput/MapRender" method="RoadDisplayChange"]
 [connection signal="toggled" from="MouseInput/VBoxContainer/HBoxContainer3/CheckButton" to="MouseInput/MapRender" method="FactoryDisplayChange"]
 [connection signal="toggled" from="MouseInput/VBoxContainer/HBoxContainer4/CheckButton" to="MouseInput/MapRender" method="LinkDisplayChange"]
+[connection signal="toggled" from="MouseInput/VBoxContainer/HBoxContainer5/CheckButton" to="MouseInput/MapRender" method="TrainLine1DisplayChange"]
+[connection signal="toggled" from="MouseInput/VBoxContainer/HBoxContainer6/CheckButton" to="MouseInput/MapRender" method="TrainLine2DisplayChange"]
+[connection signal="toggled" from="MouseInput/VBoxContainer/HBoxContainer7/CheckButton" to="MouseInput/MapRender" method="TrainLine3DisplayChange"]

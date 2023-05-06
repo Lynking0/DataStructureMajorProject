@@ -3,9 +3,15 @@ using GraphMoudle;
 using System.Collections.Generic;
 namespace TransportMoudle
 {
+    enum TrainLineLevel
+    {
+        MainLine,
+        SideLine,
+        FootPath,
+    }
     class TrainLine
     {
-
+        public readonly TrainLineLevel Level;
         private static List<TrainLine> _trainLines = new List<TrainLine>();
         public static IReadOnlyList<TrainLine> TrainLines => _trainLines;
 
@@ -14,8 +20,9 @@ namespace TransportMoudle
 
         public Color Color = new Color(GD.Randf() / 2, GD.Randf() / 2, GD.Randf() / 2, 1);
 
-        public TrainLine()
+        public TrainLine(TrainLineLevel level)
         {
+            Level = level;
             _trainLines.Add(this);
         }
 

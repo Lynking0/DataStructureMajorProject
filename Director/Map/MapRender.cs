@@ -18,9 +18,12 @@ namespace DirectorMoudle
         private Dictionary<Factory, FactoryRender> FactoryToRender = new Dictionary<Factory, FactoryRender>();
         private Dictionary<Vertex, FactoryRender> VertexToRender = new Dictionary<Vertex, FactoryRender>();
 
-        private bool RoadDisplay = true;
-        private bool FactoryDisplay = true;
-        private bool LinkDisplay = true;
+        public bool RoadDisplay { get; private set; } = true;
+        public bool FactoryDisplay { get; private set; } = true;
+        public bool LinkDisplay { get; private set; } = true;
+        public bool TrainLine1Display { get; private set; } = true;
+        public bool TrainLine2Display { get; private set; } = false;
+        public bool TrainLine3Display { get; private set; } = false;
 
         private bool MaxEdgeLoadDirty = true;
         public int MaxEdgeLoad { get; private set; } = 0;
@@ -37,21 +40,43 @@ namespace DirectorMoudle
             }
             Instance = this;
         }
+        private void FactoryRenderRedraw()
+        {
+            foreach (var render in Renders)
+            {
+                render.QueueRedraw();
+            }
+        }
 
         public void RoadDisplayChange(bool status)
         {
             RoadDisplay = status;
-            QueueRedraw();
+            FactoryRenderRedraw();
         }
         public void FactoryDisplayChange(bool status)
         {
             FactoryDisplay = status;
-            QueueRedraw();
+            FactoryRenderRedraw();
         }
         public void LinkDisplayChange(bool status)
         {
             LinkDisplay = status;
-            QueueRedraw();
+            FactoryRenderRedraw();
+        }
+        public void TrainLine1DisplayChange(bool status)
+        {
+            TrainLine1Display = status;
+            FactoryRenderRedraw();
+        }
+        public void TrainLine2DisplayChange(bool status)
+        {
+            TrainLine2Display = status;
+            FactoryRenderRedraw();
+        }
+        public void TrainLine3DisplayChange(bool status)
+        {
+            TrainLine3Display = status;
+            FactoryRenderRedraw();
         }
 
         public override void _Ready()
