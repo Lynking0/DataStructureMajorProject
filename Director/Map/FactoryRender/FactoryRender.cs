@@ -5,6 +5,7 @@ using IndustryMoudle;
 using IndustryMoudle.Link;
 using GraphMoudle;
 using TransportMoudle;
+using TransportMoudle.Extensions;
 
 namespace DirectorMoudle
 {
@@ -87,9 +88,8 @@ namespace DirectorMoudle
             var color = edge.IsBridge ? Colors.Red : Colors.Gray;
             if (mapRender.TrainLine1Display)
             {
-                var trainLine = TrainLine.TrainLines
+                var trainLine = edge.GetTrainLines()
                     .Where(line => line.Level == TrainLineLevel.MainLine)
-                    .Where(line => line.Edges.Contains(edge))
                     .FirstOrDefault();
                 if (trainLine is not null)
                 {

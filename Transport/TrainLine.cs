@@ -3,13 +3,13 @@ using GraphMoudle;
 using System.Collections.Generic;
 namespace TransportMoudle
 {
-    enum TrainLineLevel
+    public enum TrainLineLevel
     {
         MainLine,
         SideLine,
         FootPath,
     }
-    class TrainLine
+    public class TrainLine
     {
         private static int MainLineIDCount = 0;
         private static int SideLineIDCount = 0;

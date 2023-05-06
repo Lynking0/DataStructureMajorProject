@@ -1,6 +1,7 @@
 using Godot;
 using System.Collections.Generic;
 using Shared.QuadTree;
+using GraphMoudle;
 using IndustryMoudle.Entry;
 
 namespace IndustryMoudle
@@ -9,6 +10,8 @@ namespace IndustryMoudle
     {
         public static QuadTree<Factory> FactoriesQuadTree = new QuadTree<Factory>(new Rect2(DirectorMoudle.Constants.OriginCoordinates, DirectorMoudle.Constants.WorldSize));
         public static List<Factory> Factories = new List<Factory>();
+        private static Dictionary<Vertex, Factory> _vertexToFactory = new Dictionary<Vertex, Factory>();
+        public static IReadOnlyDictionary<Vertex, Factory> VertexToFactory => _vertexToFactory;
 
         public static ItemBox Blanace
         {

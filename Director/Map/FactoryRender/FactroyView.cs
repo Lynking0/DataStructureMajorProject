@@ -2,7 +2,7 @@ using Godot;
 using System.Linq;
 using IndustryMoudle;
 using TransportMoudle;
-
+using TransportMoudle.Extensions;
 namespace DirectorMoudle
 {
     public partial class FactroyView : Control
@@ -59,10 +59,8 @@ namespace DirectorMoudle
                 label.Text = $"{(string)link} out to {link.To.ID}";
                 Links.AddChild(label);
             }
-            var lines = TrainLine.TrainLines
-                .Where(line => line.Edges.Any(edge => edge.A == factory.Vertex || edge.B == factory.Vertex));
 
-            foreach (var line in lines)
+            foreach (var line in factory.Vertex.GetTrainLines())
             {
                 var label = new Label();
                 label.Text = $"{line.ID}";
