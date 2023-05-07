@@ -37,7 +37,7 @@ namespace IndustryMoudle
             {
                 if (Recipe.OutputTypes.First() is null)
                     return new ItemBox();
-                return new ItemBox(new[] { new Item(OutputLinks.Sum(link => link.Item.Number), Recipe.OutputTypes.First()) })
+                return new ItemBox(new[] { new Item(OutputLinks.Sum(link => link.Item.Number), Recipe.OutputTypes.First()) });
             }
         }
 
