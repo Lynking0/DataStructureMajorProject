@@ -1,5 +1,6 @@
 using Godot;
 using System.Collections.Generic;
+using System.Linq;
 using Shared.QuadTree;
 using TransportMoudle;
 using IndustryMoudle.Entry;
@@ -29,6 +30,16 @@ namespace IndustryMoudle
 
         public ItemBox CapacityInput { get => new ItemBox(Recipe.Input) * BaseProduceSpeed; }
         public ItemBox CapacityOutput { get => new ItemBox(Recipe.Output) * BaseProduceSpeed; }
+
+        public ItemBox ActualOutput
+        {
+            get
+            {
+                if (Recipe.OutputTypes.First() is null)
+                    return new ItemBox();
+                return new ItemBox(new[] { new Item(OutputLinks.Sum(link => link.Item.Number), Recipe.OutputTypes.First()) })
+            }
+        }
 
         public void AddInputLink(ProduceLink link)
         {

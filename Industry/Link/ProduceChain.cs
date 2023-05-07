@@ -23,9 +23,12 @@ namespace IndustryMoudle.Link
         {
             get
             {
-                return new Item(_links
-                .FindAll(link => link.Item.Type == OutputType)
-                .Sum(link => link.Item.Number), OutputType);
+                return new Item(Factories
+                            .Where(factory => factory.Recipe.OutputTypes.FirstOrDefault() is not null)
+                            .Where(factory => factory.Recipe.OutputTypes.First() == OutputType)
+                            .SelectMany(factory => factory.OutputLinks)
+                            .Where(link => Factories.Contains(link.To))
+                            .Sum(link => link.Item.Number), OutputType);
             }
         }
 #if DEBUG
