@@ -66,6 +66,18 @@ namespace DirectorMoudle
                 label.Text = $"{line.ID}";
                 label.LabelSettings = new LabelSettings();
                 label.LabelSettings.FontColor = line.Color;
+                switch (line.Level)
+                {
+                    case TrainLineLevel.MainLine:
+                        label.LabelSettings.FontSize = 20;
+                        break;
+                    case TrainLineLevel.SideLine:
+                        label.LabelSettings.FontSize = 16;
+                        break;
+                    case TrainLineLevel.FootPath:
+                        label.LabelSettings.FontSize = 12;
+                        break;
+                }
                 label.LabelSettings.OutlineSize = 4;
                 label.LabelSettings.OutlineColor = Colors.White;
                 TrainLines.AddChild(label);

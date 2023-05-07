@@ -86,20 +86,35 @@ namespace DirectorMoudle
         {
             var mapRender = GetParent().GetParent<MapRender>();
             var color = edge.IsBridge ? Colors.Red : Colors.Gray;
-            if (mapRender.TrainLine1Display)
+
+            var trainLine = edge.GetTrainLines()
+                .GroupBy(l => l.Level);
+            if (trainLine.Count() == 0)
             {
-                var trainLine = edge.GetTrainLines()
-                    .Where(line => line.Level == TrainLineLevel.MainLine)
-                    .FirstOrDefault();
-                if (trainLine is not null)
-                {
-                    color = trainLine.Color;
-                }
-                else if (!mapRender.RoadDisplay)
+                // this edge is a road
+                if (!mapRender.RoadDisplay)
                 {
                     return;
                 }
             }
+            else
+            {
+                // this edge is a train line
+                foreach (var line in trainLine)
+                {
+                    if (line.Key == TrainLineLevel.MainLine && mapRender.TrainLine1Display
+                        || line.Key == TrainLineLevel.SideLine && mapRender.TrainLine2Display
+                        || line.Key == TrainLineLevel.FootPath && mapRender.TrainLine3Display)
+                    {
+                        color = line.First().Color;
+                    }
+                    else
+                    {
+                        return;
+                    }
+                }
+            }
+
             var loadInfo = ProduceLink.GetEdgeLoad(edge);
             if (loadInfo.TotalLoad == 0)
             {

@@ -9,13 +9,17 @@ namespace TransportMoudle
     public class Transport
     {
         // 主干道占边的比例
-        private const double MainLineRate = 0.2;
-        // 最小负载比例
-        private const double MinLoadRate = 0.4;
+        private const double MainLineRate = 0.15;
+        // 主干道最小负载比例
+        private const double MainLineMinLoadRate = 0.6;
+        // 辅路最小负载比例
+        private const double SideLineMinLoadRate = 0.2;
         // 主干道最大边数
         private const int MainLineMaxEdgeCount = 16;
         // 主干道最小边数
         private const int MainLineMinEdgeCount = 8;
+        // 辅路最小边数
+        private const int SideLineMinEdgeCount = 4;
         private static HashSet<Edge> visitedEdges = new HashSet<Edge>();
         private class IntReverseComparer : IComparer<int>
         {
@@ -32,8 +36,18 @@ namespace TransportMoudle
         }
 
         /// <returns>从edge的vertex到端点的边集，不包含edge</returns>
-        private static List<Edge> ExtendedAnEnd(Edge edge, Vertex vertex, int maxLoad, HashSet<Vertex> visitedVertexes)
+        private static List<Edge> ExtendedAnEnd(Edge edge, Vertex vertex, int maxLoad, HashSet<Vertex> visitedVertexes, TrainLineLevel level)
         {
+            double MinLoadRate = 0;
+            switch (level)
+            {
+                case TrainLineLevel.MainLine:
+                    MinLoadRate = MainLineMinLoadRate;
+                    break;
+                case TrainLineLevel.SideLine:
+                    MinLoadRate = SideLineMinLoadRate;
+                    break;
+            }
             var result = new List<Edge>();
             if (vertex != edge.A && vertex != edge.B)
             {
@@ -70,11 +84,11 @@ namespace TransportMoudle
             var visitedVertexes = new HashSet<Vertex>();
             var edges = new List<Edge>();
             visitedEdges.Add(edge);
-            var left = ExtendedAnEnd(edge, edge.A, maxLoad, visitedVertexes);
+            var left = ExtendedAnEnd(edge, edge.A, maxLoad, visitedVertexes, TrainLineLevel.MainLine);
             left.Reverse();
             edges.AddRange(left);
             edges.Add(edge);
-            edges.AddRange(ExtendedAnEnd(edge, edge.B, maxLoad, visitedVertexes));
+            edges.AddRange(ExtendedAnEnd(edge, edge.B, maxLoad, visitedVertexes, TrainLineLevel.MainLine));
             if (edges.Count < MainLineMinEdgeCount)
             {
                 foreach (var e in edges)
@@ -96,31 +110,62 @@ namespace TransportMoudle
             var line = new TrainLine(TrainLineLevel.MainLine);
             line.AddEdgeRange(edges);
         }
-
+        private static void BuildSideLine(Vertex vertex)
+        {
+            var edges = new List<Edge>();
+            var visitedVertexes = new HashSet<Vertex>();
+            var curEdge = vertex.Adjacencies
+                .Where(e => !visitedEdges.Contains(e))
+                .OrderByDescending(e => e.GetLoadInfo().TotalLoad)
+                .FirstOrDefault();
+            if (curEdge is null)
+                return;
+            edges.Add(curEdge);
+            visitedEdges.Add(curEdge);
+            visitedVertexes.Add(vertex);
+            edges.AddRange(ExtendedAnEnd(curEdge, curEdge.GetOtherEnd(vertex)!, curEdge.GetLoadInfo().TotalLoad, visitedVertexes, TrainLineLevel.SideLine));
+            if (edges.Count < SideLineMinEdgeCount)
+            {
+                foreach (var e in edges)
+                {
+                    visitedEdges.Remove(e);
+                    visitedVertexes.Remove(e.A);
+                    visitedVertexes.Remove(e.B);
+                }
+                return;
+            }
+            var line = new TrainLine(TrainLineLevel.SideLine);
+            line.AddEdgeRange(edges);
+        }
         public static void BuildTrainLines()
         {
             // 确定主干道
-            var edgeLoad = new PriorityQueue<Edge, int>(new IntReverseComparer());
+            var edges = Graph.Instance.Edges
+                                                    .OrderByDescending(e => ProduceLink.GetEdgeLoad(e).TotalLoad)
+                                                    .Where(e => !visitedEdges.Contains(e));
+            foreach (var edge in edges)
+            {
+                if ((double)visitedEdges.Count() / edges.Count() > MainLineRate)
+                    break;
+                BuildMainTrainLine(edge, edge.GetLoadInfo().TotalLoad);
+            }
+            // 依托主干道构建辅路
+            var mainTrainLines = TrainLine.TrainLines.ToList();
+            foreach (var vertex in mainTrainLines
+                                            .SelectMany(l => l.Edges)
+                                            .SelectMany(e => new[] { e.A, e.B })
+                                            .Distinct())
+            {
+                BuildSideLine(vertex);
+            }
 
-            foreach (var edge in Graph.Instance.Edges)
-            {
-                edgeLoad.Enqueue(edge, ProduceLink.GetEdgeLoad(edge).TotalLoad);
-            }
-            var edgeCount = edgeLoad.Count;
-            // TODO:主干道边界判定
-            while ((double)edgeLoad.Count / edgeCount > 1 - MainLineRate)
-            {
-                Edge? mainEdge = null;
-                int load = 0;
-                while (mainEdge is null || visitedEdges.Contains(mainEdge!))
-                {
-                    mainEdge = edgeLoad.Dequeue();
-                    edgeLoad.TryDequeue(out mainEdge, out load);
-                }
-                if (mainEdge is null)
-                    return;
-                BuildMainTrainLine(mainEdge, load);
-            }
+            var edgeCount = Graph.Instance.Edges.Count();
+            var mainLines = TrainLine.TrainLines.Where(l => l.Level == TrainLineLevel.MainLine);
+            var sideLines = TrainLine.TrainLines.Where(l => l.Level == TrainLineLevel.SideLine);
+            var mainLineEdgeCount = mainLines.Sum(l => l.Edges.Count);
+            var sideLineEdgeCount = sideLines.Sum(l => l.Edges.Count);
+            Logger.trace($"主干道：{mainLines.Count()}条，占比{mainLineEdgeCount / (double)edgeCount * 100}%");
+            Logger.trace($"辅路：{sideLines.Count()}条，占比{sideLineEdgeCount / (double)edgeCount * 100}%");
         }
     }
 }
