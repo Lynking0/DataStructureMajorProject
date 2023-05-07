@@ -8,10 +8,8 @@ namespace GraphMoudle
 {
     public partial class Graph
     {
-        private ConcurrentDictionary<Vertex, Vertex[]>? DistInfo;
         private void CalcDistInfo()
         {
-            DistInfo = new ConcurrentDictionary<Vertex, Vertex[]>();
             Dictionary<Block, (double, Vertex, Vertex)>[] blockAdjInfo = new Dictionary<Block, (double, Vertex, Vertex)>[Blocks.Count];
             for (int i = 0; i < blockAdjInfo.Length; ++i)
                 blockAdjInfo[i] = new Dictionary<Block, (double, Vertex, Vertex)>();
@@ -33,7 +31,6 @@ namespace GraphMoudle
                         ++idx;
                     }
                     Array.Sort(keys, items);
-                    DistInfo.TryAdd(vertex, items);
                     for (int i = 0; i < keys.Length; ++i)
                     {
                         if (items[i].ParentBlock != vertex.ParentBlock)

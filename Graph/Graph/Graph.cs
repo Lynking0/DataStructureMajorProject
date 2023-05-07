@@ -33,20 +33,6 @@ namespace GraphMoudle
             GISInfoStorer = new RTree(5);
             Blocks = new List<Block>();
         }
-        /// <summary>
-        ///   获取到指定节点vertex的距离最近的点
-        /// </summary>
-        public Vertex GetNearestVertex(Vertex vertex)
-        {
-            return DistInfo![vertex][0];
-        }
-        /// <summary>
-        ///   获取一个节点数组，数组中的节点按到指定节点vertex的距离由近到远排列（vertex不在数组中）
-        /// </summary>
-        public Vertex[] GetNearVertices(Vertex vertex)
-        {
-            return DistInfo![vertex];
-        }
         public void CreateVertices()
         {
             VerticesContainer.Clear();
@@ -138,6 +124,15 @@ namespace GraphMoudle
 
             // 生成桥
             CreateBridges();
+        }
+        /// <summary>
+        ///   将指定边从图中删除
+        /// </summary>
+        public void RemoveEdge(Edge edge)
+        {
+            edge.A.Adjacencies.Remove(edge);
+            edge.B.Adjacencies.Remove(edge);
+            GISInfoStorer.Remove(edge);
         }
     }
 }
