@@ -115,38 +115,46 @@ namespace Shared.Extensions.CentralityExtensions
             );
             timespan = stopwatch.Elapsed;
             print(timespan.TotalMilliseconds + "毫秒");
-            // for (int i = 0; i < len; i++)
-            // {
-            //     for (int j = 0; j < len; j++)
-            //     {
-            //         if (D[i, j] != float.PositiveInfinity) print(D[vs[i], vs[j]].ToString());
-            //     }
-            // }
-            // int realI = 0;
+            Parallel.ForEach(graph.Vertices,
+                (Vertex vt) =>
+                {
+                    // 点度中心性
+                    vt.DegreeCentrality = vt.Adjacencies.Count / (len - 1);
+                    // 接近中心性
+                    float res = 0;
+                    foreach (Vertex vtc in vs)
+                    {
+                        res += distInfo[vt][vtc];
+                    }
+                    vt.ClosenessCentrality = 1 / res;
+                }
+            );
             // foreach (Vertex vt in graph.Vertices)
             // {
             //     // 点度中心性
             //     vt.DegreeCentrality = vt.Adjacencies.Count / (len - 1);
             //     // 接近中心性
             //     float res = 0;
-            //     for (int i = 0; i < len; i++)
+            //     foreach (Vertex vtc in vs)
             //     {
-            //         res += D[realI, i];
+            //         res += distInfo[vt][vtc];
             //     }
             //     vt.ClosenessCentrality = 1 / res;
             //     // 中介中心性
-            //     res = 0;
-            //     for (int s = 0; s < len; s++) // 起点
-            //     {
-            //         for (int t = 0; t < len; t++) // 终点
-            //         {
-            //             res += sigmaSTV(s, t, realI, false) / sigmaST(s, t);
-            //         }
-            //     }
-            //     vt.BetweennessCentrality = res;
-            //     realI++;
+            //     // res = 0;
+            //     // for (int s = 0; s < len; s++) // 起点
+            //     // {
+            //     //     for (int t = 0; t < len; t++) // 终点
+            //     //     {
+            //     //         res += sigmaSTV(s, t, realI, false) / sigmaST(s, t);
+            //     //     }
+            //     // }
+            //     // vt.BetweennessCentrality = res;
+            //     // realI++;
             // }
-            // stopwatch.Stop();
+            timespan = stopwatch.Elapsed;
+            print(timespan.TotalMilliseconds + "毫秒");
+            stopwatch.Stop();
         }
     }
 }
