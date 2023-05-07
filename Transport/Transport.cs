@@ -80,6 +80,8 @@ namespace TransportMoudle
                 foreach (var e in edges)
                 {
                     visitedEdges.Remove(e);
+                    visitedVertexes.Remove(e.A);
+                    visitedVertexes.Remove(e.B);
                 }
                 return;
             }
@@ -88,6 +90,8 @@ namespace TransportMoudle
                 var minLoadEdge = edges.First().GetLoadInfo().TotalLoad > edges.Last().GetLoadInfo().TotalLoad ? edges.Last() : edges.First();
                 edges.Remove(minLoadEdge);
                 visitedEdges.Remove(minLoadEdge);
+                visitedVertexes.Remove(minLoadEdge.A);
+                visitedVertexes.Remove(minLoadEdge.B);
             }
             var line = new TrainLine(TrainLineLevel.MainLine);
             line.AddEdgeRange(edges);
