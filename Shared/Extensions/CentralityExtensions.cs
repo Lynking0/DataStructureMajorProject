@@ -4,6 +4,9 @@ using System;
 using Godot;
 using System.IO;
 using System.Diagnostics;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Collections.Concurrent;
 
 
 namespace Shared.Extensions.CentralityExtensions
@@ -20,7 +23,7 @@ namespace Shared.Extensions.CentralityExtensions
             PriorityQueue<Vertex, float> heap = new PriorityQueue<Vertex, float>();
             foreach (Vertex vtemp in vs)
             {
-                dist.Add(vtemp, 10000);
+                dist.Add(vtemp, float.MaxValue);
                 visit.Add(vtemp, false);
             }
             dist[s] = 0; // 自己到自己为0
@@ -103,10 +106,13 @@ namespace Shared.Extensions.CentralityExtensions
             TimeSpan timespan = stopwatch.Elapsed;
             wr.WriteLine("初始化程序运行时间：" + timespan.TotalMilliseconds + "毫秒");
             wr.Close();
-            foreach (Vertex s in vs)
-            {
-                dijkstra(s);
-            }
+            ConcurrentDictionary<Vertex, Dictionary<Vertex, float>>? distInfo = new ConcurrentDictionary<Vertex, Dictionary<Vertex, float>>();
+            Parallel.ForEach(vs,
+                (Vertex s) =>
+                {
+                    distInfo.TryAdd(s, dijkstra(s));
+                }
+            );
             timespan = stopwatch.Elapsed;
             print(timespan.TotalMilliseconds + "毫秒");
             // for (int i = 0; i < len; i++)
