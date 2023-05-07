@@ -18,13 +18,14 @@ namespace DirectorMoudle
 
         public override void _Ready()
         {
-            NameLabel = GetNode<Label>("VBoxContainer/Name");
-            Recipe = GetNode<Label>("VBoxContainer/Recipe");
-            MaximumCapacity = GetNode<Label>("VBoxContainer/MaximumCapacity");
-            AvailableCapacity = GetNode<Label>("VBoxContainer/AvailableCapacity");
-            Storage = GetNode<HBoxContainer>("VBoxContainer/storage");
-            Links = GetNode<VBoxContainer>("VBoxContainer/links");
-            TrainLines = GetNode<VBoxContainer>("VBoxContainer/TrainLines");
+            var basePath = "ScrollContainer/VBoxContainer";
+            NameLabel = GetNode<Label>($"{basePath}/Name");
+            Recipe = GetNode<Label>($"{basePath}/Recipe");
+            MaximumCapacity = GetNode<Label>($"{basePath}/MaximumCapacity");
+            AvailableCapacity = GetNode<Label>($"{basePath}/AvailableCapacity");
+            Storage = GetNode<HBoxContainer>($"{basePath}/storage");
+            Links = GetNode<VBoxContainer>($"{basePath}/links");
+            TrainLines = GetNode<VBoxContainer>($"{basePath}/TrainLines");
         }
 
         // Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -80,7 +81,22 @@ namespace DirectorMoudle
                 }
                 label.LabelSettings.OutlineSize = 4;
                 label.LabelSettings.OutlineColor = Colors.White;
+                label.MouseFilter = MouseFilterEnum.Stop;
+                label.GuiInput += e => OnTrainLineClick(e, label);
                 TrainLines.AddChild(label);
+            }
+        }
+
+        public void OnTrainLineClick(InputEvent @event, Label target)
+        {
+            if (@event is InputEventMouse mouseEvent)
+            {
+                if (mouseEvent.IsPressed())
+                {
+                    var window = GetNode<Window>("/root/Main/TrainLineViewWindow");
+                    window.Popup();
+                    window.GetNode<TrainLineView>("TrainLineView").Refresh(TrainLine.TrainLines.Where(t => t.ID == target.Text).First());
+                }
             }
         }
     }

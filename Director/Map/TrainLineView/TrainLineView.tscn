@@ -1,0 +1,43 @@
+[gd_scene load_steps=3 format=3 uid="uid://b031tbrhy4pqh"]
+
+[ext_resource type="Script" path="res://Director/Map/TrainLineView/TrainLineView.cs" id="1_cylmo"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_k7a7u"]
+font_size = 20
+outline_size = 4
+
+[node name="TrainLineView" type="PanelContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_cylmo")
+
+[node name="VBoxContainer" type="ScrollContainer" parent="."]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="Name" type="Label" parent="VBoxContainer/VBoxContainer"]
+layout_mode = 2
+text = "M23"
+label_settings = SubResource("LabelSettings_k7a7u")
+
+[node name="HSeparator" type="HSeparator" parent="VBoxContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="MaxLoad" type="Label" parent="VBoxContainer/VBoxContainer"]
+layout_mode = 2
+text = "最大负载: 233"
+
+[node name="HSeparator2" type="HSeparator" parent="VBoxContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="FactoryLabel" type="Label" parent="VBoxContainer/VBoxContainer"]
+layout_mode = 2
+text = "Factories"
+
+[node name="Factories" type="VBoxContainer" parent="VBoxContainer/VBoxContainer"]
+layout_mode = 2

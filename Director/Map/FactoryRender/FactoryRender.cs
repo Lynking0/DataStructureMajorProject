@@ -49,8 +49,9 @@ namespace DirectorMoudle
             PathContainer = GetNode<Node2D>("PathContainer");
             GetNode<Button>("Button").ButtonDown += () =>
             {
-                GetNode<FactroyView>("/root/Main/MouseInput/FactroyView").Refresh(Factory!);
-                GD.Print(Factory!.Recipe.DEBUG_OUTPUT());
+                var window = GetNode<Window>("/root/Main/FactroyViewWindow");
+                window.Popup();
+                window.GetNode<FactroyView>("FactroyView").Refresh(Factory!);
             };
         }
 
