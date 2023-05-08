@@ -22,7 +22,21 @@ namespace TransportMoudle
         private List<Edge> _edges = new List<Edge>();
         public IReadOnlyList<Edge> Edges => _edges;
 
-        public Color Color = new Color(GD.Randf() / 2, GD.Randf() / 2, GD.Randf() / 2, 1);
+        public IReadOnlyCollection<Vertex> Vertexes
+        {
+            get
+            {
+                var result = new HashSet<Vertex>();
+                foreach (var edge in _edges)
+                {
+                    result.Add(edge.A);
+                    result.Add(edge.B);
+                }
+                return result;
+            }
+        }
+
+        public Color Color;
 
         public TrainLine(TrainLineLevel level)
         {
@@ -32,12 +46,15 @@ namespace TransportMoudle
             {
                 case TrainLineLevel.MainLine:
                     ID = $"M{MainLineIDCount++}";
+                    Color = new Color(GD.Randf() / 3, GD.Randf() / 3, GD.Randf() / 3, 1);
                     break;
                 case TrainLineLevel.SideLine:
                     ID = $"S{SideLineIDCount++}";
+                    Color = new Color(GD.Randf() / 3 + 1f / 3, GD.Randf() / 3 + 1f / 3, GD.Randf() / 3 + 1f / 3, 1);
                     break;
                 case TrainLineLevel.FootPath:
                     ID = $"F{FootPathIDCount++}";
+                    Color = new Color(GD.Randf() / 3 + 2f / 3, GD.Randf() / 3 + 2f / 3, GD.Randf() / 3 + 2f / 3, 1);
                     break;
                 default:
                     throw new System.Exception("Unknown TrainLineLevel");

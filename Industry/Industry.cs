@@ -5,6 +5,7 @@ using GraphMoudle;
 using System.Linq;
 using IndustryMoudle.Entry;
 using IndustryMoudle.Link;
+using IndustryMoudle.Extensions;
 
 namespace IndustryMoudle
 {
@@ -345,6 +346,21 @@ namespace IndustryMoudle
                 // 定性链路构建完成，开始定量收缩
                 ShirkChain(chain);
             }
+            Logger.trace("删除孤立点、边");
+            GD.Print(Graph.Instance.Vertices.Count());
+            foreach (var edge in Graph.Instance.Edges.Where(e => e.GetLoadInfo().TotalLoad == 0).ToArray())
+            {
+                Graph.Instance.RemoveEdge(edge);
+            }
+            // TODO: 换浩哥删删
+            foreach (var factory in Factory.Factories.ToArray())
+            {
+                if (Graph.Instance.Vertices.Contains(factory.Vertex))
+                    continue;
+                Factory.Factories.Remove(factory);
+            }
+            GD.Print(Graph.Instance.Vertices.Count());
+
             DirectorMoudle.MapRender.Instance?.QueueRedraw();
 
             var lengths = ProduceLink.Links.Select(l => l.EdgeInfos.Sum(e => e.Edge?.Length ?? 0));

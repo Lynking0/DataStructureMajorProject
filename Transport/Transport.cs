@@ -140,32 +140,65 @@ namespace TransportMoudle
         public static void BuildTrainLines()
         {
             // 确定主干道
-            var edges = Graph.Instance.Edges
+            var totalEdges = Graph.Instance.Edges
                                                     .OrderByDescending(e => ProduceLink.GetEdgeLoad(e).TotalLoad)
                                                     .Where(e => !visitedEdges.Contains(e));
-            foreach (var edge in edges)
+            foreach (var edge in totalEdges)
             {
-                if ((double)visitedEdges.Count() / edges.Count() > MainLineRate)
+                if ((double)visitedEdges.Count() / totalEdges.Count() > MainLineRate)
                     break;
                 BuildMainTrainLine(edge, edge.GetLoadInfo().TotalLoad);
             }
             // 依托主干道构建辅路
-            var mainTrainLines = TrainLine.TrainLines.ToList();
-            foreach (var vertex in mainTrainLines
-                                            .SelectMany(l => l.Edges)
-                                            .SelectMany(e => new[] { e.A, e.B })
-                                            .Distinct())
+            var mainLines = TrainLine.TrainLines.Where(l => l.Level == TrainLineLevel.MainLine).ToArray();
+            foreach (var vertex in mainLines
+                                            .SelectMany(l => l.Vertexes))
             {
                 BuildSideLine(vertex);
             }
 
+
+            var sideLines = TrainLine.TrainLines.Where(l => l.Level == TrainLineLevel.SideLine).ToArray();
+
+            var trafficFreeBlocks = new List<TrafficFreeBlock>();
+            var trafficFreeEdges = Graph.Instance.Edges
+                                    .Where(e => !TrainLine.TrainLines.SelectMany(l => l.Edges).Contains(e));
+            foreach (var edge in trafficFreeEdges)
+            {
+                if (visitedEdges.Contains(edge))
+                    continue;
+                var edges = new List<Edge>();
+                edges.Add(edge);
+                visitedEdges.Add(edge);
+                var waitVertexes = new List<Vertex>();
+                waitVertexes.AddRange(new[] { edge.A, edge.B });
+                while (waitVertexes.Count > 0)
+                {
+                    var vertex = waitVertexes.First();
+                    waitVertexes.Remove(vertex);
+                    var adjacentEdges = vertex.Adjacencies
+                        .Where(e => !visitedEdges.Contains(e))
+                        .Where(e => trafficFreeEdges.Contains(e));
+                    foreach (var curEdge in adjacentEdges)
+                    {
+                        edges.Add(curEdge);
+                        visitedEdges.Add(curEdge);
+                        waitVertexes.AddRange(new[] { curEdge.A, curEdge.B });
+                    }
+                }
+                var line = new TrainLine(TrainLineLevel.FootPath);
+                line.AddEdgeRange(edges);
+                // TODO: 基层配送拆解
+                var trafficFreeBlock = new TrafficFreeBlock(edges);
+            }
+            var footPaths = TrainLine.TrainLines.Where(l => l.Level == TrainLineLevel.FootPath).ToArray();
             var edgeCount = Graph.Instance.Edges.Count();
-            var mainLines = TrainLine.TrainLines.Where(l => l.Level == TrainLineLevel.MainLine);
-            var sideLines = TrainLine.TrainLines.Where(l => l.Level == TrainLineLevel.SideLine);
             var mainLineEdgeCount = mainLines.Sum(l => l.Edges.Count);
             var sideLineEdgeCount = sideLines.Sum(l => l.Edges.Count);
+            var footPathEdgeCount = footPaths.Sum(l => l.Edges.Count);
             Logger.trace($"主干道：{mainLines.Count()}条，占比{mainLineEdgeCount / (double)edgeCount * 100}%");
             Logger.trace($"辅路：{sideLines.Count()}条，占比{sideLineEdgeCount / (double)edgeCount * 100}%");
+            Logger.trace($"基层配送：{footPaths.Count()}条，占比{footPathEdgeCount / (double)edgeCount * 100}%");
         }
     }
 }

@@ -38,7 +38,7 @@ namespace DirectorMoudle
             }
 
 
-            foreach (var factory in line.Edges.SelectMany(e => new[] { e.A, e.B }).Distinct().Select(e => e.GetFactory()))
+            foreach (var factory in line.Vertexes.Select(v => v.GetFactory()))
             {
                 var label = new Label();
                 label.Text = $"工厂 {factory!.ID}";
