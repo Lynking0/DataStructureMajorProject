@@ -8,7 +8,6 @@ namespace GraphMoudle.DataStructureAndAlgorithm.OptimalCombinationAlgorithm
 {
     public class BridgePlanner : Abstract.GeneticAlgorithm<BridgePlanner.BridgeData, uint>
     {
-        public static BridgePlanner Instance = new BridgePlanner();
         public struct BridgeData
         {
             Vector2D Pos;
@@ -35,6 +34,7 @@ namespace GraphMoudle.DataStructureAndAlgorithm.OptimalCombinationAlgorithm
         /// </summary>
         public Vector2D BCtrl;
         public Vector2D CentralPosition;
+        public double CtrlPointDist;
         public double MaxSemiMajorAxis;
         public double MaxSemiMinorAxis;
         private const int RadiusBitCount = 12;
@@ -43,7 +43,8 @@ namespace GraphMoudle.DataStructureAndAlgorithm.OptimalCombinationAlgorithm
         private const uint RadianSelector = 0b_0000_0000_0000_1111_1111_1111_0000_0000;
         private const int DirectionBitCount = 8;
         private const uint DirectionSelector = 0b_0000_0000_0000_0000_0000_0000_1111_1111;
-        public BridgePlanner() : base(60, 300, 0.6, 0.02)
+        private const int ToleranceLength = 5;
+        public BridgePlanner() : base(24, 100, 0.6, 0.05)
         {
 #if SECURITY
             // 检验各常量正确性
@@ -66,14 +67,26 @@ namespace GraphMoudle.DataStructureAndAlgorithm.OptimalCombinationAlgorithm
             uint _radius = (individual & RadiusSelector) >> (RadianBitCount + DirectionBitCount);
             uint _radian = (individual & RadianSelector) >> DirectionBitCount;
             uint _direction = individual & DirectionSelector;
+
             double semiMajorAxis = _radius * MaxSemiMajorAxis / (1u << RadiusBitCount);
             double semiMinorAxis = _radius * MaxSemiMinorAxis / (1u << RadiusBitCount);
             double radian = _radian * Math.Tau / (1u << RadianBitCount);
-            double direction = (_direction * Math.PI / (1u << DirectionBitCount)) * 0.8;
             Vector2D posOffset = new Vector2D(semiMinorAxis * Math.Cos(radian), semiMajorAxis * Math.Sin(radian));
             posOffset = posOffset.RotatedD((B - A).AngleD());
             Vector2D pos = CentralPosition + posOffset;
-            Vector2D ctrlOffset = new Vector2D(Graph.CtrlPointDistance * 0.6 * Math.Cos(direction), Graph.CtrlPointDistance * 0.6 * Math.Sin(direction));
+            if (pos.X < Graph.MinX + Graph.CtrlPointDistance)
+                pos.X = 2 * (Graph.MinX + Graph.CtrlPointDistance) - pos.X;
+            if (pos.X > Graph.MaxX - Graph.CtrlPointDistance)
+                pos.X = 2 * (Graph.MaxX - Graph.CtrlPointDistance) - pos.X;
+            if (pos.Y < Graph.MinY + Graph.CtrlPointDistance)
+                pos.Y = 2 * (Graph.MinY + Graph.CtrlPointDistance) - pos.Y;
+            if (pos.Y > Graph.MaxY - Graph.CtrlPointDistance)
+                pos.Y = 2 * (Graph.MaxY - Graph.CtrlPointDistance) - pos.Y;
+            
+            // TODO: 明确角度限制
+            double direction = (((double)_direction / (1u << DirectionBitCount)) * 0.6 - 0.3) * Math.PI;
+            Vector2D ctrlOffset = new Vector2D(CtrlPointDist * Math.Cos(direction), CtrlPointDist * Math.Sin(direction));
+            ctrlOffset = ctrlOffset.RotatedD((B - A).AngleD());
             if (Mathf.Abs(ctrlOffset.AngleToD(A - pos)) >= Math.PI / 2)
                 ctrlOffset = -ctrlOffset;
             return new BridgeData(pos, ctrlOffset);
@@ -93,17 +106,17 @@ namespace GraphMoudle.DataStructureAndAlgorithm.OptimalCombinationAlgorithm
             curve.AddPoint((Vector2)A, @out: (Vector2)(ACtrl - A));
             curve.AddPoint((Vector2)pos, @in: (Vector2)ctrlOffset, @out: -(Vector2)ctrlOffset);
             curve.AddPoint((Vector2)B, @in: (Vector2)(BCtrl - B));
-            Vector2[] points = curve.TessellateEvenLength(4, 6);
+            Vector2[] points = curve.TessellateEvenLength(4, ToleranceLength);
             double ans = 0;
             foreach (Vector2 point in points)
             {
-                double temp = FractalNoiseGenerator.GetFractalNoise(point.X, point.Y) - Graph.MaxVertexAltitude;
-                ans += temp < 0 ? 0 : temp * temp;
+                double temp = FractalNoiseGenerator.GetFractalNoise(point.X, point.Y);
+                ans += temp * temp;
             }
-            ans /= points.Length;
+            ans = 1 / ans;
             if (BestIndividual is (uint _, double fitness))
             {
-                if (ans < fitness)
+                if (ans > fitness)
                     BestIndividual = (individual, ans);
             }
             else
@@ -160,10 +173,21 @@ namespace GraphMoudle.DataStructureAndAlgorithm.OptimalCombinationAlgorithm
         {
             individual ^= 1u << GD.RandRange(0, 31);
         }
+        private (double fitness, double maintainTimes) AnswerRecord = (-1, 0);
         protected override bool CanEndEarly()
         {
             if (BestIndividual is (uint _, double fitness))
-                return fitness < Graph.MaxVertexAltitude * Graph.MaxVertexAltitude * 0.25;
+            {
+                if (fitness != AnswerRecord.fitness)
+                    AnswerRecord = (fitness, 0);
+                else
+                {
+                    ++AnswerRecord.maintainTimes;
+                    if (AnswerRecord.maintainTimes > 15)
+                        return true;
+                }
+                return fitness > ToleranceLength / (A.DistanceToD(B) * 1.15 * Graph.MaxVertexAltitude * Graph.MaxVertexAltitude * 1.5);
+            }
             return false;
         }
     }

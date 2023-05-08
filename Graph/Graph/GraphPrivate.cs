@@ -7,6 +7,8 @@ using GraphMoudle.DataStructureAndAlgorithm.OptimalCombinationAlgorithm.ComputeS
 using GraphMoudle.DataStructureAndAlgorithm;
 using GraphMoudle.DataStructureAndAlgorithm.DisjointSet;
 using static Shared.RandomMethods;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace GraphMoudle
 {
@@ -160,59 +162,58 @@ namespace GraphMoudle
         /// </summary>
         private void CreateBridges()
         {
+            List<(Vertex a, Vertex b)> VerticesPairs = new List<(Vertex a, Vertex b)>();
             foreach (Block block in Blocks)
-            {
                 foreach (BlockAdjInfo info in block.AdjacenciesInfo!)
+                    VerticesPairs.Add((info.Vertex1, info.Vertex2));
+            System.Threading.Mutex mut = new System.Threading.Mutex();
+            Parallel.ForEach(VerticesPairs,
+                ((Vertex, Vertex) pair) =>
                 {
-                    if (!info.Vertex1.IsDirectlyConnected(info.Vertex2))
-                        _createBridge(info.Vertex1, info.Vertex2);
+                    (Vertex a, Vertex b) = pair;
+                    Vector2D aCtrl, bCtrl;
+                    BridgePlanner bridgePlanner = new BridgePlanner();
+                    bridgePlanner.CtrlPointDist = a.Position.DistanceToD(b.Position) * 0.25;
+                    if (a.Type == Vertex.VertexType.Intermediate)
+                    {
+                        if (Mathf.Abs(a.Gradient.OrthogonalD().AngleToD(b.Position - a.Position)) < Math.PI / 2)
+                            aCtrl = a.Position + a.Gradient.OrthogonalD().NormalizedD() * bridgePlanner.CtrlPointDist;
+                        else
+                            aCtrl = a.Position - a.Gradient.OrthogonalD().NormalizedD() * bridgePlanner.CtrlPointDist;
+                    }
+                    else
+                        aCtrl = a.Position + a.Gradient.NormalizedD() * bridgePlanner.CtrlPointDist;
+                    if (b.Type == Vertex.VertexType.Intermediate)
+                    {
+                        if (Mathf.Abs(b.Gradient.OrthogonalD().AngleToD(a.Position - b.Position)) < Math.PI / 2)
+                            bCtrl = b.Position + b.Gradient.OrthogonalD().NormalizedD() * bridgePlanner.CtrlPointDist;
+                        else
+                            bCtrl = b.Position - b.Gradient.OrthogonalD().NormalizedD() * bridgePlanner.CtrlPointDist;
+                    }
+                    else
+                        bCtrl = b.Position + b.Gradient.NormalizedD() * bridgePlanner.CtrlPointDist;
+                    bridgePlanner.A = a.Position;
+                    bridgePlanner.ACtrl = aCtrl;
+                    bridgePlanner.BCtrl = bCtrl;
+                    bridgePlanner.B = b.Position;
+                    bridgePlanner.CentralPosition = (a.Position + b.Position) * 0.5;
+                    bridgePlanner.MaxSemiMajorAxis = a.Position.DistanceToD(b.Position) * 0.45;
+                    bridgePlanner.MaxSemiMinorAxis = a.Position.DistanceToD(b.Position) * 0.15;
+                    (Vector2D pos, Vector2D ctrlOffset) = bridgePlanner.Run();
+                    Edge edge = new Edge(a, b, new Curve2D());
+                    edge.Curve.AddPoint((Vector2)a.Position, @out: (Vector2)(aCtrl - a.Position));
+                    edge.Curve.AddPoint((Vector2)pos, @in: (Vector2)ctrlOffset, @out: -(Vector2)ctrlOffset);
+                    edge.Curve.AddPoint((Vector2)b.Position, @in: (Vector2)(bCtrl - b.Position));
+                    mut.WaitOne();
+                    if (GISInfoStorer.CanAdd(edge))
+                    {
+                        a.Adjacencies.Add(edge);
+                        b.Adjacencies.Add(edge);
+                        GISInfoStorer.Add(edge);
+                    }
+                    mut.ReleaseMutex();
                 }
-            }
-        }
-        /// <summary>
-        ///   在指定的两点间建桥。
-        /// </summary>
-        private bool _createBridge(Vertex a, Vertex b)
-        {
-            Vector2D aCtrl, bCtrl;
-            if (a.Type == Vertex.VertexType.Intermediate)
-            {
-                if (Mathf.Abs(a.Gradient.OrthogonalD().AngleToD(b.Position - a.Position)) < Math.PI / 2)
-                    aCtrl = a.Position + a.Gradient.OrthogonalD().NormalizedD() * Graph.CtrlPointDistance * 0.6;
-                else
-                    aCtrl = a.Position - a.Gradient.OrthogonalD().NormalizedD() * Graph.CtrlPointDistance * 0.6;
-            }
-            else
-                aCtrl = a.Position - a.Gradient.NormalizedD() * Graph.CtrlPointDistance * 0.6;
-            if (b.Type == Vertex.VertexType.Intermediate)
-            {
-                if (Mathf.Abs(b.Gradient.OrthogonalD().AngleToD(a.Position - b.Position)) < Math.PI / 2)
-                    bCtrl = b.Position + b.Gradient.OrthogonalD().NormalizedD() * Graph.CtrlPointDistance * 0.6;
-                else
-                    bCtrl = b.Position - b.Gradient.OrthogonalD().NormalizedD() * Graph.CtrlPointDistance * 0.6;
-            }
-            else
-                bCtrl = b.Position - b.Gradient.NormalizedD() * Graph.CtrlPointDistance * 0.6;
-            BridgePlanner.Instance.A = a.Position;
-            BridgePlanner.Instance.ACtrl = aCtrl;
-            BridgePlanner.Instance.BCtrl = bCtrl;
-            BridgePlanner.Instance.B = b.Position;
-            BridgePlanner.Instance.CentralPosition = (a.Position + b.Position) * 0.5;
-            BridgePlanner.Instance.MaxSemiMajorAxis = a.Position.DistanceToD(b.Position) * 0.45;
-            BridgePlanner.Instance.MaxSemiMinorAxis = a.Position.DistanceToD(b.Position) * 0.15;
-            (Vector2D pos, Vector2D ctrlOffset) = BridgePlanner.Instance.Run();
-            Edge edge = new Edge(a, b, new Curve2D());
-            edge.Curve.AddPoint((Vector2)a.Position, @out: (Vector2)(aCtrl - a.Position));
-            edge.Curve.AddPoint((Vector2)pos, @in: (Vector2)ctrlOffset, @out: -(Vector2)ctrlOffset);
-            edge.Curve.AddPoint((Vector2)b.Position, @in: (Vector2)(bCtrl - b.Position));
-            if (GISInfoStorer.CanAdd(edge))
-            {
-                a.Adjacencies.Add(edge);
-                b.Adjacencies.Add(edge);
-                GISInfoStorer.Add(edge);
-                return true;
-            }
-            return false;
+            );
         }
     }
 }
