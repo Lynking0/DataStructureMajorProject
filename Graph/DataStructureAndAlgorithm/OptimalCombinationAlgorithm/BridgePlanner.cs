@@ -37,14 +37,15 @@ namespace GraphMoudle.DataStructureAndAlgorithm.OptimalCombinationAlgorithm
         public double CtrlPointDist;
         public double MaxSemiMajorAxis;
         public double MaxSemiMinorAxis;
+        private const int MaxUnchangedTimes = 10;
+        private const int ToleranceLength = 5;
         private const int RadiusBitCount = 12;
         private const uint RadiusSelector = 0b_1111_1111_1111_0000_0000_0000_0000_0000;
         private const int RadianBitCount = 12;
         private const uint RadianSelector = 0b_0000_0000_0000_1111_1111_1111_0000_0000;
         private const int DirectionBitCount = 8;
         private const uint DirectionSelector = 0b_0000_0000_0000_0000_0000_0000_1111_1111;
-        private const int ToleranceLength = 5;
-        public BridgePlanner() : base(24, 100, 0.6, 0.05)
+        public BridgePlanner() : base(20, 100, 0.99, 0.1)
         {
 #if SECURITY
             // 检验各常量正确性
@@ -183,7 +184,7 @@ namespace GraphMoudle.DataStructureAndAlgorithm.OptimalCombinationAlgorithm
                 else
                 {
                     ++AnswerRecord.maintainTimes;
-                    if (AnswerRecord.maintainTimes > 15)
+                    if (AnswerRecord.maintainTimes > MaxUnchangedTimes)
                         return true;
                 }
                 return fitness > ToleranceLength / (A.DistanceToD(B) * 1.15 * Graph.MaxVertexAltitude * Graph.MaxVertexAltitude * 1.5);
