@@ -75,26 +75,21 @@ namespace Shared.Extensions.CentralityExtensions
         // }
         /* variables */
 
+        // private static void print(string s)
+        // {
+        //     string result1 = @"result2.txt";
+        //     FileStream fs = new FileStream(result1, FileMode.Append);
+        //     StreamWriter wr = null;
+        //     wr = new StreamWriter(fs);
+        //     wr.WriteLine(s);
+        //     wr.Close();
+        // }
+
         /// <summary>
-        ///   对于给定的图，计算所有节点的中心性，并存入各个Vertex对应属性
+        ///   对于给定的图及节点，计算该节点的中心性
         /// </summary>
-        private static void print(string s)
+        public static void CalcCentrality(this Graph graph, Vertex vertex)
         {
-            string result1 = @"result2.txt";
-            FileStream fs = new FileStream(result1, FileMode.Append);
-            StreamWriter wr = null;
-            wr = new StreamWriter(fs);
-            wr.WriteLine(s);
-            wr.Close();
-        }
-        public static void PrecomputeCentrality(this Graph graph)
-        {
-            string result1 = @"result2.txt";
-            FileStream fs = new FileStream(result1, FileMode.Create);
-            StreamWriter wr = null;
-            wr = new StreamWriter(fs);
-            Stopwatch stopwatch = new Stopwatch();
-            stopwatch.Start();  // 开始计时
             /* code */
             vs = new Vertex[graph.Vertices.Count];
             len = vs.Length;
@@ -103,32 +98,16 @@ namespace Shared.Extensions.CentralityExtensions
             {
                 vs[index++] = v;
             }
-            TimeSpan timespan = stopwatch.Elapsed;
-            wr.WriteLine("初始化程序运行时间：" + timespan.TotalMilliseconds + "毫秒");
-            wr.Close();
-            ConcurrentDictionary<Vertex, Dictionary<Vertex, float>>? distInfo = new ConcurrentDictionary<Vertex, Dictionary<Vertex, float>>();
-            Parallel.ForEach(vs,
-                (Vertex s) =>
-                {
-                    distInfo.TryAdd(s, dijkstra(s));
-                }
-            );
-            timespan = stopwatch.Elapsed;
-            print(timespan.TotalMilliseconds + "毫秒");
-            Parallel.ForEach(graph.Vertices,
-                (Vertex vt) =>
-                {
-                    // 点度中心性
-                    vt.DegreeCentrality = vt.Adjacencies.Count / (len - 1);
-                    // 接近中心性
-                    float res = 0;
-                    foreach (Vertex vtc in vs)
-                    {
-                        res += distInfo[vt][vtc];
-                    }
-                    vt.ClosenessCentrality = 1 / res;
-                }
-            );
+            Dictionary<Vertex, float> dict = dijkstra(vertex);
+            // 点度中心性
+            vertex.DegreeCentrality = (float)vertex.Adjacencies.Count / (len - 1);
+            // 接近中心性
+            float res = 0;
+            foreach (Vertex vtc in vs)
+            {
+                res += dict[vtc];
+            }
+            vertex.ClosenessCentrality = (len - 1) / res;
             // foreach (Vertex vt in graph.Vertices)
             // {
             //     // 点度中心性
@@ -152,9 +131,6 @@ namespace Shared.Extensions.CentralityExtensions
             //     // vt.BetweennessCentrality = res;
             //     // realI++;
             // }
-            timespan = stopwatch.Elapsed;
-            print(timespan.TotalMilliseconds + "毫秒");
-            stopwatch.Stop();
         }
     }
 }

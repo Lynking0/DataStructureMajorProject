@@ -1,7 +1,5 @@
 using Godot;
 using GraphMoudle;
-using Shared.Extensions.ICollectionExtensions;
-using Shared.Extensions.CentralityExtensions;
 
 namespace TopographyMoudle
 {
@@ -33,7 +31,6 @@ namespace TopographyMoudle
         {
             Graph.Instance.CreateVertices();
             Graph.Instance.CreateEdges();
-            Graph.Instance.PrecomputeCentrality();
         }
     }
 }
