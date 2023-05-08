@@ -126,10 +126,12 @@ namespace GraphMoudle
             CreateBridges();
         }
         /// <summary>
-        ///   将指定边从图中删除，注意调用后Block.AdjacenciesInfo信息有部分会失效
+        ///   将指定边从图中删除，注意调用后Block信息有部分会失效
         /// </summary>
-        public void RemoveEdge(Edge edge)
+        /// <return>被顺便删除的孤立点</return>
+        public List<Vertex> RemoveEdge(Edge edge)
         {
+            List<Vertex> result = new List<Vertex>();
             edge.A.Adjacencies.Remove(edge);
             edge.B.Adjacencies.Remove(edge);
             GISInfoStorer.Remove(edge);
@@ -137,12 +139,15 @@ namespace GraphMoudle
             {
                 VerticesContainer.Remove(edge.A);
                 edge.A.ParentBlock.Vertices.Remove(edge.A);
+                result.Add(edge.A);
             }
             if (edge.B.Adjacencies.Count == 0)
             {
                 VerticesContainer.Remove(edge.B);
                 edge.B.ParentBlock.Vertices.Remove(edge.B);
+                result.Add(edge.B);
             }
+            return result;
         }
     }
 }
