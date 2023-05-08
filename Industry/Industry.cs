@@ -350,16 +350,8 @@ namespace IndustryMoudle
             GD.Print(Graph.Instance.Vertices.Count());
             foreach (var edge in Graph.Instance.Edges.Where(e => e.GetLoadInfo().TotalLoad == 0).ToArray())
             {
-                Graph.Instance.RemoveEdge(edge);
+                Graph.Instance.RemoveEdge(edge).ForEach(v => Factory.Factories.Remove(v.GetFactory()!));
             }
-            // TODO: 换浩哥删删
-            foreach (var factory in Factory.Factories.ToArray())
-            {
-                if (Graph.Instance.Vertices.Contains(factory.Vertex))
-                    continue;
-                Factory.Factories.Remove(factory);
-            }
-            GD.Print(Graph.Instance.Vertices.Count());
 
             DirectorMoudle.MapRender.Instance?.QueueRedraw();
 
