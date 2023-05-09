@@ -15,7 +15,7 @@ namespace TopographyMoudle
             FractalNoiseGenerator.Lacunarity = 2.2;
             FractalNoiseGenerator.Gain = 0.56;
             FractalNoiseGenerator.BottomNumber = 30;
-            FractalNoiseGenerator.PseudorandomGenerator.Precalculate(Graph.MinX, Graph.MinY, Graph.MaxX, Graph.MaxY);
+            FractalNoiseGenerator.PseudorandomGenerator.Precompute(Graph.MinX, Graph.MinY, Graph.MaxX, Graph.MaxY);
             RenderingServer.GlobalShaderParameterSet("Seed", FractalNoiseGenerator.Seed);
             RenderingServer.GlobalShaderParameterSet("Frequency", FractalNoiseGenerator.Frequency);
             RenderingServer.GlobalShaderParameterSet("Amplitude", FractalNoiseGenerator.Amplitude);

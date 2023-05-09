@@ -3,7 +3,7 @@ using Shared.Extensions.DoubleVector2Extensions;
 using System.Collections.Generic;
 using GraphMoudle.DataStructureAndAlgorithm.DisjointSet;
 using GraphMoudle.DataStructureAndAlgorithm.SpatialIndexer.RTreeStructure;
-using Godot;
+using Shared.Extensions.CentralityExtensions;
 
 namespace GraphMoudle
 {
@@ -36,6 +36,7 @@ namespace GraphMoudle
         ///   控制生成Edge时控制点方向的选择，仅在生成Edge时使用。
         /// </summary>
         public VertexType Type;
+        
         public Vertex(double x, double y)
         {
             Position.X = (float)x;
@@ -81,6 +82,39 @@ namespace GraphMoudle
             double minY = Position.Y - Graph.EdgesDistance / 2;
             double maxY = Position.Y + Graph.EdgesDistance / 2;
             return new RTRect2(new Vector2D(minX, minY), new Vector2D(maxX, maxY));
+        }
+
+        #endregion
+
+        #region Centrality
+
+        private float? _degreeCentrality = null;
+        /// <summary>
+        ///   度中心性
+        /// </summary>
+        public float DegreeCentrality
+        {
+            get
+            {
+                if (_degreeCentrality is null)
+                    Graph.Instance.CalcCentrality(this);
+                return (float)_degreeCentrality!;
+            }
+            set => _degreeCentrality = value;
+        }
+        private float? _closenessCentrality = null;
+        /// <summary>
+        ///   接近中心性
+        /// </summary>
+        public float ClosenessCentrality
+        {
+            get
+            {
+                if (_closenessCentrality is null)
+                    Graph.Instance.CalcCentrality(this);
+                return (float)_closenessCentrality!;
+            }
+            set => _closenessCentrality = value;
         }
 
         #endregion

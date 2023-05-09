@@ -2,10 +2,13 @@ using System;
 using Godot;
 using GraphMoudle.DataStructureAndAlgorithm.SpatialIndexer;
 using GraphMoudle.DataStructureAndAlgorithm.SpatialIndexer.RTreeStructure;
+using Shared.Extensions.ICollectionExtensions;
 using Shared.Extensions.DoubleVector2Extensions;
 using System.Collections.Generic;
 using TopographyMoudle;
+using GraphMoudle.DataStructureAndAlgorithm.OptimalCombinationAlgorithm;
 using GraphMoudle.DataStructureAndAlgorithm.OptimalCombinationAlgorithm.ComputeShader;
+using static Shared.RandomMethods;
 
 namespace GraphMoudle
 {
@@ -148,6 +151,58 @@ namespace GraphMoudle
                 result.Add(edge.B);
             }
             return result;
+        }
+        public void AdjustEdges()
+        {
+            foreach (Vertex vertex in Vertices)
+            {
+                if (vertex.Type != Vertex.VertexType.Intermediate || vertex.Adjacencies.Count < 2)
+                    continue;
+                bool flag = true;
+                foreach ((Edge a, Edge b) in vertex.Adjacencies.ToPairs())
+                {
+                    if (!Mathf.IsEqualApprox((float)a.GetCtrlAngle(vertex)!, (float)b.GetCtrlAngle(vertex)!))
+                    {
+                        flag = false;
+                        break;
+                    }
+                }
+                if (flag)
+                {
+                    Edge[] adjEdges = new Edge[vertex.Adjacencies.Count];
+                    vertex.Adjacencies.CopyTo(adjEdges);
+                    RandomDislocate(adjEdges);
+                    foreach (Edge edge in adjEdges)
+                    {
+                        if (edge.IsBridge)
+                            continue;
+                        Curve2D temp = edge.GetCurveCopy();
+                        edge.RotateCtrlPoint(vertex, MathF.PI);
+                        // edge不是桥，所以只有一段三阶贝塞尔
+                        EdgeEvaluator.Instance.MaxEnergy = MaxVertexAltitude;
+                        EdgeEvaluator.Instance.A = edge.Curve.GetPointPosition(0);
+                        EdgeEvaluator.Instance.B = edge.Curve.GetPointPosition(0) + edge.Curve.GetPointOut(0);
+                        EdgeEvaluator.Instance.C = edge.Curve.GetPointPosition(1) + edge.Curve.GetPointIn(1);
+                        EdgeEvaluator.Instance.D = edge.Curve.GetPointPosition(1);
+                        if (EdgeEvaluator.Instance.Annealing().energy >= MaxVertexAltitude)
+                        {
+                            edge.SetCurveCopy(temp);
+                            continue;
+                        }
+                        GISInfoStorer.Remove(edge);
+                        if (!GISInfoStorer.CanAdd(edge))
+                        {
+                            edge.SetCurveCopy(temp);
+                            GISInfoStorer.Add(edge);
+                        }
+                        else
+                        {
+                            GISInfoStorer.Add(edge);
+                            break;
+                        }
+                    }
+                }
+            }
         }
     }
 }

@@ -5,7 +5,7 @@ using static Shared.RandomMethods;
 
 namespace GraphMoudle.DataStructureAndAlgorithm.OptimalCombinationAlgorithm
 {
-    [Obsolete("相关功能已移至EdgeEvaluator.glsl中")]
+    // [Obsolete("相关功能已移至EdgeEvaluator.glsl中")]
     public class EdgeEvaluator : Abstract.SimulatedAnnealing<double>
     {
         public static EdgeEvaluator Instance = new EdgeEvaluator();

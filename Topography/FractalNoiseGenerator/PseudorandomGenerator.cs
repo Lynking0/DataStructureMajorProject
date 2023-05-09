@@ -16,7 +16,7 @@ namespace TopographyMoudle
             /// <summary>
             ///   预先计算好的伪随机数
             /// </summary>
-            public static PseudorandomData[]? Precalculations;
+            public static PseudorandomData[]? Precomputations;
             private const int PrimeX = 501125321;
             private const int PrimeY = 1136930381;
             private static Int32 Hash(Int32 seed, Int32 x, Int32 y)
@@ -36,13 +36,13 @@ namespace TopographyMoudle
                 hash ^= hash << 19;
                 return hash * (1 / 2147483648.0);
             }
-            public static void Precalculate(double minX, double minY, double maxX, double maxY)
+            public static void Precompute(double minX, double minY, double maxX, double maxY)
             {
                 minX *= Frequency;
                 minY *= Frequency;
                 maxX *= Frequency;
                 maxY *= Frequency;
-                Precalculations = new PseudorandomData[Octaves];
+                Precomputations = new PseudorandomData[Octaves];
                 // 每边各多算一位以防万一
                 for (int oct = 0; oct < Octaves; ++oct)
                 {
@@ -50,9 +50,9 @@ namespace TopographyMoudle
                     int minYI = Mathf.FloorToInt(minY);
                     int maxXI = Mathf.FloorToInt(maxX);
                     int maxYI = Mathf.FloorToInt(maxY);
-                    Precalculations[oct].xOffset = 2 - minXI;
-                    Precalculations[oct].yOffset = 2 - minYI;
-                    Precalculations[oct].data = new double[
+                    Precomputations[oct].xOffset = 2 - minXI;
+                    Precomputations[oct].yOffset = 2 - minYI;
+                    Precomputations[oct].data = new double[
                         maxXI - minXI + 6,
                         maxYI - minYI + 6
                     ];
@@ -60,7 +60,7 @@ namespace TopographyMoudle
                     {
                         for (int j = minYI - 2; j <= maxYI + 3; ++j)
                         {
-                            Precalculations[oct].data[
+                            Precomputations[oct].data[
                                 i - minXI + 2, j - minYI + 2
                             ] = Pseudorandom(Seed + oct, i, j);
                         }

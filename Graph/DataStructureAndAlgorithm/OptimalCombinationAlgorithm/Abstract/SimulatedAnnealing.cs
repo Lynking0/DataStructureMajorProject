@@ -5,20 +5,20 @@ using System;
 
 namespace GraphMoudle.DataStructureAndAlgorithm.OptimalCombinationAlgorithm.Abstract
 {
-    public abstract class SimulatedAnnealing<Status>
+    public abstract class SimulatedAnnealing<TStatus>
     {
         /// <summary>
         ///   得到某一状态对应的能量
         /// </summary>
-        protected abstract double GetEnergy(Status status);
+        protected abstract double GetEnergy(TStatus status);
         /// <summary>
         ///   得到初始状态
         /// </summary>
-        protected abstract Status GetInitStatus();
+        protected abstract TStatus GetInitStatus();
         /// <summary>
         ///   根据当前状态及温度得到临近状态
         /// </summary>
-        protected abstract Status GetNearStatus(Status curStatus, double temperature);
+        protected abstract TStatus GetNearStatus(TStatus curStatus, double temperature);
         /// <summary>
         ///   根据能量判断是否可以提前结束退火，默认不提前结束
         /// </summary>
@@ -30,13 +30,13 @@ namespace GraphMoudle.DataStructureAndAlgorithm.OptimalCombinationAlgorithm.Abst
         /// <summary>
         ///   结果更新方式。
         /// </summary>
-        protected virtual void UpdateResult(ref (Status status, double energy) result, Status status, double energy) { result = (status, energy); }
+        protected virtual void UpdateResult(ref (TStatus status, double energy) result, TStatus status, double energy) { result = (status, energy); }
 
-        protected double AttenuationRate;
-        protected double InitTemperature;
-        protected double LowestTemperature;
-        protected int RepeatTimes;
-        protected int MaxRejectTimes;
+        protected readonly double AttenuationRate;
+        protected readonly double InitTemperature;
+        protected readonly double LowestTemperature;
+        protected readonly int RepeatTimes;
+        protected readonly int MaxRejectTimes;
 
         /// <param name="attenuationRate">温度的衰减系数</param>
         /// <param name="initTemperature">初始温度</param>
@@ -52,11 +52,11 @@ namespace GraphMoudle.DataStructureAndAlgorithm.OptimalCombinationAlgorithm.Abst
             this.RepeatTimes = repeatTimes;
             this.MaxRejectTimes = maxRejectTimes;
         }
-        public virtual (Status status, double energy) Annealing()
+        public virtual (TStatus status, double energy) Annealing()
         {
-            Status status = this.GetInitStatus();
+            TStatus status = this.GetInitStatus();
             double energy = this.GetEnergy(status);
-            (Status status, double energy) result = (status, energy);
+            (TStatus status, double energy) result = (status, energy);
             int rejectCnt = 0;
 #if PrintAnnealCnt
             int @cnt = 0;
@@ -77,7 +77,7 @@ namespace GraphMoudle.DataStructureAndAlgorithm.OptimalCombinationAlgorithm.Abst
 #if PrintAnnealCnt
                     ++@cnt;
 #endif
-                    Status nextStatus = this.GetNearStatus(status, t);
+                    TStatus nextStatus = this.GetNearStatus(status, t);
                     double nextEnergy = this.GetEnergy(nextStatus);
                     if (GD.Randf() < this.GetAcceptPR(energy, nextEnergy, t))
                     {
