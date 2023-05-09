@@ -69,7 +69,6 @@ namespace GraphMoudle
                 );
             }
             return curve;
-            ClearCacheInfo(); // 曲线改变，需清理缓存信息
         }
         public void SetCurveCopy(Curve2D curve)
         {
@@ -82,7 +81,7 @@ namespace GraphMoudle
                     @out: curve.GetPointOut(i)
                 );
             }
-            ClearCacheInfo();
+            ClearCacheInfo(); // 曲线改变，需清理缓存信息
         }
         private void ClearCacheInfo()
         {
