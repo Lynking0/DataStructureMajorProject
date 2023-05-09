@@ -9,7 +9,7 @@ namespace TransportMoudle
     public class Transport
     {
         // 主干道占边的比例
-        private const double MainLineRate = 0.15;
+        private const double MainLineRate = 0.25;
         // 主干道最小负载比例
         private const double MainLineMinLoadRate = 0.6;
         // 辅路最小负载比例
@@ -19,7 +19,7 @@ namespace TransportMoudle
         // 主干道最小边数
         private const int MainLineMinEdgeCount = 8;
         // 辅路最小边数
-        private const int SideLineMinEdgeCount = 4;
+        private const int SideLineMinEdgeCount = 2;
         private static HashSet<Edge> visitedEdges = new HashSet<Edge>();
         private class IntReverseComparer : IComparer<int>
         {
@@ -139,6 +139,7 @@ namespace TransportMoudle
         }
         public static void BuildTrainLines()
         {
+            Logger.trace("构建主干道");
             // 确定主干道
             var totalEdges = Graph.Instance.Edges
                                                     .OrderByDescending(e => ProduceLink.GetEdgeLoad(e).TotalLoad)
@@ -149,20 +150,25 @@ namespace TransportMoudle
                     break;
                 BuildMainTrainLine(edge, edge.GetLoadInfo().TotalLoad);
             }
+            Logger.trace("构建辅路");
             // 依托主干道构建辅路
             var mainLines = TrainLine.TrainLines.Where(l => l.Level == TrainLineLevel.MainLine).ToArray();
-            foreach (var vertex in mainLines
-                                            .SelectMany(l => l.Vertexes))
+            foreach (var vertex in mainLines.SelectMany(l => l.Vertexes))
             {
                 BuildSideLine(vertex);
             }
 
-
+            Logger.trace("构建基层配送");
             var sideLines = TrainLine.TrainLines.Where(l => l.Level == TrainLineLevel.SideLine).ToArray();
 
+            var passingLine = mainLines.Concat(sideLines)
+                        .SelectMany(line => line.Vertexes.Select(vertex => (vertex, line)))
+                        .GroupBy(t => t.vertex)
+                        .ToDictionary(g => g.Key, g => g.Select(t => t.line).ToArray());
+
             var trafficFreeBlocks = new List<TrafficFreeBlock>();
-            var trafficFreeEdges = Graph.Instance.Edges
-                                    .Where(e => !TrainLine.TrainLines.SelectMany(l => l.Edges).Contains(e));
+            var trafficFreeEdges = new HashSet<Edge>(Graph.Instance.Edges
+                                    .Where(e => !TrainLine.TrainLines.SelectMany(l => l.Edges).Contains(e)));
             foreach (var edge in trafficFreeEdges)
             {
                 if (visitedEdges.Contains(edge))
@@ -189,7 +195,7 @@ namespace TransportMoudle
                 var line = new TrainLine(TrainLineLevel.FootPath);
                 line.AddEdgeRange(edges);
                 // TODO: 基层配送拆解
-                var trafficFreeBlock = new TrafficFreeBlock(edges);
+                var trafficFreeBlock = new TrafficFreeBlock(edges, passingLine);
             }
             var footPaths = TrainLine.TrainLines.Where(l => l.Level == TrainLineLevel.FootPath).ToArray();
             var edgeCount = Graph.Instance.Edges.Count();
