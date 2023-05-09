@@ -5,7 +5,7 @@ using static Shared.RandomMethods;
 
 namespace GraphMoudle.DataStructureAndAlgorithm.OptimalCombinationAlgorithm
 {
-    [Obsolete("相关功能已移至EdgeEvaluator.glsl中")]
+    // [Obsolete("相关功能已移至EdgeEvaluator.glsl中")]
     public class EdgeEvaluator : Abstract.SimulatedAnnealing<double>
     {
         public static EdgeEvaluator Instance = new EdgeEvaluator();
@@ -14,7 +14,7 @@ namespace GraphMoudle.DataStructureAndAlgorithm.OptimalCombinationAlgorithm
         public Vector2D C;
         public Vector2D D;
         public double MaxEnergy;
-        public EdgeEvaluator() : base(0.998, 5000, 1500, 1, 10) { }
+        public EdgeEvaluator() : base(0.997, 5000, 2000, 1, 10) { }
         protected override double GetEnergy(double t)
         {
             Vector2D v = A * Mathf.Pow(1 - t, 3) + B * 3 * (Mathf.Pow(1 - t, 2) * t) + C * 3 * ((1 - t) * t * t) + D * (t * t * t);

@@ -25,7 +25,7 @@ namespace GraphMoudle
             PAngle = pAngle;
         }
         /// <summary>
-        ///   获取另一头的节点，若v不是该边的端点，则返回null。
+        ///   获取节点v在当前边另一头的节点，若v不是当前边的端点，则返回null。
         /// </summary>
         public Vertex? GetOtherEnd(Vertex v)
         {
@@ -34,6 +34,61 @@ namespace GraphMoudle
             if (v == B)
                 return A;
             return null;
+        }
+        /// <summary>
+        ///   获取当前边在节点v的控制点的方向角，若v不是当前边的端点，则返回null。
+        /// </summary>
+        public float? GetCtrlAngle(Vertex v)
+        {
+            if (v == A)
+                return Curve.GetPointOut(0).Angle();
+            if (v == B)
+                return Curve.GetPointIn(Curve.PointCount - 1).Angle();
+            return null;
+        }
+        /// <summary>
+        ///   以节点v为中心旋转当前边在节点v的控制点，若v不是当前边的端点，则不做任何操作
+        /// </summary>
+        public void RotateCtrlPoint(Vertex v, float angle)
+        {
+            if (v == A)
+                Curve.SetPointOut(0, Curve.GetPointOut(0).Rotated(angle));
+            if (v == B)
+                Curve.SetPointIn(Curve.PointCount - 1, Curve.GetPointIn(Curve.PointCount - 1).Rotated(angle));
+            ClearCacheInfo(); // 曲线改变，需清理缓存信息
+        }
+        public Curve2D GetCurveCopy()
+        {
+            Curve2D curve = new Curve2D();
+            for (int i = 0; i < Curve.PointCount; ++i)
+            {
+                curve.AddPoint(
+                    Curve.GetPointPosition(i),
+                    @in: Curve.GetPointIn(i),
+                    @out: Curve.GetPointOut(i)
+                );
+            }
+            return curve;
+            ClearCacheInfo(); // 曲线改变，需清理缓存信息
+        }
+        public void SetCurveCopy(Curve2D curve)
+        {
+            Curve.ClearPoints();
+            for (int i = 0; i < curve.PointCount; ++i)
+            {
+                Curve.AddPoint(
+                    curve.GetPointPosition(i),
+                    @in: curve.GetPointIn(i),
+                    @out: curve.GetPointOut(i)
+                );
+            }
+            ClearCacheInfo();
+        }
+        private void ClearCacheInfo()
+        {
+            _length = null;
+            _points = null;
+            _rectangle = null;
         }
 
         #region IBrokenLineLikeImplementation
