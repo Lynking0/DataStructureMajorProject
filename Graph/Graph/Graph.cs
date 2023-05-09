@@ -102,7 +102,6 @@ namespace GraphMoudle
         }
         public void CreateEdges()
         {
-            ulong t = Time.GetTicksUsec();
             // 初始化标记
             foreach (Vertex vertex in Vertices)
                 vertex.Type = Vertex.VertexType.Isolated;
@@ -142,9 +141,6 @@ namespace GraphMoudle
 
             // 生成桥
             CreateBridges();
-
-            AdjustEdges();
-            GD.Print(Time.GetTicksUsec() - t);
         }
         public void AdjustEdges()
         {
