@@ -51,8 +51,8 @@ namespace DirectorMoudle
             // factoryInitStopWatch.Start();
             Industry.BuildFactories();
             Logger.trace("工厂生成完成");
-            // Industry.BuildFactoryChains();
-            // Logger.trace("产业链生成完成");
+            Industry.BuildFactoryChains();
+            Logger.trace("产业链生成完成");
             // factoryInitStopWatch.Stop();
             // GD.Print("Factory build in ", factoryInitStopWatch.ElapsedMilliseconds, " ms");
             // Factory.FactoriesQuadTree.Detail();
