@@ -7,6 +7,7 @@ namespace DirectorMoudle
 {
     public partial class FactroyView : Control
     {
+        public static FactroyView? Instance;
         // Called when the node enters the scene tree for the first time.
         private HBoxContainer? Storage;
         private VBoxContainer? Links;
@@ -15,6 +16,13 @@ namespace DirectorMoudle
         private Label? Recipe;
         private Label? MaximumCapacity;
         private Label? AvailableCapacity;
+
+        Factory? Factory;
+
+        public FactroyView()
+        {
+            Instance = this;
+        }
 
         public override void _Ready()
         {
@@ -32,13 +40,21 @@ namespace DirectorMoudle
         public override void _Process(double delta)
         {
         }
-
         public void Refresh(Factory factory)
         {
-            NameLabel!.Text = $"工厂: {factory.ID}";
-            Recipe!.Text = factory.Recipe;
-            MaximumCapacity!.Text = $"最大产能: {factory.BaseProduceSpeed.ToString()}";
-            AvailableCapacity!.Text = $"可用产能: {((factory.IdealOutput.ToList().Count > 0) ? factory.IdealOutput.ToList()[0].number.ToString() : "0")}";
+            Factory = factory;
+            Refresh();
+        }
+        public void Refresh()
+        {
+            if (Factory is null)
+            {
+                return;
+            }
+            NameLabel!.Text = $"工厂: {Factory.ID}";
+            Recipe!.Text = Factory.Recipe;
+            MaximumCapacity!.Text = $"最大产能: {Factory.BaseProduceSpeed.ToString()}";
+            AvailableCapacity!.Text = $"可用产能: {((Factory.IdealOutput.ToList().Count > 0) ? Factory.IdealOutput.ToList()[0].number.ToString() : "0")}";
 
             foreach (var child in Links!.GetChildren())
             {
@@ -48,20 +64,34 @@ namespace DirectorMoudle
             {
                 TrainLines.RemoveChild(child);
             }
-            foreach (var link in factory.InputLinks)
+            foreach (var child in Storage!.GetChildren())
+            {
+                Storage.RemoveChild(child);
+            }
+            foreach (var link in Factory.InputLinks)
             {
                 var label = new Label();
                 label.Text = $"{(string)link} in from {link.From.ID}";
                 Links.AddChild(label);
             }
-            foreach (var link in factory.OutputLinks)
+            foreach (var link in Factory.OutputLinks)
             {
                 var label = new Label();
                 label.Text = $"{(string)link} out to {link.To.ID}";
                 Links.AddChild(label);
             }
-
-            foreach (var line in factory.Vertex.GetTrainLines())
+            foreach (var item in Factory.Storage)
+            {
+                var c = new VBoxContainer();
+                var name = new Label();
+                name.Text = item.Key;
+                var number = new Label();
+                number.Text = item.Value.ToString();
+                c.AddChild(name);
+                c.AddChild(number);
+                Storage.AddChild(c);
+            }
+            foreach (var line in Factory.Vertex.GetTrainLines())
             {
                 var label = new Label();
                 label.Text = $"{line.ID}";

@@ -67,6 +67,7 @@ namespace DirectorMoudle
         private void BindEverything()
         {
             Factory.Factories.ForEach(f => { Director.Instance!.Tick += f.Tick; });
+            Director.Instance!.Tick += FactroyView.Instance!.Refresh;
         }
 
         public override void _Process(double delta)

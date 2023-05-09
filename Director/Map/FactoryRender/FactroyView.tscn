@@ -40,12 +40,10 @@ text = "可用产能"
 layout_mode = 2
 
 [node name="Label2" type="Label" parent="ScrollContainer/VBoxContainer"]
-visible = false
 layout_mode = 2
 text = "库存"
 
 [node name="storage" type="HBoxContainer" parent="ScrollContainer/VBoxContainer"]
-visible = false
 layout_mode = 2
 
 [node name="VBoxContainer2" type="VBoxContainer" parent="ScrollContainer/VBoxContainer/storage"]
@@ -81,6 +79,9 @@ text = "A"
 layout_mode = 2
 text = "2"
 
+[node name="HSeparator3" type="HSeparator" parent="ScrollContainer/VBoxContainer"]
+layout_mode = 2
+
 [node name="Label3" type="Label" parent="ScrollContainer/VBoxContainer"]
 layout_mode = 2
 text = "链接"
@@ -92,7 +93,7 @@ layout_mode = 2
 layout_mode = 2
 text = "A x 10 in"
 
-[node name="HSeparator3" type="HSeparator" parent="ScrollContainer/VBoxContainer"]
+[node name="HSeparator4" type="HSeparator" parent="ScrollContainer/VBoxContainer"]
 layout_mode = 2
 
 [node name="Label4" type="Label" parent="ScrollContainer/VBoxContainer"]

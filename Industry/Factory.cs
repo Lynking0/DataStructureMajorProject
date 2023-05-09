@@ -15,7 +15,7 @@ namespace IndustryMoudle
         public Recipe Recipe { get; }
         public GraphMoudle.Vertex Vertex { get; }
         public Vector2 Position { get => (Vector2)Vertex.Position; }
-        private Dictionary<ItemType, int> storage = new Dictionary<ItemType, int>();
+        public ItemBox Storage = new ItemBox();
         // 工厂产能 固定的
         public int BaseProduceSpeed = 100 + GD.RandRange(-4, 4);
         public QuadTree<Factory>.Handle QuadTreeHandle;
@@ -90,34 +90,16 @@ namespace IndustryMoudle
 
         public void LoadGoods(Goods goods, Train train)
         {
-            if (storage.ContainsKey(goods.Item.Type))
-                storage[goods.Item.Type] += goods.Item.Number;
-            else
-                storage.Add(goods.Item.Type, goods.Item.Number);
+            Storage.AddItem(goods.Item);
             goods.EnterFactory(this, train);
         }
 
-        private bool CanProduce()
-        {
-            foreach (var item in Recipe.Input)
-                if (!storage.ContainsKey(item.Key) || storage[item.Key] < item.Value)
-                    return false;
-            return true;
-        }
         private void Produce()
         {
-            foreach (var item in Recipe.Input)
-                storage[item.Key] -= item.Value;
-            foreach (var item in Recipe.Output)
-                if (storage.ContainsKey(item.Key))
-                    storage[item.Key] += item.Value;
-                else
-                    storage.Add(item.Key, item.Value);
-        }
-        public void Update()
-        {
-            if (CanProduce())
-                Produce();
+            foreach (var item in CapacityInput)
+                var (_, actual) = Storage.RequireItem(item.Key, item.Value);
+            foreach (var item in CapacityOutput)
+                Storage.AddItem(item.Key, item.Value);
         }
         /// <summary>
         /// 获取该工厂每周期的原料需求
@@ -126,14 +108,26 @@ namespace IndustryMoudle
         public List<Item> GetRequirement()
         {
             var requirement = new List<Item>();
-            foreach (var item in Recipe.Input)
-                requirement.Add(new Item(item.Value * BaseProduceSpeed / Recipe.Time, item.Key));
+            foreach (var item in CapacityInput)
+                requirement.Add(new Item(item.Value / Recipe.Time, item.Key));
             return requirement;
         }
 
+        private int TickCount = 0;
         public void Tick()
         {
-
+            TickCount++;
+            if (TickCount < 100)
+                return;
+            TickCount = 0;
+            foreach (var (type, number) in CapacityInput)
+            {
+                if (!Storage.HasItem(type, number))
+                {
+                    return;
+                }
+            }
+            Produce();
         }
     }
 }

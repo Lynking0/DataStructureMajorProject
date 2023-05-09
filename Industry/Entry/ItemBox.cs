@@ -35,6 +35,10 @@ namespace IndustryMoudle.Entry
             }
             return result;
         }
+        public IEnumerator<KeyValuePair<ItemType, int>> GetEnumerator()
+        {
+            return Content.GetEnumerator();
+        }
 
         public static implicit operator string(ItemBox self)
         {
@@ -66,6 +70,14 @@ namespace IndustryMoudle.Entry
             {
                 Content[type] = number;
             }
+        }
+        public bool HasItem(ItemType type, int number)
+        {
+            if (Content.ContainsKey(type))
+            {
+                return Content[type] >= number;
+            }
+            return false;
         }
 
         public (int deficit, int actual) RequireItem(ItemType type, int number)
