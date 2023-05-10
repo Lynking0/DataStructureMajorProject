@@ -81,6 +81,11 @@ namespace Shared.Extensions.Curve2DExtensions
                         newCurve.AddPoint(pos, @in, @out);
                 }
             }
+            if (newCurve.PointCount == 0)
+            {
+                foreach ((Vector2 pos, Vector2 @in, Vector2 @out) in lastCurve.GetEnumerable())
+                    newCurve.AddPoint(pos, @in, @out);
+            }
             return newCurve;
         }
     }

@@ -4,6 +4,7 @@ using UserControl;
 using TopographyMoudle;
 using IndustryMoudle;
 using TransportMoudle;
+using Shared.Extensions.Curve2DExtensions;
 
 namespace DirectorMoudle
 {
