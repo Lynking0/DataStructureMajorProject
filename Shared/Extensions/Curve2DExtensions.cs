@@ -26,8 +26,8 @@ namespace Shared.Extensions.Curve2DExtensions
             {
                 yield return (
                     curve.GetPointPosition(i),
-                    curve.GetPointIn(i),
-                    curve.GetPointOut(i)
+                    curve.GetPointOut(i),
+                    curve.GetPointIn(i)
                 );
             }
         }
@@ -74,7 +74,12 @@ namespace Shared.Extensions.Curve2DExtensions
                         throw new Exception("Shared.Extensions.Curve2DExtensions.Concat(): Value error!");
                 }
                 foreach ((Vector2 pos, Vector2 @in, Vector2 @out) in points)
-                    newCurve.AddPoint(pos, @in, @out);
+                {
+                    if (newCurve.PointCount > 0 && newCurve.GetPointPosition(newCurve.PointCount - 1) == pos && @in == Vector2.Zero && newCurve.GetPointOut(newCurve.PointCount - 1) == Vector2.Zero)
+                        newCurve.SetPointOut(newCurve.PointCount - 1, @out);
+                    else
+                        newCurve.AddPoint(pos, @in, @out);
+                }
             }
             return newCurve;
         }
