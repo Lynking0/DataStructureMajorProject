@@ -19,61 +19,31 @@ namespace GraphMoudle
             Parallel.ForEach(vertices,
                 (Vertex vertex) =>
                 {
-                    Vertex[] items = new Vertex[vertices.Length - 1];
-                    double[] keys = new double[vertices.Length - 1];
-                    int idx = 0;
+                    double key = System.Double.MaxValue;
+                    Vertex? item = null;
                     foreach (Vertex vertex_ in vertices)
                     {
-                        if (vertex == vertex_)
+                        if (vertex.ParentBlock == vertex_.ParentBlock)
                             continue;
-                        items[idx] = vertex_;
-                        keys[idx] = vertex.Position.DistanceSquaredToD(vertex_.Position);
-                        ++idx;
-                    }
-                    Array.Sort(keys, items);
-                    for (int i = 0; i < keys.Length; ++i)
-                    {
-                        if (items[i].ParentBlock != vertex.ParentBlock)
+                        double distS = vertex.Position.DistanceSquaredToD(vertex_.Position);
+                        if (distS < key)
                         {
-                            (double, Vertex, Vertex) value = (keys[i], vertex, items[i]);
-                            (double, Vertex, Vertex) oldValue;
-                            mut.WaitOne();
-                            if (!blockAdjInfo[vertex.ParentBlock.Index].TryGetValue(items[i].ParentBlock, out oldValue))
-                                blockAdjInfo[vertex.ParentBlock.Index].Add(items[i].ParentBlock, value);
-                            else if (keys[i] < oldValue.Item1)
-                                blockAdjInfo[vertex.ParentBlock.Index][items[i].ParentBlock] = value;
-                            mut.ReleaseMutex();
-                            return;
+                            key = distS;
+                            item = vertex_;
                         }
                     }
+                    (double, Vertex, Vertex) value = (key, vertex, item!);
+                    (double, Vertex, Vertex) oldValue;
+                    mut.WaitOne();
+                    if (!blockAdjInfo[vertex.ParentBlock.Index].TryGetValue(item!.ParentBlock, out oldValue))
+                        blockAdjInfo[vertex.ParentBlock.Index].Add(item.ParentBlock, value);
+                    else if (key < oldValue.Item1)
+                        blockAdjInfo[vertex.ParentBlock.Index][item.ParentBlock] = value;
+                    mut.ReleaseMutex();
                 }
             );
             for (int i = 0; i < Blocks.Count; ++i)
                 Blocks[i].SetAdjacenciesInfo(blockAdjInfo[i]);
         }
-
-        // private Task CalcDistInfoAsync()
-        // {
-        //     DistInfo = new ConcurrentDictionary<Vertex, Vertex[]>();
-        //     Vertex[] vertices = new Vertex[Vertices.Count];
-        //     VerticesContainer.CopyTo(vertices, 0);
-        //     return Parallel.ForEachAsync(vertices,
-        //         async (Vertex vertex, CancellationToken _) =>
-        //         {
-        //             await Task.Run(
-        //                 () =>
-        //                 {
-        //                     Vertex[] items = new Vertex[vertices.Length];
-        //                     vertices.CopyTo(items, 0);
-        //                     double[] keys = new double[vertices.Length];
-        //                     for (int i = 0; i < items.Length; ++i)
-        //                         keys[i] = vertex.Position.DistanceSquaredToD(items[i].Position);
-        //                     Array.Sort(keys, items);
-        //                     DistInfo.TryAdd(vertex, items);
-        //                 }
-        //             );
-        //         }
-        //     );
-        // }
     }
 }
