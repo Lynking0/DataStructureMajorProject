@@ -40,7 +40,7 @@ namespace Shared.Extensions.Curve2DExtensions
             IEnumerable<(Vector2 pos, Vector2 @in, Vector2 @out)> points;
             Curve2D newCurve = new Curve2D();
             Curve2D lastCurve = thisCurve;
-            for (int i = 1; i < curves.Length; ++i)
+            for (int i = 0; i < curves.Length; ++i)
             {
                 if (newCurve.PointCount == 0)
                 {
