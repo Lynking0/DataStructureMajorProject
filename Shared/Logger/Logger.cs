@@ -34,7 +34,7 @@ public class Logger
     private static string GetHeader(LogLevel level)
     {
         var level_name = GetLevelName(level);
-        var t = Process.GetCurrentProcess().TotalProcessorTime;
+        var t = Process.GetCurrentProcess().Threads[0].TotalProcessorTime;
 
         StackTrace stackTrace = new StackTrace();
         var stackFrame = stackTrace.GetFrame(3)!;
