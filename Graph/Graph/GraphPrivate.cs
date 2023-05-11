@@ -1,4 +1,3 @@
-#define FoolishBridges
 using System;
 using Godot;
 using Shared.Extensions.DoubleVector2Extensions;
