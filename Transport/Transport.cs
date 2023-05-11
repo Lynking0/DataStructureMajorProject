@@ -192,10 +192,8 @@ namespace TransportMoudle
                         waitVertexes.AddRange(new[] { curEdge.A, curEdge.B });
                     }
                 }
-                var line = new TrainLine(TrainLineLevel.FootPath);
-                line.AddEdgeRange(edges);
-                // TODO: 基层配送拆解
                 var trafficFreeBlock = new TrafficFreeBlock(edges, passingLine);
+                trafficFreeBlock.GenerateFootPath();
             }
             var footPaths = TrainLine.TrainLines.Where(l => l.Level == TrainLineLevel.FootPath).ToArray();
             var edgeCount = Graph.Instance.Edges.Count();

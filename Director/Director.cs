@@ -62,12 +62,12 @@ namespace DirectorMoudle
             Transport.BuildTrainLines();
             Logger.trace("交通网络生成完成");
 
-            foreach (var (line, path) in TrainLine.TrainLines.Where(line => line.Level == TrainLineLevel.MainLine).Select(line => (line, line.Path)))
+            foreach (var line in TrainLine.TrainLines)
             {
-                GetNode("%MapRender").AddChild(path);
+                line.GenerateCurve();
+                GetNode("%MapRender").AddChild(line.Path);
                 new Train(line);
             }
-
             BindEverything();
         }
 
