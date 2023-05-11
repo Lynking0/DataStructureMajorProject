@@ -100,13 +100,13 @@ namespace DirectorMoudle
                 switch (line.Level)
                 {
                     case TrainLineLevel.MainLine:
-                        label.LabelSettings.FontSize = 20;
+                        label.LabelSettings.FontSize = 24;
                         break;
                     case TrainLineLevel.SideLine:
-                        label.LabelSettings.FontSize = 16;
+                        label.LabelSettings.FontSize = 20;
                         break;
                     case TrainLineLevel.FootPath:
-                        label.LabelSettings.FontSize = 12;
+                        label.LabelSettings.FontSize = 16;
                         break;
                 }
                 label.LabelSettings.OutlineSize = 4;

@@ -23,8 +23,8 @@ namespace TransportMoudle
 
         public void GenerateFootPath()
         {
-            // TODO: 合并部分重合的FootPath
             var ports = PassingLine.Keys.ToHashSet();
+            var lineEdges = new List<List<Edge>>();
             foreach (var vertex in _vertexes.Where(v => !ports.Contains(v)))
             {
                 var queue = new PriorityQueue<(Vertex vertex, List<Edge> edges), double>();
@@ -40,9 +40,7 @@ namespace TransportMoudle
                     var (nextVertex, edges) = temp;
                     if (ports.Contains(nextVertex))
                     {
-                        var l = new TrainLine(TrainLineLevel.FootPath);
-                        edges.Reverse();
-                        l.AddEdgeRange(edges);
+                        lineEdges.Add(edges);
                         break;
                     }
                     else
@@ -60,6 +58,44 @@ namespace TransportMoudle
                         }
                     }
                 }
+            }
+            if (lineEdges.Count > 0)
+            {
+                bool include(List<Edge> t, List<Edge> o)
+                {
+                    if (t.Count < o.Count)
+                        return false;
+                    for (int i = 0; i < t.Count; i++)
+                    {
+                        if (t[i] != o[0])
+                            continue;
+                        for (int j = 0; j < o.Count; j++)
+                        {
+                            if (t[i + j] != o[j])
+                                break;
+                            if (j == o.Count - 1)
+                                return true;
+                        }
+                    }
+                    return false;
+                }
+                lineEdges.Sort((a, b) => b.Count - a.Count);
+                for (int i = 0; i < lineEdges.Count; i++)
+                {
+                    for (int j = i + 1; j < lineEdges.Count; j++)
+                    {
+                        if (include(lineEdges[i], lineEdges[j]))
+                        {
+                            lineEdges.RemoveAt(j);
+                            j--;
+                        }
+                    }
+                }
+            }
+            foreach (var edges in lineEdges)
+            {
+                var l = new TrainLine(TrainLineLevel.FootPath);
+                l.AddEdgeRange(edges);
             }
         }
     }
