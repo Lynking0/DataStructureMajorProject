@@ -1,6 +1,9 @@
 using Godot;
 using GraphMoudle;
 using System.Collections.Generic;
+using System.Linq;
+using Shared.Extensions.Curve2DExtensions;
+
 namespace TransportMoudle
 {
     public enum TrainLineLevel
@@ -21,7 +24,7 @@ namespace TransportMoudle
 
         private List<Edge> _edges = new List<Edge>();
         public IReadOnlyList<Edge> Edges => _edges;
-
+        public Path2D Path = new Path2D();
         public IReadOnlyCollection<Vertex> Vertexes
         {
             get
@@ -42,6 +45,7 @@ namespace TransportMoudle
         {
             Level = level;
             _trainLines.Add(this);
+            Path.Curve = new Curve2D();
             switch (level)
             {
                 case TrainLineLevel.MainLine:
@@ -64,10 +68,25 @@ namespace TransportMoudle
         public void AddEdge(Edge edge)
         {
             _edges.Add(edge);
+            // Path.Curve.AddPoint(edge.Curve.GetPointPosition(0));
+            // Path.Curve.AddPoint(edge.Curve.GetPointPosition(1));
+
+            // if (Path.Curve.PointCount == 0)
+            //     Path.Curve = edge.Curve;
+            // else
+            Path.Curve = Path.Curve.Concat(edge.Curve);
         }
         public void AddEdgeRange(IEnumerable<Edge> edges)
         {
-            _edges.AddRange(edges);
+            foreach (var edge in edges)
+            {
+                AddEdge(edge);
+            }
+            // _edges.AddRange(edges);
+            // foreach (var edge in edges)
+            // {
+            //     Path.Curve = Path.Curve.Concat(edge.Curve);
+            // }
         }
     }
 }

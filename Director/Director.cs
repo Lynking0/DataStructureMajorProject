@@ -4,7 +4,7 @@ using UserControl;
 using TopographyMoudle;
 using IndustryMoudle;
 using TransportMoudle;
-using Shared.Extensions.Curve2DExtensions;
+using System.Linq;
 
 namespace DirectorMoudle
 {
@@ -62,6 +62,12 @@ namespace DirectorMoudle
             Transport.BuildTrainLines();
             Logger.trace("交通网络生成完成");
 
+            foreach (var (line, path) in TrainLine.TrainLines.Where(line => line.Level == TrainLineLevel.MainLine).Select(line => (line, line.Path)))
+            {
+                GetNode("%MapRender").AddChild(path);
+                new Train(line);
+            }
+
             BindEverything();
         }
 
@@ -69,6 +75,7 @@ namespace DirectorMoudle
         {
             Factory.Factories.ForEach(f => { Director.Instance!.Tick += f.Tick; });
             Director.Instance!.Tick += FactroyView.Instance!.Refresh;
+            Train.Trains.ForEach(t => { Director.Instance!.Tick += t.Tick; });
         }
 
         public override void _Process(double delta)
