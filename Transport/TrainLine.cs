@@ -68,15 +68,25 @@ namespace TransportMoudle
         public void AddEdge(Edge edge)
         {
             _edges.Add(edge);
+            // Path.Curve.AddPoint(edge.Curve.GetPointPosition(0));
+            // Path.Curve.AddPoint(edge.Curve.GetPointPosition(1));
+
+            // if (Path.Curve.PointCount == 0)
+            //     Path.Curve = edge.Curve;
+            // else
             Path.Curve = Path.Curve.Concat(edge.Curve);
         }
         public void AddEdgeRange(IEnumerable<Edge> edges)
         {
-            _edges.AddRange(edges);
             foreach (var edge in edges)
             {
-                Path.Curve = Path.Curve.Concat(edge.Curve);
+                AddEdge(edge);
             }
+            // _edges.AddRange(edges);
+            // foreach (var edge in edges)
+            // {
+            //     Path.Curve = Path.Curve.Concat(edge.Curve);
+            // }
         }
     }
 }
