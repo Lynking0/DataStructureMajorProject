@@ -122,8 +122,7 @@ namespace DirectorMoudle
                 return;
             }
             var width = MapRender.Instance!.GetRoadWidth(loadInfo.TotalLoad);
-            var l = TrainLine.TrainLines.Where(l => l.Level == TrainLineLevel.MainLine).Where(l => l.Edges.Contains(edge)).First();
-            DrawEdge(edge, width, color, l.Edges.ToList().IndexOf(edge).ToString());
+            DrawEdge(edge, width, color, loadInfo.TotalLoad.ToString());
         }
 
         private void DrawLine(TrainLine line)
