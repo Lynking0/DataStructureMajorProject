@@ -152,6 +152,46 @@ namespace GraphMoudle
             }
             return result;
         }
+        /// <summary>
+        ///   对指定点和该点邻接的若干指定边，对边的方向进行调整，
+        ///   这些边在该点处的控制点方向需一致。
+        /// </summary>
+        private void _adjustEdges(Vertex vertex, params Edge[] adjEdges)
+        {
+            RandomDislocate(adjEdges);
+            foreach (Edge edge in adjEdges)
+            {
+                if (edge.IsBridge)
+                    continue;
+                Curve2D temp = edge.GetCurveCopy();
+                edge.RotateCtrlPoint(vertex, MathF.PI);
+                // edge不是桥，所以只有一段三阶贝塞尔
+                EdgeEvaluator.Instance.MaxEnergy = MaxVertexAltitude;
+                EdgeEvaluator.Instance.A = edge.Curve.GetPointPosition(0);
+                EdgeEvaluator.Instance.B = edge.Curve.GetPointPosition(0) + edge.Curve.GetPointOut(0);
+                EdgeEvaluator.Instance.C = edge.Curve.GetPointPosition(1) + edge.Curve.GetPointIn(1);
+                EdgeEvaluator.Instance.D = edge.Curve.GetPointPosition(1);
+                if (EdgeEvaluator.Instance.Annealing().energy >= MaxVertexAltitude)
+                {
+                    edge.SetCurveCopy(temp);
+                    continue;
+                }
+                GISInfoStorer.Remove(edge);
+                if (!GISInfoStorer.CanAdd(edge))
+                {
+                    edge.SetCurveCopy(temp);
+                    GISInfoStorer.Add(edge);
+                }
+                else
+                {
+                    GISInfoStorer.Add(edge);
+                    break;
+                }
+            }
+        }
+        /// <summary>
+        ///   根据各个节点情况自觉调整边的方向
+        /// </summary>
         public void AdjustEdges()
         {
             foreach (Vertex vertex in Vertices)
@@ -171,38 +211,24 @@ namespace GraphMoudle
                 {
                     Edge[] adjEdges = new Edge[vertex.Adjacencies.Count];
                     vertex.Adjacencies.CopyTo(adjEdges);
-                    RandomDislocate(adjEdges);
-                    foreach (Edge edge in adjEdges)
-                    {
-                        if (edge.IsBridge)
-                            continue;
-                        Curve2D temp = edge.GetCurveCopy();
-                        edge.RotateCtrlPoint(vertex, MathF.PI);
-                        // edge不是桥，所以只有一段三阶贝塞尔
-                        EdgeEvaluator.Instance.MaxEnergy = MaxVertexAltitude;
-                        EdgeEvaluator.Instance.A = edge.Curve.GetPointPosition(0);
-                        EdgeEvaluator.Instance.B = edge.Curve.GetPointPosition(0) + edge.Curve.GetPointOut(0);
-                        EdgeEvaluator.Instance.C = edge.Curve.GetPointPosition(1) + edge.Curve.GetPointIn(1);
-                        EdgeEvaluator.Instance.D = edge.Curve.GetPointPosition(1);
-                        if (EdgeEvaluator.Instance.Annealing().energy >= MaxVertexAltitude)
-                        {
-                            edge.SetCurveCopy(temp);
-                            continue;
-                        }
-                        GISInfoStorer.Remove(edge);
-                        if (!GISInfoStorer.CanAdd(edge))
-                        {
-                            edge.SetCurveCopy(temp);
-                            GISInfoStorer.Add(edge);
-                        }
-                        else
-                        {
-                            GISInfoStorer.Add(edge);
-                            break;
-                        }
-                    }
+                    _adjustEdges(vertex, adjEdges);
                 }
             }
+        }
+        /// <summary>
+        ///   调整给定的两边在它们的公共点上的控制点方向
+        /// </summary>
+        public void AdjustEdges(Edge edge1, Edge edge2)
+        {
+            Vertex vertex;
+            if (edge1.A == edge2.A || edge1.A == edge2.B)
+                vertex = edge1.A;
+            else if (edge1.B == edge2.A || edge1.B == edge2.B)
+                vertex = edge1.B;
+            else
+                throw new Exception($"{GetType()}.AdjustEdges(Edge, Edge): Value error!");
+            if (Mathf.IsEqualApprox((float)edge1.GetCtrlAngle(vertex)!, (float)edge2.GetCtrlAngle(vertex)!))
+                _adjustEdges(vertex, edge1, edge2);
         }
     }
 }
