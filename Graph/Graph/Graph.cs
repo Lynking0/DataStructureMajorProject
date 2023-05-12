@@ -2,12 +2,13 @@ using System;
 using Godot;
 using GraphMoudle.DataStructureAndAlgorithm.SpatialIndexer;
 using GraphMoudle.DataStructureAndAlgorithm.SpatialIndexer.RTreeStructure;
+using GraphMoudle.DataStructureAndAlgorithm.OptimalCombinationAlgorithm;
+using GraphMoudle.DataStructureAndAlgorithm.OptimalCombinationAlgorithm.ComputeShader;
+using Shared;
 using Shared.Extensions.ICollectionExtensions;
 using Shared.Extensions.DoubleVector2Extensions;
 using System.Collections.Generic;
 using TopographyMoudle;
-using GraphMoudle.DataStructureAndAlgorithm.OptimalCombinationAlgorithm;
-using GraphMoudle.DataStructureAndAlgorithm.OptimalCombinationAlgorithm.ComputeShader;
 using static Shared.RandomMethods;
 
 namespace GraphMoudle
@@ -85,6 +86,7 @@ namespace GraphMoudle
                 FractalNoiseGenerator.GetFractalNoise(vertex.Position.X, vertex.Position.Y, out gradX, out gradY);
                 vertex.Gradient = new Vector2D(gradX, gradY);
             }
+            Logger.trace("Vertex生成完成");
         }
         public void CreateEdges()
         {
@@ -94,18 +96,23 @@ namespace GraphMoudle
 
             // 找出邻近点对
             List<(Vertex, Vertex)> pairs = VerticesContainer.GetNearbyPairs();
+            Logger.trace("Edge已准备开始生成");
 
             // 通过海拔高度初步筛选出可选边
             List<Edge> alternativeEdges = new List<Edge>();
             EdgeEvaluatorInvoker.Init();
+            Logger.trace("EdgeEvaluatorInvoker初始化完成");
             FirstTimeFilter(pairs, alternativeEdges);
+            Logger.trace("Edge初次筛选完成");
             SecondTimeFilter(pairs, alternativeEdges);
+            Logger.trace("Edge二次筛选完成");
 
             // 初始化RTree，并加入各个Vertex
             GISInfoStorer.Clear();
             foreach (Vertex vertex in Vertices)
                 if (vertex.Type != Vertex.VertexType.Isolated) // 已经确认没有连边的点不需要参与后面的运算
                     GISInfoStorer.Add(vertex); // 此时不存在vertex无法添加的可能性，故不调用CanAdd()函数
+            Logger.trace("RTree初始化完成");
 
             // 从初步筛出的边中选择出最终要生成的边
             BuildEdges(alternativeEdges);
@@ -118,15 +125,19 @@ namespace GraphMoudle
                 if (vertex.Adjacencies.Count == 0)
                     VerticesContainer.Remove(vertex);
             }
+            Logger.trace("Edge初步生成完成");
 
             // 生成分块信息
             DivideBlocks();
+            Logger.trace("分块信息生成完成");
 
             // 预计算并存储距离信息
             CalcDistInfo();
+            Logger.trace("区块邻近信息预计算完成");
 
             // 生成桥
             CreateBridges();
+            Logger.trace("桥生成完成");
         }
         /// <summary>
         ///   将指定边从图中删除，注意调用后Block信息有部分会失效

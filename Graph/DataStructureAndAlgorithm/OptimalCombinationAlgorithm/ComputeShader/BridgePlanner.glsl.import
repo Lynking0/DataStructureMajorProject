@@ -1,0 +1,14 @@
+[remap]
+
+importer="glsl"
+type="RDShaderFile"
+uid="uid://qdcy02o2tlxw"
+path="res://.godot/imported/BridgePlanner.glsl-10f7f26eea38babce034c9d9a9f82e6b.res"
+
+[deps]
+
+source_file="res://Graph/DataStructureAndAlgorithm/OptimalCombinationAlgorithm/ComputeShader/BridgePlanner.glsl"
+dest_files=["res://.godot/imported/BridgePlanner.glsl-10f7f26eea38babce034c9d9a9f82e6b.res"]
+
+[params]
+

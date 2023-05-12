@@ -47,7 +47,7 @@ namespace DirectorMoudle
             Logger.trace("Director绑定完成");
             Topography.InitParams();
             Topography.Generate();
-            Logger.trace("Topography生成完成");
+            Logger.trace("Graph生成完成");
             // var factoryInitStopWatch = new System.Diagnostics.Stopwatch();
             // factoryInitStopWatch.Start();
             Industry.BuildFactories();
