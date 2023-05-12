@@ -350,7 +350,7 @@ vec2 Rotated(vec2 v, float angle)
 		v.x * sine + v.y * cosi);
 }
 
-vec2 vertices[34];
+vec2 vertices[36];
 struct StackInfo
 {
 	float minT;

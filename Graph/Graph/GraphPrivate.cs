@@ -1,3 +1,4 @@
+#define ShaderBridges
 using System;
 using Godot;
 using Shared.Extensions.DoubleVector2Extensions;
@@ -162,11 +163,11 @@ namespace GraphMoudle
         /// </summary>
         private void CreateBridges()
         {
+#if FoolishBridges
             List<(Vertex a, Vertex b)> VerticesPairs = new List<(Vertex a, Vertex b)>();
             foreach (Block block in Blocks)
                 foreach (BlockAdjInfo info in block.AdjacenciesInfo!)
                     VerticesPairs.Add((info.Vertex1, info.Vertex2));
-#if FoolishBridges
             foreach ((Vertex a, Vertex b) in VerticesPairs)
             {
                 Vector2D aCtrl, bCtrl;
@@ -199,7 +200,62 @@ namespace GraphMoudle
                     GISInfoStorer.Add(edge);
                 }
             }
+#elif ShaderBridges
+            BridgePlannerInvoker.Init();
+            BridgePlannerInvoker.Data = new List<(Vertex a, Vertex b, Vector2D aCtrl, Vector2D bCtrl)>();
+            foreach (Block block in Blocks)
+            {
+                foreach (BlockAdjInfo info in block.AdjacenciesInfo!)
+                {
+                    Vertex a = info.Vertex1;
+                    Vertex b = info.Vertex2;
+                    Vector2D aCtrl, bCtrl;
+                    double CtrlPointDist = a.Position.DistanceToD(b.Position) * 0.25;
+                    if (a.Type == Vertex.VertexType.Intermediate)
+                    {
+                        if (Mathf.Abs(a.Gradient.OrthogonalD().AngleToD(b.Position - a.Position)) < Math.PI / 2)
+                            aCtrl = a.Position + a.Gradient.OrthogonalD().NormalizedD() * CtrlPointDist;
+                        else
+                            aCtrl = a.Position - a.Gradient.OrthogonalD().NormalizedD() * CtrlPointDist;
+                    }
+                    else
+                        aCtrl = a.Position + a.Gradient.NormalizedD() * CtrlPointDist;
+                    if (b.Type == Vertex.VertexType.Intermediate)
+                    {
+                        if (Mathf.Abs(b.Gradient.OrthogonalD().AngleToD(a.Position - b.Position)) < Math.PI / 2)
+                            bCtrl = b.Position + b.Gradient.OrthogonalD().NormalizedD() * CtrlPointDist;
+                        else
+                            bCtrl = b.Position - b.Gradient.OrthogonalD().NormalizedD() * CtrlPointDist;
+                    }
+                    else
+                        bCtrl = b.Position + b.Gradient.NormalizedD() * CtrlPointDist;
+                    BridgePlannerInvoker.Data.Add((a, b, aCtrl, bCtrl));
+                }
+            }
+            BridgePlannerInvoker.Invoke();
+            (float[] posX, float[] posY, float[] ctrlOffsetX, float[] ctrlOffsetY) = BridgePlannerInvoker.Receive();
+            for (int i = 0; i < BridgePlannerInvoker.Data.Count; ++i)
+            {
+                // GD.Print((posX[i], posY[i]), ' ', (ctrlOffsetX[i], ctrlOffsetY[i]));
+                (Vertex a, Vertex b, Vector2D aCtrl, Vector2D bCtrl) = BridgePlannerInvoker.Data[i];
+                Vector2D pos = new Vector2D(posX[i], posY[i]);
+                Vector2D ctrlOffset = new Vector2D(ctrlOffsetX[i], ctrlOffsetY[i]);
+                Edge edge = new Edge(a, b, new Curve2D());
+                edge.Curve.AddPoint((Vector2)a.Position, @out: (Vector2)(aCtrl - a.Position));
+                edge.Curve.AddPoint((Vector2)pos, @in: (Vector2)ctrlOffset, @out: -(Vector2)ctrlOffset);
+                edge.Curve.AddPoint((Vector2)b.Position, @in: (Vector2)(bCtrl - b.Position));
+                if (GISInfoStorer.CanAdd(edge))
+                {
+                    a.Adjacencies.Add(edge);
+                    b.Adjacencies.Add(edge);
+                    GISInfoStorer.Add(edge);
+                }
+            }
 #else
+            List<(Vertex a, Vertex b)> VerticesPairs = new List<(Vertex a, Vertex b)>();
+            foreach (Block block in Blocks)
+                foreach (BlockAdjInfo info in block.AdjacenciesInfo!)
+                    VerticesPairs.Add((info.Vertex1, info.Vertex2));
             System.Threading.Mutex mut = new System.Threading.Mutex();
             Parallel.ForEach(VerticesPairs,
                 ((Vertex, Vertex) pair) =>
