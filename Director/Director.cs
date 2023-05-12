@@ -41,7 +41,7 @@ namespace DirectorMoudle
             MapRender = GetNode<MapRender>("%MapRender");
             MouselInput = GetNode<MouselInput>("%MouseInput");
 
-            MouselInput.MapMoveTo += MapController!.SetMapPosition;
+            MouselInput.MapMoveTo += MapController!.SetMapRelativePosition;
             MouselInput.MapZoomIn += MapController.MapZoomIn;
             MouselInput.MapZoomOut += MapController.MapZoomOut;
             Logger.trace("Director绑定完成");
@@ -65,8 +65,8 @@ namespace DirectorMoudle
             foreach (var line in TrainLine.TrainLines)
             {
                 line.GenerateCurve();
-                GetNode("%MapRender").AddChild(line.Path);
-                new Train(line);
+                GetNode("%MapRender").GetNode("TrainLineContainer").AddChild(line.Path);
+                GetNode("%MapRender").GetNode("TrainContainer").AddChild(new Train(line));
             }
             BindEverything();
         }
@@ -78,6 +78,10 @@ namespace DirectorMoudle
             Train.Trains.ForEach(t => { Director.Instance!.Tick += t.Tick; });
         }
 
+        private void FocusOn(Vector2 position)
+        {
+            MapController!.SetMapPosition(position);
+        }
         public override void _Process(double delta)
         {
             DeltaCount += delta;
@@ -86,6 +90,9 @@ namespace DirectorMoudle
                 Tick!.Invoke();
                 DeltaCount -= TickLength;
             }
+            var t = Train.Trains.Where(t => t.TrainLine.Level == TrainLineLevel.MainLine).First();
+            t.Size = 100;
+            FocusOn(t.TrainPosition);
         }
     }
 }
