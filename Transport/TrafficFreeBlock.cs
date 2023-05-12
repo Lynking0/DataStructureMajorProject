@@ -27,6 +27,7 @@ namespace TransportMoudle
             var lineEdges = new List<List<Edge>>();
             foreach (var vertex in _vertexes.Where(v => !ports.Contains(v)))
             {
+                // TODO: 三级路要按照link生成，不然有些路会空出来
                 var queue = new PriorityQueue<(Vertex vertex, List<Edge> edges), double>();
                 var visitedEdges = new HashSet<Edge>();
                 foreach (var edge in vertex.Adjacencies.Where(e => _edges.Contains(e)))
