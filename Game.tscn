@@ -66,6 +66,10 @@ script = ExtResource("5_tv3h6")
 visible = false
 script = ExtResource("5_fj2l2")
 
+[node name="TrainLineContainer" type="Node2D" parent="MouseInput/MapRender"]
+
+[node name="TrainContainer" type="Node2D" parent="MouseInput/MapRender"]
+
 [node name="LogicFrame" type="Label" parent="MouseInput"]
 unique_name_in_owner = true
 layout_mode = 1

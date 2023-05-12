@@ -1,7 +1,8 @@
 using Godot;
-using GraphMoudle;
 using System.Collections.Generic;
 using System.Linq;
+using GraphMoudle;
+using TransportMoudle.Extensions;
 using Shared.Extensions.Curve2DExtensions;
 
 namespace TransportMoudle
@@ -40,7 +41,6 @@ namespace TransportMoudle
         }
 
         public Color Color;
-
         public TrainLine(TrainLineLevel level)
         {
             Level = level;
@@ -76,6 +76,33 @@ namespace TransportMoudle
         public void GenerateCurve()
         {
             Path.Curve = Path.Curve.Concat(_edges.Select(e => e.Curve).ToArray());
+        }
+        public static List<Trip> Navigate(IReadOnlyList<Vertex> vertexes)
+        {
+            var result = new List<Trip>();
+            var lines = vertexes[0].GetTrainLines().ToList();
+            var t = new Trip() { Start = vertexes[0] };
+            for (int i = 0; i < vertexes.Count(); i++)
+            {
+                var v = vertexes[i];
+                if (lines.Count == 0)
+                {
+                    // 当前线路无法达到该点，开始下一段trip
+                    result.Add(t);
+                    lines = v.GetTrainLines().ToList();
+                    t = new Trip() { Start = v };
+                }
+                else
+                {
+                    t.End = v;
+                    t.Line = lines.First();
+
+                    lines = lines.Intersect(v.GetTrainLines()).ToList();
+
+                }
+            }
+            result.Add(t);
+            return result;
         }
     }
 }
