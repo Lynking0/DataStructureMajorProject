@@ -145,10 +145,11 @@ namespace IndustryMoudle
         private int TickCount = 0;
         public void Tick()
         {
+            // 避免整百全部工厂一起生产卡卡
             TickCount++;
-            if (TickCount < 100)
+            if (TickCount < ID % 100 + 100)
                 return;
-            TickCount = 0;
+            TickCount = ID % 100;
             foreach (var (type, number) in CapacityInput)
             {
                 if (!Storage.HasItem(type, number))
