@@ -71,13 +71,13 @@ namespace DirectorMoudle
             foreach (var link in Factory.InputLinks)
             {
                 var label = new Label();
-                label.Text = $"{(string)link} in from {link.From.ID}";
+                label.Text = $"{link.ID} {(string)link} in from {link.From.ID} for {link.For?.ID ?? -1}";
                 Links.AddChild(label);
             }
             foreach (var link in Factory.OutputLinks)
             {
                 var label = new Label();
-                label.Text = $"{(string)link} out to {link.To.ID}";
+                label.Text = $"{link.ID} {(string)link} out to {link.To.ID} for {link.For?.ID ?? -1}";
                 Links.AddChild(label);
             }
             foreach (var item in Factory.Storage)

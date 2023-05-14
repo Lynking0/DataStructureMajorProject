@@ -5,6 +5,7 @@ using TopographyMoudle;
 using IndustryMoudle;
 using TransportMoudle;
 using System.Linq;
+using IndustryMoudle.Link;
 
 namespace DirectorMoudle
 {
@@ -54,6 +55,24 @@ namespace DirectorMoudle
             Logger.trace("工厂生成完成");
             Industry.BuildFactoryChains();
             Logger.trace("产业链生成完成");
+            var totalDeficit = Factory.TotalDeficit.ToArray();
+            Logger.error($"未配平工厂： {totalDeficit.Count()}");
+            foreach (var (factory, deficit) in totalDeficit)
+            {
+                var def = deficit.Select(item => ((string)item.Key, item.Value));
+                var affectChains = ProduceChain.Chains
+                    .Where(c => c.Links.SelectMany(l => new[] { l.From, l.To }).Contains(factory))
+                    .Select(c => c.ID);
+                Logger.error($"{factory.ID} {string.Join(" ", def)} affect chain {string.Join(" ", affectChains)}");
+            }
+            var cs = ProduceChain.Chains
+                .Where(
+                    c => totalDeficit.Select(item => item.factory)
+                    .Intersect(
+                        c.Links.SelectMany(l => new[] { l.From, l.To }))
+                        .Count() > 0
+                    );
+            Logger.error($"未配平产业链： {cs.Count()}");
             // factoryInitStopWatch.Stop();
             // GD.Print("Factory build in ", factoryInitStopWatch.ElapsedMilliseconds, " ms");
             // Factory.FactoriesQuadTree.Detail();

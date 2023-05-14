@@ -87,7 +87,36 @@ namespace IndustryMoudle
         {
             FactoriesQuadTree.Remove(this);
         }
-
+        public List<Goods> OutputGoods(Train train, TrainLine line, int max)
+        {
+            var links = OutputLinks;
+                // .Where(l => TrainLine.Navigate(line.Vertexes.ToArray()).First().Line == line);
+            var outputSum = links.Sum(l => l.Item.Number);
+            if (outputSum == 0)
+            {
+                return new List<Goods>();
+            }
+            var maxRound = max / outputSum;
+            var result = new List<Goods>();
+            for (int _ = 0; _ < maxRound; _++)
+            {
+                foreach (var link in links)
+                {
+                    if (Storage.HasItem(link.Item))
+                    {
+                        Storage.RequireItem(link.Item);
+                        var g = new Goods(link.Item, link);
+                        g.LeaveFactory(this, train);
+                        result.Add(g);
+                    }
+                    else
+                    {
+                        return result;
+                    }
+                }
+            }
+            return result;
+        }
         public void LoadGoods(Goods goods, Train train)
         {
             Storage.AddItem(goods.Item);

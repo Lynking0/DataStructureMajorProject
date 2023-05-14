@@ -7,6 +7,8 @@ namespace IndustryMoudle.Link
 {
     public partial class ProduceChain
     {
+        private static int IDCount = 0;
+        public readonly int ID = IDCount++;
         private List<Factory> _factories = new List<Factory>();
         public IReadOnlyList<Factory> Factories => _factories;
         private List<ProduceLink> _links = new List<ProduceLink>();
@@ -57,7 +59,14 @@ namespace IndustryMoudle.Link
             Color = colors[Godot.GD.RandRange(0, colors.Length - 1)];
 #endif
         }
-
+        public void Destory()
+        {
+            _chains.Remove(this);
+            foreach (var link in Links)
+            {
+                link.Destroy();
+            }
+        }
         public void AddFactory(Factory factory)
         {
             _factories.Add(factory);
@@ -77,7 +86,6 @@ namespace IndustryMoudle.Link
         {
             _links.AddRange(links);
         }
-
         public void AddDeficit(Factory factory, Item item)
         {
             Deficit.AddItem(item);
