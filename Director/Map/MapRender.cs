@@ -153,12 +153,9 @@ namespace DirectorMoudle
             {
                 render.Clear();
             }
-            if (FactoryDisplay)
-                Factory.Factories.ToList().ForEach(DrawFactor);
-            if (RoadDisplay)
-                Graph.Instance.Edges.ToList().ForEach(AddRoad);
-            if (LinkDisplay)
-                ProduceLink.Links.ForEach(AddLink);
+            Factory.Factories.ToList().ForEach(DrawFactor);
+            Graph.Instance.Edges.ToList().ForEach(AddRoad);
+            ProduceLink.Links.ForEach(AddLink);
             foreach (var render in Renders)
             {
                 render.QueueRedraw();

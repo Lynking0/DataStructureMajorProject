@@ -17,7 +17,7 @@ namespace IndustryMoudle
         public Vector2 Position { get => (Vector2)Vertex.Position; }
         public ItemBox Storage = new ItemBox();
         // 工厂产能 固定的
-        public int BaseProduceSpeed = 100 + GD.RandRange(-4, 4);
+        public int BaseProduceSpeed = 10 + GD.RandRange(-4, 4);
         public QuadTree<Factory>.Handle QuadTreeHandle;
 
         private List<ProduceLink> _inputLinks = new List<ProduceLink>();
@@ -31,6 +31,8 @@ namespace IndustryMoudle
         public ItemBox CapacityInput { get => new ItemBox(Recipe.Input) * BaseProduceSpeed; }
         public ItemBox CapacityOutput { get => new ItemBox(Recipe.Output) * BaseProduceSpeed; }
 
+        public int ProduceCount { get; private set; } = 0;
+        public Dictionary<TrainLine, List<Goods>> Platform = new Dictionary<TrainLine, List<Goods>>();
         public ItemBox ActualOutput
         {
             get
@@ -58,20 +60,7 @@ namespace IndustryMoudle
             _outputLinks.Remove(link);
         }
 
-        public IEnumerable<ProduceLink> Links
-        {
-            get
-            {
-                foreach (var link in InputLinks)
-                {
-                    yield return link;
-                }
-                foreach (var link in OutputLinks)
-                {
-                    yield return link;
-                }
-            }
-        }
+        public IEnumerable<ProduceLink> Links => InputLinks.Concat(OutputLinks);
 
         public Factory(Recipe recipe, GraphMoudle.Vertex vertex)
         {
@@ -89,46 +78,67 @@ namespace IndustryMoudle
         }
         public List<Goods> OutputGoods(Train train, TrainLine line, int max)
         {
-            var links = OutputLinks;
-                // .Where(l => TrainLine.Navigate(line.Vertexes.ToArray()).First().Line == line);
-            var outputSum = links.Sum(l => l.Item.Number);
-            if (outputSum == 0)
-            {
-                return new List<Goods>();
-            }
-            var maxRound = max / outputSum;
             var result = new List<Goods>();
-            for (int _ = 0; _ < maxRound; _++)
+            var count = 0;
+            if (!Platform.ContainsKey(line))
+                Platform[line] = new List<Goods>();
+            var pla = Platform[line];
+            while (count < max && Platform.Count > 0 && pla.Count > 0)
             {
-                foreach (var link in links)
+                if (pla.First().Item.Number + count <= max)
                 {
-                    if (Storage.HasItem(link.Item))
-                    {
-                        Storage.RequireItem(link.Item);
-                        var g = new Goods(link.Item, link);
-                        g.LeaveFactory(this, train);
-                        result.Add(g);
-                    }
-                    else
-                    {
-                        return result;
-                    }
+                    var goods = Platform[line].First();
+                    pla.Remove(goods);
+                    Platform[line].Remove(goods);
+                    count += goods.Item.Number;
+                    result.Add(goods);
                 }
+                else
+                    break;
             }
             return result;
         }
         public void LoadGoods(Goods goods, Train train)
         {
-            Storage.AddItem(goods.Item);
-            goods.EnterFactory(this, train);
+            if (goods.Ticket.Trips.Last().End == Vertex)
+            {
+                Storage.AddItem(goods.Item);
+                goods.EnterFactory(this, train);
+            }
+            else
+            {
+                if (Platform.ContainsKey(goods.Ticket.CurTrip.Line))
+                    Platform[goods.Ticket.CurTrip.Line].Add(goods);
+                else
+                    Platform[goods.Ticket.CurTrip.Line] = new List<Goods>(new[] { goods });
+            }
         }
 
         private void Produce()
         {
-            foreach (var item in CapacityInput)
-                var (_, actual) = Storage.RequireItem(item.Key, item.Value);
-            foreach (var item in CapacityOutput)
-                Storage.AddItem(item.Key, item.Value);
+            var count = 0;
+            while (count < BaseProduceSpeed)
+            {
+                if (OutputLinks.Count == 0)
+                    break;
+                foreach (var link in OutputLinks)
+                {
+                    var num = link.Item.Number;
+                    foreach (var (t, n) in Recipe.Input)
+                    {
+                        if (!Storage.HasItem(t, n * num))
+                            return;
+                        Storage.RequireItem(t, n * num);
+                    }
+                    count += num;
+                    ProduceCount += num;
+                    var goods = new Goods(link.Item, link);
+                    if (Platform.ContainsKey(goods.Ticket.CurTrip.Line))
+                        Platform[goods.Ticket.CurTrip.Line].Add(goods);
+                    else
+                        Platform[goods.Ticket.CurTrip.Line] = new List<Goods>(new[] { goods });
+                }
+            }
         }
         /// <summary>
         /// 获取该工厂每周期的原料需求

@@ -12,7 +12,7 @@ namespace TransportMoudle
         }
         public override void _Process(double delta)
         {
-            Progress += 1;
+            // Progress += 1;
         }
     }
 }

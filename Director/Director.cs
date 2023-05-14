@@ -1,11 +1,14 @@
 using Godot;
 using System;
+using System.Linq;
 using UserControl;
 using TopographyMoudle;
 using IndustryMoudle;
-using TransportMoudle;
-using System.Linq;
 using IndustryMoudle.Link;
+using IndustryMoudle.Extensions;
+using TransportMoudle;
+using TransportMoudle.Extensions;
+using GraphMoudle;
 
 namespace DirectorMoudle
 {
@@ -22,6 +25,7 @@ namespace DirectorMoudle
 
         public delegate void TickHandler();
         public event TickHandler? Tick;
+        public event TickHandler? Tick100;
 
         public Director()
         {
@@ -31,7 +35,11 @@ namespace DirectorMoudle
             }
             Instance = this;
         }
-
+        public void SetGameSpeed(bool state, int rate)
+        {
+            if (state)
+                TickLength = 0.024 / rate;
+        }
         public override void _Ready()
         {
             var seed = 58777ul;
@@ -85,15 +93,21 @@ namespace DirectorMoudle
             {
                 line.GenerateCurve();
                 GetNode("%MapRender").GetNode("TrainLineContainer").AddChild(line.Path);
-                GetNode("%MapRender").GetNode("TrainContainer").AddChild(new Train(line));
             }
+            Logger.trace("删除孤立点、边");
+            foreach (var edge in Graph.Instance.Edges.Where(e => e.GetTrainLines().Count() == 0).ToArray())
+            {
+                Graph.Instance.RemoveEdge(edge).ForEach(v => Factory.Factories.Remove(v.GetFactory()!));
+            }
+
+            DirectorMoudle.MapRender.Instance?.QueueRedraw();
             BindEverything();
         }
 
         private void BindEverything()
         {
             Factory.Factories.ForEach(f => { Director.Instance!.Tick += f.Tick; });
-            Director.Instance!.Tick += FactroyView.Instance!.Refresh;
+            Director.Instance!.Tick100 += FactroyView.Instance!.Refresh;
             Train.Trains.ForEach(t => { Director.Instance!.Tick += t.Tick; });
         }
 
@@ -101,17 +115,49 @@ namespace DirectorMoudle
         {
             MapController!.SetMapPosition(position);
         }
+        int TickCount = 0;
         public override void _Process(double delta)
         {
             DeltaCount += delta;
             while (DeltaCount > TickLength)
             {
                 Tick!.Invoke();
+                TickCount += 1;
+                if (TickCount % 100 == 0)
+                    Tick100?.Invoke();
                 DeltaCount -= TickLength;
+                // GD.Print(Factory.Factories.Where(f => f.ProduceCount == 0).Count());
+                // var a = Train.Trains.GroupBy(t => t.GoodsCount / 10).Select(g => $"[{g.Key},{g.Count()}]");
+                // GD.Print(string.Join(" ", a));
+
+                if (TickCount < 20000)
+                {
+                    foreach (var line in TrainLine.TrainLines)
+                    {
+                        if (line.Level == TrainLineLevel.MainLine && (TickCount == 100 || TickCount == 3000 || TickCount == 6000 || TickCount == 9000 || TickCount == 12000))
+                        {
+                            var t = new Train(line);
+                            Tick += t.Tick;
+                            GetNode("%MapRender").GetNode("TrainContainer").AddChild(t);
+                        }
+                        if (line.Level == TrainLineLevel.SideLine && (TickCount == 100 || TickCount == 3000 || TickCount == 6000))
+                        {
+                            var t = new Train(line);
+                            Tick += t.Tick;
+                            GetNode("%MapRender").GetNode("TrainContainer").AddChild(t);
+                        }
+                        if (line.Level == TrainLineLevel.FootPath && TickCount == 100)
+                        {
+                            var t = new Train(line);
+                            Tick += t.Tick;
+                            GetNode("%MapRender").GetNode("TrainContainer").AddChild(t);
+                        }
+                    }
+                }
             }
-            var t = Train.Trains.Where(t => t.TrainLine.Level == TrainLineLevel.MainLine).First();
-            t.Size = 100;
-            FocusOn(t.TrainPosition);
+            // var t = Train.Trains.Where(t => t.TrainLine.Level == TrainLineLevel.MainLine).First();
+            // t.Size = 100;
+            // FocusOn(t.TrainPosition);
         }
     }
 }

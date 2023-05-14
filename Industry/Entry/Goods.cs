@@ -1,4 +1,5 @@
-
+using TransportMoudle;
+using IndustryMoudle.Link;
 
 namespace IndustryMoudle.Entry
 {
@@ -9,6 +10,14 @@ namespace IndustryMoudle.Entry
     /// </summary>
     public class Goods
     {
+        public readonly Item Item;
+        public readonly Ticket Ticket;
+
+        public Goods(Item item, ProduceLink link)
+        {
+            Item = item;
+            Ticket = new Ticket(link);
+        }
         public delegate void GoodsLeaveFactoryHandler(Factory factory, TransportMoudle.Train to);
         /// <summary>
         /// 当货物离开工厂时触发
@@ -59,12 +68,5 @@ namespace IndustryMoudle.Entry
         /// 当货物生产为其他货物时触发
         /// </summary>
         // public event GoodsTranformHandler? GoodsTranform;
-
-        public readonly Item Item;
-
-        public Goods(Item item)
-        {
-            Item = item;
-        }
     }
 }

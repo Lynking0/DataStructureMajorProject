@@ -5,7 +5,6 @@ using GraphMoudle;
 using System.Linq;
 using IndustryMoudle.Entry;
 using IndustryMoudle.Link;
-using IndustryMoudle.Extensions;
 
 namespace IndustryMoudle
 {
@@ -262,9 +261,9 @@ namespace IndustryMoudle
                 var links = factory.InputLinks.Where(l => l.Item.Type == type);
                 if (parentLink is not null)
                     links = links.Where(l => l.For == parentLink);
-                links = links.ToList();
                 foreach (var link in links)
                 {
+                    var a = GetActualOutput(link.From, link);
                     supplyCount += GetActualOutput(link.From, link);
                 }
                 outputNumber = Math.Min(outputNumber, supplyCount / rate);
@@ -289,8 +288,7 @@ namespace IndustryMoudle
                     {
                         continue;
                     }
-                    var actOut = GetActualOutput(link.From, link);
-                    if (enough || outputNumber == 0 || actOut == 0)
+                    if (enough || outputNumber == 0)
                     {
                         // 释放该link
                         link.From.IdealOutput.AddItem(new Item(link.Item.Number, type));
@@ -314,6 +312,11 @@ namespace IndustryMoudle
                         AdjustUpstreamLink(link.From, link.Item.Number, link);
                     }
                 }
+                // if (supplyCount < requirementNumber)
+                // {
+                //     Logger.error("过量需求 无法满足");
+                //     throw new Exception("过量需求 无法满足");
+                // }
             }
         }
 
@@ -364,14 +367,8 @@ namespace IndustryMoudle
 
                 // 定性链路构建完成，开始定量收缩
                 ShirkChain(chain);
+                // break;
             }
-            Logger.trace("删除孤立点、边");
-            foreach (var edge in Graph.Instance.Edges.Where(e => e.GetLoadInfo().TotalLoad == 0).ToArray())
-            {
-                Graph.Instance.RemoveEdge(edge).ForEach(v => Factory.Factories.Remove(v.GetFactory()!));
-            }
-
-            DirectorMoudle.MapRender.Instance?.QueueRedraw();
 
             var lengths = ProduceLink.Links.Select(l => l.EdgeInfos.Sum(e => e.Edge?.Length ?? 0));
 

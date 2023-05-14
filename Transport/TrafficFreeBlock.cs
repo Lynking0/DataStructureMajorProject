@@ -28,36 +28,55 @@ namespace TransportMoudle
             foreach (var vertex in _vertexes.Where(v => !ports.Contains(v)))
             {
                 // TODO: 三级路要按照link生成，不然有些路会空出来
-                var queue = new PriorityQueue<(Vertex vertex, List<Edge> edges), double>();
-                var visitedEdges = new HashSet<Edge>();
-                foreach (var edge in vertex.Adjacencies.Where(e => _edges.Contains(e)))
+                // 按link生成
+                foreach (var link in vertex.GetLinks())
                 {
-                    queue.Enqueue((edge.GetOtherEnd(vertex)!, new List<Edge>(new[] { edge })), edge.Length);
-                    visitedEdges.Add(edge);
-                }
-                while (queue.Count > 0)
-                {
-                    queue.TryDequeue(out var temp, out var length);
-                    var (nextVertex, edges) = temp;
-                    if (ports.Contains(nextVertex))
+                    var edges = new List<Edge>();
+                    foreach (var e in link.EdgeInfos.Select(info => info.Edge).Where(e => _edges.Contains(e)))
                     {
+                        if (e is null)
+                            continue;
+                        edges.Add(e);
+                        if (ports.Contains(e.A) || ports.Contains(e.B))
+                            break;
+                    }
+                    if (edges is not null && edges.Count > 0)
                         lineEdges.Add(edges);
-                        break;
-                    }
-                    else
-                    {
-                        var a = nextVertex.Adjacencies;
-                        var b = nextVertex.Adjacencies.Where(e => _edges.Contains(e)).ToList();
-                        foreach (var edge in nextVertex.Adjacencies.Where(e => _edges.Contains(e)))
-                        {
-                            if (visitedEdges.Contains(edge))
-                                continue;
-                            var newEdges = new List<Edge>(edges);
-                            newEdges.Add(edge);
-                            queue.Enqueue((edge.GetOtherEnd(nextVertex)!, newEdges), length + edge.Length);
-                            visitedEdges.Add(edge);
-                        }
-                    }
+                }
+
+                // 按最短出口生成
+                {
+                    // var queue = new PriorityQueue<(Vertex vertex, List<Edge> edges), double>();
+                    // var visitedEdges = new HashSet<Edge>();
+                    // foreach (var edge in vertex.Adjacencies.Where(e => _edges.Contains(e)))
+                    // {
+                    //     queue.Enqueue((edge.GetOtherEnd(vertex)!, new List<Edge>(new[] { edge })), edge.Length);
+                    //     visitedEdges.Add(edge);
+                    // }
+                    // while (queue.Count > 0)
+                    // {
+                    //     queue.TryDequeue(out var temp, out var length);
+                    //     var (nextVertex, edges) = temp;
+                    //     if (ports.Contains(nextVertex))
+                    //     {
+                    //         lineEdges.Add(edges);
+                    //         break;
+                    //     }
+                    //     else
+                    //     {
+                    //         var a = nextVertex.Adjacencies;
+                    //         var b = nextVertex.Adjacencies.Where(e => _edges.Contains(e)).ToList();
+                    //         foreach (var edge in nextVertex.Adjacencies.Where(e => _edges.Contains(e)))
+                    //         {
+                    //             if (visitedEdges.Contains(edge))
+                    //                 continue;
+                    //             var newEdges = new List<Edge>(edges);
+                    //             newEdges.Add(edge);
+                    //             queue.Enqueue((edge.GetOtherEnd(nextVertex)!, newEdges), length + edge.Length);
+                    //             visitedEdges.Add(edge);
+                    //         }
+                    //     }
+                    // }
                 }
             }
             if (lineEdges.Count > 0)
@@ -70,7 +89,7 @@ namespace TransportMoudle
                     {
                         if (t[i] != o[0])
                             continue;
-                        for (int j = 0; j < o.Count; j++)
+                        for (int j = 0; j < o.Count && i + j < t.Count; j++)
                         {
                             if (t[i + j] != o[j])
                                 break;
@@ -85,7 +104,11 @@ namespace TransportMoudle
                 {
                     for (int j = i + 1; j < lineEdges.Count; j++)
                     {
-                        if (include(lineEdges[i], lineEdges[j]))
+                        var a = lineEdges[i];
+                        var b = lineEdges[j];
+                        var c = lineEdges[j].ToList();
+                        c.Reverse();
+                        if (include(a, b) || include(a, c))
                         {
                             lineEdges.RemoveAt(j);
                             j--;
