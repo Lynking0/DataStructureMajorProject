@@ -32,7 +32,7 @@ namespace TransportMoudle
                 foreach (var link in vertex.GetLinks())
                 {
                     var edges = new List<Edge>();
-                    foreach (var e in link.EdgeInfos.Select(info => info.Edge).Where(e => _edges.Contains(e)))
+                    foreach (var e in link.EdgeInfos.Select(info => info.Edge).Where(e => e is null ? false : _edges.Contains(e)))
                     {
                         if (e is null)
                             continue;

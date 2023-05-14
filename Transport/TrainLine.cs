@@ -99,7 +99,7 @@ namespace TransportMoudle
                     // 当前线路无法达到该点，开始下一段trip
                     result.Add(t);
                     lines = v.GetTrainLines().ToList();
-                    t = new Trip() { Start = vertexes[i - 1] };
+                    t = new Trip() { Start = vertexes[i - 1], End = vertexes[i], Line = lines.First() };
                 }
                 else
                 {

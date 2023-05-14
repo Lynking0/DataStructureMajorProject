@@ -120,23 +120,33 @@ namespace IndustryMoudle
             while (count < BaseProduceSpeed)
             {
                 if (OutputLinks.Count == 0)
-                    break;
-                foreach (var link in OutputLinks)
                 {
-                    var num = link.Item.Number;
-                    foreach (var (t, n) in Recipe.Input)
+                    // 消费
+                    if (!Storage.HasItem("ABCDEF", BaseProduceSpeed))
+                        return;
+                    Storage.RequireItem("ABCDEF", BaseProduceSpeed);
+                    count += BaseProduceSpeed;
+                    ProduceCount += BaseProduceSpeed;
+                }
+                else
+                {
+                    foreach (var link in OutputLinks)
                     {
-                        if (!Storage.HasItem(t, n * num))
-                            return;
-                        Storage.RequireItem(t, n * num);
+                        var num = link.Item.Number;
+                        foreach (var (t, n) in Recipe.Input)
+                        {
+                            if (!Storage.HasItem(t, n * num))
+                                return;
+                            Storage.RequireItem(t, n * num);
+                        }
+                        count += num;
+                        ProduceCount += num;
+                        var goods = new Goods(link.Item, link);
+                        if (Platform.ContainsKey(goods.Ticket.CurTrip.Line))
+                            Platform[goods.Ticket.CurTrip.Line].Add(goods);
+                        else
+                            Platform[goods.Ticket.CurTrip.Line] = new List<Goods>(new[] { goods });
                     }
-                    count += num;
-                    ProduceCount += num;
-                    var goods = new Goods(link.Item, link);
-                    if (Platform.ContainsKey(goods.Ticket.CurTrip.Line))
-                        Platform[goods.Ticket.CurTrip.Line].Add(goods);
-                    else
-                        Platform[goods.Ticket.CurTrip.Line] = new List<Goods>(new[] { goods });
                 }
             }
         }
