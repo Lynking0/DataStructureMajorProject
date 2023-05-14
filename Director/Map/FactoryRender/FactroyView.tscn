@@ -36,6 +36,10 @@ text = "最大产能"
 layout_mode = 2
 text = "可用产能"
 
+[node name="ProduceCount" type="Label" parent="ScrollContainer/VBoxContainer"]
+layout_mode = 2
+text = "总生产："
+
 [node name="HSeparator2" type="HSeparator" parent="ScrollContainer/VBoxContainer"]
 layout_mode = 2
 
@@ -80,6 +84,20 @@ layout_mode = 2
 text = "2"
 
 [node name="HSeparator3" type="HSeparator" parent="ScrollContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label5" type="Label" parent="ScrollContainer/VBoxContainer"]
+layout_mode = 2
+text = "Goodses"
+
+[node name="Goodses" type="VBoxContainer" parent="ScrollContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="ScrollContainer/VBoxContainer/Goodses"]
+layout_mode = 2
+text = "A x 10 in"
+
+[node name="HSeparator5" type="HSeparator" parent="ScrollContainer/VBoxContainer"]
 layout_mode = 2
 
 [node name="Label3" type="Label" parent="ScrollContainer/VBoxContainer"]

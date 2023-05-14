@@ -12,10 +12,12 @@ namespace DirectorMoudle
         private HBoxContainer? Storage;
         private VBoxContainer? Links;
         private VBoxContainer? TrainLines;
+        private VBoxContainer? Goodses;
         private Label? NameLabel;
         private Label? Recipe;
         private Label? MaximumCapacity;
         private Label? AvailableCapacity;
+        private Label? ProduceCount;
 
         Factory? Factory;
 
@@ -31,9 +33,11 @@ namespace DirectorMoudle
             Recipe = GetNode<Label>($"{basePath}/Recipe");
             MaximumCapacity = GetNode<Label>($"{basePath}/MaximumCapacity");
             AvailableCapacity = GetNode<Label>($"{basePath}/AvailableCapacity");
+            ProduceCount = GetNode<Label>($"{basePath}/ProduceCount");
             Storage = GetNode<HBoxContainer>($"{basePath}/storage");
             Links = GetNode<VBoxContainer>($"{basePath}/links");
             TrainLines = GetNode<VBoxContainer>($"{basePath}/TrainLines");
+            Goodses = GetNode<VBoxContainer>($"{basePath}/Goodses");
         }
 
         // Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -55,7 +59,7 @@ namespace DirectorMoudle
             Recipe!.Text = Factory.Recipe;
             MaximumCapacity!.Text = $"最大产能: {Factory.BaseProduceSpeed.ToString()}";
             AvailableCapacity!.Text = $"可用产能: {((Factory.IdealOutput.ToList().Count > 0) ? Factory.IdealOutput.ToList()[0].number.ToString() : "0")}";
-
+            ProduceCount!.Text = $"总生产: {Factory.ProduceCount}";
             foreach (var child in Links!.GetChildren())
             {
                 Links.RemoveChild(child);
@@ -68,6 +72,10 @@ namespace DirectorMoudle
             {
                 Storage.RemoveChild(child);
             }
+            foreach (var child in Goodses!.GetChildren())
+            {
+                Goodses.RemoveChild(child);
+            }
             foreach (var link in Factory.InputLinks)
             {
                 var label = new Label();
@@ -79,6 +87,14 @@ namespace DirectorMoudle
                 var label = new Label();
                 label.Text = $"{link.ID} {(string)link} out to {link.To.ID} for {link.For?.ID ?? -1}";
                 Links.AddChild(label);
+            }
+            foreach (var goods in Factory.Platform.SelectMany(a => a.Value)
+                .GroupBy(a => a.Item.Type))
+            {
+                var label = new Label();
+
+                label.Text = $"{(string)goods.Key} x {goods.Sum(g => g.Item.Number)}";
+                Goodses.AddChild(label);
             }
             foreach (var item in Factory.Storage)
             {
