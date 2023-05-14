@@ -100,6 +100,15 @@ namespace DirectorMoudle
             {
                 Graph.Instance.RemoveEdge(edge).ForEach(v => Factory.Factories.Remove(v.GetFactory()!));
             }
+            Graph.Instance.AdjustEdges();
+            foreach (var line in TrainLine.TrainLines.Where(line => line.Level == TrainLineLevel.MainLine))
+            {
+                var edges = line.Edges.ToArray();
+                for (int i = 0; i < edges.Length - 1; i++)
+                {
+                    Graph.Instance.AdjustEdges(edges[i], edges[i + 1]);
+                }
+            }
 
             DirectorMoudle.MapRender.Instance?.QueueRedraw();
             BindEverything();
