@@ -13,14 +13,15 @@ namespace TransportMoudle
         private static int IDCount = 0;
         public readonly int ID = IDCount++;
         public static List<Train> Trains = new List<Train>();
-        public const int CarriageCount = 2;
+        public const int CarriageCount = 1;
         public TrainLine TrainLine { get; private set; }
         public Path2D Path => TrainLine.Path;
         public List<Carriage> Carriages = new List<Carriage>();
         public Vector2 TrainPosition => Carriages.First().Position;
         private int StopTickCount = 0;
         private const int StopTick = 50;
-        private int Speed = 2;
+        private readonly int TrainSpeed = 1;
+        private int CurSpeed;
         private List<Goods> Goodses = new List<Goods>();
         public int GoodsCount => Goodses.Sum(g => g.Item.Number);
         private readonly int GoodsCapacity = 1000;
@@ -51,12 +52,13 @@ namespace TransportMoudle
             switch (trainLine.Level)
             {
                 case TrainLineLevel.MainLine:
-                    GoodsCapacity = 5000; Size = 30; break;
+                    GoodsCapacity = 5000; Size = 30; TrainSpeed = 8; break;
                 case TrainLineLevel.SideLine:
-                    GoodsCapacity = 2500; Size = 20; break;
+                    GoodsCapacity = 2500; Size = 20; TrainSpeed = 4; break;
                 case TrainLineLevel.FootPath:
-                    GoodsCapacity = 800; Size = 15; break;
+                    GoodsCapacity = 800; Size = 15; TrainSpeed = 1; break;
             }
+            CurSpeed = TrainSpeed;
             Trains.Add(this);
         }
         private Vertex? LastStop;
@@ -69,11 +71,11 @@ namespace TransportMoudle
             }
             foreach (var carriage in Carriages)
             {
-                carriage.Progress += Speed;
+                carriage.Progress += CurSpeed;
             }
             var p = Carriages.First().Progress;
             var nearStations = TrainLine.Station
-                .Where(item => Math.Abs(p - item.Value) < Math.Abs(Speed))
+                .Where(item => Math.Abs(p - item.Value) < Math.Abs(CurSpeed))
                 .ToList();
             if (nearStations.Count() > 0)
             {
@@ -83,17 +85,15 @@ namespace TransportMoudle
                 LastStop = vertex;
                 StopTickCount = StopTick;
                 if (vertex == TrainLine.Vertexes.First())
-                    Speed = 8;
+                    CurSpeed = TrainSpeed;
                 if (vertex == TrainLine.Vertexes.Last())
-                    Speed = -8;
+                    CurSpeed = -TrainSpeed;
                 var factory = vertex.GetFactory()!;
                 // unload goods
                 for (int i = 0; i < Goodses.Count; i++)
                 {
                     if (Goodses[i].Ticket.Arrive(vertex))
                     {
-                        // if (TrainLine.ID == "F0")
-                        //     GD.Print("Unload ", (string)Goodses[i].Item.Type, " ", Goodses[i].Item.Number, " to ", factory.ID);
                         factory.LoadGoods(Goodses[i], this);
                         Goodses.RemoveAt(i);
                         i--;
@@ -101,7 +101,7 @@ namespace TransportMoudle
                 }
                 // load goods
                 var goodses = factory.OutputGoods(this, TrainLine, GoodsCapacity - GoodsCount);
-                goodses.AddRange(goodses);
+                Goodses.AddRange(goodses);
                 return;
             }
         }

@@ -25,6 +25,7 @@ namespace DirectorMoudle
 
         public delegate void TickHandler();
         public event TickHandler? Tick;
+        public event TickHandler? Tick10;
         public event TickHandler? Tick100;
 
         public Director()
@@ -107,7 +108,7 @@ namespace DirectorMoudle
         private void BindEverything()
         {
             Factory.Factories.ForEach(f => { Director.Instance!.Tick += f.Tick; });
-            Director.Instance!.Tick100 += FactroyView.Instance!.Refresh;
+            Director.Instance!.Tick10 += FactroyView.Instance!.Refresh;
             Train.Trains.ForEach(t => { Director.Instance!.Tick += t.Tick; });
         }
 
@@ -123,6 +124,8 @@ namespace DirectorMoudle
             {
                 Tick!.Invoke();
                 TickCount += 1;
+                if (TickCount % 10 == 0)
+                    Tick10?.Invoke();
                 if (TickCount % 100 == 0)
                     Tick100?.Invoke();
                 DeltaCount -= TickLength;
