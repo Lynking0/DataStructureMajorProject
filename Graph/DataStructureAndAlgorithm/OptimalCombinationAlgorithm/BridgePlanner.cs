@@ -38,7 +38,7 @@ namespace GraphMoudle.DataStructureAndAlgorithm.OptimalCombinationAlgorithm
         public double MaxSemiMajorAxis;
         public double MaxSemiMinorAxis;
         private const int MaxUnchangedTimes = 10;
-        private const int ToleranceLength = 5;
+        public const float ToleranceLength = 5 * DirectorMoudle.Constants.Magnification;
         private const int RadiusBitCount = 12;
         private const uint RadiusSelector = 0b_1111_1111_1111_0000_0000_0000_0000_0000;
         private const int RadianBitCount = 12;

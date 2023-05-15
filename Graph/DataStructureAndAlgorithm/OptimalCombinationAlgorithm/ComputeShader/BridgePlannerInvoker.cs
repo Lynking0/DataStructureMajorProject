@@ -38,13 +38,14 @@ namespace GraphMoudle.DataStructureAndAlgorithm.OptimalCombinationAlgorithm.Comp
             };
             float[] input10 = new float[]
             {
-                (float)GraphMoudle.Graph.MaxVertexAltitude,
-                (float)GraphMoudle.Graph.CtrlPointDistance,
+                (float)Graph.MaxVertexAltitude,
+                (float)Graph.CtrlPointDistance,
                 (float)Data!.Count,
-                (float)GraphMoudle.Graph.MinX,
-                (float)GraphMoudle.Graph.MinY,
-                (float)GraphMoudle.Graph.MaxX,
-                (float)GraphMoudle.Graph.MaxY
+                (float)Graph.MinX,
+                (float)Graph.MinY,
+                (float)Graph.MaxX,
+                (float)Graph.MaxY,
+                (float)BridgePlanner.ToleranceLength
             };
             float[] input1 = new float[Data.Count];
             float[] input2 = new float[Data.Count];

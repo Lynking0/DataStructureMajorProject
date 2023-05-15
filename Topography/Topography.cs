@@ -8,7 +8,7 @@ namespace TopographyMoudle
         public static void InitParams()
         {
             FractalNoiseGenerator.Seed = 1054;
-            FractalNoiseGenerator.Frequency = 1 / 200.0;
+            FractalNoiseGenerator.Frequency = 1 / (200.0 * DirectorMoudle.Constants.Magnification);
             FractalNoiseGenerator.Amplitude = 1 / 2.5;
             FractalNoiseGenerator.Octaves = 5;
             FractalNoiseGenerator.PingPongStrength = 2;

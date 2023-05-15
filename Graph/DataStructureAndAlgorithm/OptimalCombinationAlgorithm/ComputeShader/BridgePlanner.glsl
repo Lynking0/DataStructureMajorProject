@@ -268,6 +268,7 @@ layout(set = 0, binding = 10, std430) restrict buffer Params
 	float MinY;
 	float MaxX;
 	float MaxY;
+	float ToleranceLength;
 } params;
 layout(set = 0, binding = 11, std430) restrict buffer PosX
 {
@@ -315,7 +316,6 @@ const int MaxIterTimes = 100;
 const float CrossProb = 0.99;
 const float MutateProb = 0.1;
 const int MaxUnchangedTimes = 10;
-const int ToleranceLength = 5;
 const int RadiusBitCount = 12;
 const uint RadiusSelector = 0xFFF00000;
 const int RadianBitCount = 12;
@@ -414,7 +414,7 @@ float TessellateEvenLengthAndCalc(vec2 a, vec2 b, vec2 c, vec2 d, vec2 e, vec2 f
 	for (int i = 1; i < verticesSize; ++i)
 	{
 		float segmentLen = distance(vertices[i - 1], vertices[i]);
-		for (; dist < segmentLen; dist += ToleranceLength)
+		for (; dist < segmentLen; dist += params.ToleranceLength)
 		{
 			vec2 v = linear_interpolation(vertices[i - 1], vertices[i], dist / segmentLen);
 			float temp = get_noise(v);
@@ -559,7 +559,7 @@ bool CanEndEarly()
 		if (maintainTimes > MaxUnchangedTimes)
 			return true;
 	}
-	return BestIndividual.fitness > ToleranceLength / (distance(A, B) * 1.15 * params.MaxVertexAltitude * params.MaxVertexAltitude * 1.5);
+	return BestIndividual.fitness > params.ToleranceLength / (distance(A, B) * 1.15 * params.MaxVertexAltitude * params.MaxVertexAltitude * 1.5);
 }
 
 IndividualInfo Subpopulation[PopulationSize];
