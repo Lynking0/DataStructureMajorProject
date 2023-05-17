@@ -33,14 +33,21 @@ namespace TransportMoudle
                 {
                     var vertexes = new HashSet<Vertex>();
                     var edges = new List<Edge>();
-                    foreach (var e in link.EdgeInfos.Select(info => info.Edge).Where(e => e is null ? false : _edges.Contains(e)))
+                    var linkEdges = link.EdgeInfos.Select(info => info.Edge).Where(e => e is null ? false : _edges.Contains(e));
+                    if (linkEdges.Count() == 0)
+                    {
+                        throw new System.Exception("该点关联的link无路径指出");
+                    }
+                    if (linkEdges.First()!.A != vertex && linkEdges.First()!.B != vertex)
+                        linkEdges = linkEdges.Reverse();
+                    foreach (var e in linkEdges)
                     {
                         if (e is null)
                             continue;
                         edges.Add(e);
                         vertexes.Add(e.A);
                         vertexes.Add(e.B);
-                        if (vertexes.Intersect(ports).Count() > 0 && vertexes.Contains(vertex))
+                        if (vertexes.Intersect(ports).Count() > 0)
                             break;
                     }
                     if (edges is not null && edges.Count > 0)
