@@ -68,6 +68,9 @@ namespace IndustryMoudle
             Vertex = vertex;
             QuadTreeHandle = FactoriesQuadTree.Insert(this);
             Factories.Add(this);
+            if (FactoryTickGroup[ID % 4] is null)
+                FactoryTickGroup[ID % 4] = new List<Factory>();
+            FactoryTickGroup[ID % 4].Add(this);
             _vertexToFactory[vertex] = this;
             IdealInput = new ItemBox(Recipe.Input) * BaseProduceSpeed;
             IdealOutput = new ItemBox(Recipe.Output) * BaseProduceSpeed;

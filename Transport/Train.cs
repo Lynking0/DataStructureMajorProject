@@ -60,6 +60,9 @@ namespace TransportMoudle
             }
             CurSpeed = TrainSpeed;
             Trains.Add(this);
+            if (TrainTickGroup[ID % 4] is null)
+                TrainTickGroup[ID % 4] = new List<Train>();
+            TrainTickGroup[ID % 4].Add(this);
         }
         private Vertex? LastStop;
         public void Tick()

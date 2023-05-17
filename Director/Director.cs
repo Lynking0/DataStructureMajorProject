@@ -43,9 +43,8 @@ namespace DirectorMoudle
         }
         public override void _Ready()
         {
-            var seed = 58777ul;
-            GD.Seed(seed);
-            Logger.trace($"随机种子: {seed}");
+            GD.Seed(Constants.Seed);
+            Logger.trace($"随机种子: {Constants.Seed}");
             Logger.trace("Director Ready");
             MapController = GetNode<MapController>("%GameViewportContainer");
             MapRender = GetNode<MapRender>("%MapRender");
@@ -118,7 +117,7 @@ namespace DirectorMoudle
         {
             Tick += Factory.TickAll;
             Tick10 += FactroyView.Instance!.Refresh;
-            Train.Trains.ForEach(t => { Tick += t.Tick; });
+            Tick10 += Train.TickAll;
         }
 
         private void FocusOn(Vector2 position)

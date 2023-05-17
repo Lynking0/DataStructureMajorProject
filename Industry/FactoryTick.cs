@@ -5,7 +5,8 @@ namespace IndustryMoudle
 {
     public partial class Factory
     {
-        private static int TickChunkSize = -1;
+        private const int TickChunkCount = 4;
+        private static List<Factory>[] FactoryTickGroup = new List<Factory>[TickChunkCount];
         private static void TickSomeFactory(object? fs)
         {
             if (fs is IEnumerable<Factory> factories)
@@ -16,12 +17,7 @@ namespace IndustryMoudle
         }
         public static void TickAll()
         {
-            if (TickChunkSize == -1)
-            {
-                TickChunkSize = Factories.Count / 4 + 1;
-                ThreadPool.SetMinThreads(4, 4);
-            }
-            foreach (var item in Factories.Chunk(TickChunkSize))
+            foreach (var item in FactoryTickGroup)
             {
                 ThreadPool.QueueUserWorkItem(new WaitCallback(TickSomeFactory), item);
             }
