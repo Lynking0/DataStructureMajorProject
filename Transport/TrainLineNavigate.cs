@@ -9,6 +9,12 @@ namespace TransportMoudle
     {
         public static List<Trip> Navigate(IReadOnlyList<Vertex> vertexes)
         {
+            /// TODO:
+            /// 传进的vertexes是之前生产link的时候生成的点集
+            /// 有些点已经被删掉了的
+            /// 大体可以借助之前的信息导航
+            /// 但是如果有被删掉的点
+            /// 则从这点开始计算后面的路径
             var result = new List<Trip>();
             var lines = vertexes[0].GetTrainLines();
             var t = new Trip() { Start = vertexes[0] };
