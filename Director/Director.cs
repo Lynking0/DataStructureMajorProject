@@ -116,9 +116,9 @@ namespace DirectorMoudle
 
         private void BindEverything()
         {
-            Factory.Factories.ForEach(f => { Director.Instance!.Tick += f.Tick; });
-            Director.Instance!.Tick10 += FactroyView.Instance!.Refresh;
-            Train.Trains.ForEach(t => { Director.Instance!.Tick += t.Tick; });
+            Tick += Factory.TickAll;
+            Tick10 += FactroyView.Instance!.Refresh;
+            Train.Trains.ForEach(t => { Tick += t.Tick; });
         }
 
         private void FocusOn(Vector2 position)
