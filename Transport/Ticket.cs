@@ -32,7 +32,7 @@ namespace TransportMoudle
             From = link.From.Vertex;
             To = link.To.Vertex;
             var vertices = link.Vertexes;
-            Trips = TrainLine.Navigate(link.Vertexes.ToArray());
+            Trips = link.NavigateTrips;
         }
         /// <summary>
         /// 到达一个站点

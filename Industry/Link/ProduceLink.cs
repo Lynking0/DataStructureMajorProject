@@ -18,7 +18,7 @@ namespace IndustryMoudle.Link
         }
     }
 
-    public class ProduceLink
+    public partial class ProduceLink
     {
         private static int IDCount = 0;
         public int ID = IDCount++;
