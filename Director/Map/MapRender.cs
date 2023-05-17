@@ -20,10 +20,10 @@ namespace DirectorMoudle
 
         public bool RoadDisplay { get; private set; } = true;
         public bool FactoryDisplay { get; private set; } = true;
-        public bool LinkDisplay { get; private set; } = true;
+        public bool LinkDisplay { get; private set; } = false;
         public bool TrainLine1Display { get; private set; } = true;
-        public bool TrainLine2Display { get; private set; } = false;
-        public bool TrainLine3Display { get; private set; } = false;
+        public bool TrainLine2Display { get; private set; } = true;
+        public bool TrainLine3Display { get; private set; } = true;
 
         private bool MaxEdgeLoadDirty = true;
         public int MaxEdgeLoad { get; private set; } = 0;

@@ -83,21 +83,22 @@ namespace IndustryMoudle
         {
             var result = new List<Goods>();
             var count = 0;
-            if (!Platform.ContainsKey(line))
-                Platform[line] = new List<Goods>();
-            var pla = Platform[line];
-            while (count < max && Platform.Count > 0 && pla.Count > 0)
+            lock (Platform)
             {
-                if (pla.First().Item.Number + count <= max)
+                if (!Platform.ContainsKey(line))
+                    Platform[line] = new List<Goods>();
+                while (count < max && Platform[line].Count > 0)
                 {
-                    var goods = Platform[line].First();
-                    pla.Remove(goods);
-                    Platform[line].Remove(goods);
-                    count += goods.Item.Number;
-                    result.Add(goods);
+                    if (Platform[line].First().Item.Number + count <= max)
+                    {
+                        var goods = Platform[line].First();
+                        Platform[line].Remove(goods);
+                        count += goods.Item.Number;
+                        result.Add(goods);
+                    }
+                    else
+                        break;
                 }
-                else
-                    break;
             }
             return result;
         }
@@ -110,10 +111,13 @@ namespace IndustryMoudle
             }
             else
             {
-                if (Platform.ContainsKey(goods.Ticket.CurTrip.Line))
-                    Platform[goods.Ticket.CurTrip.Line].Add(goods);
-                else
-                    Platform[goods.Ticket.CurTrip.Line] = new List<Goods>(new[] { goods });
+                lock (Platform)
+                {
+                    if (Platform.ContainsKey(goods.Ticket.CurTrip.Line))
+                        Platform[goods.Ticket.CurTrip.Line].Add(goods);
+                    else
+                        Platform[goods.Ticket.CurTrip.Line] = new List<Goods>(new[] { goods });
+                }
             }
         }
 
@@ -145,10 +149,13 @@ namespace IndustryMoudle
                         count += num;
                         ProduceCount += num;
                         var goods = new Goods(link.Item, link);
-                        if (Platform.ContainsKey(goods.Ticket.CurTrip.Line))
-                            Platform[goods.Ticket.CurTrip.Line].Add(goods);
-                        else
-                            Platform[goods.Ticket.CurTrip.Line] = new List<Goods>(new[] { goods });
+                        lock (Platform)
+                        {
+                            if (Platform.ContainsKey(goods.Ticket.CurTrip.Line))
+                                Platform[goods.Ticket.CurTrip.Line].Add(goods);
+                            else
+                                Platform[goods.Ticket.CurTrip.Line] = new List<Goods>(new[] { goods });
+                        }
                     }
                 }
             }

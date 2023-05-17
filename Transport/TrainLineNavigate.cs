@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using GraphMoudle;
+using IndustryMoudle.Extensions;
 using TransportMoudle.Extensions;
 
 namespace TransportMoudle
@@ -21,6 +22,10 @@ namespace TransportMoudle
                     // 当前线路无法达到该点，开始下一段trip
                     result.Add(t);
                     lines = v.GetTrainLines().ToList();
+                    if (lines.Count() == 0)
+                    {
+                        var a = vertexes.Select(v => v.GetFactory()!.ID);
+                    }
                     t = new Trip() { Start = vertexes[i - 1], End = vertexes[i], Line = lines.First() };
                 }
                 else

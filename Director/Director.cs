@@ -94,11 +94,11 @@ namespace DirectorMoudle
                 line.GenerateCurve();
                 GetNode("%MapRender").GetNode("TrainLineContainer").AddChild(line.Path);
             }
-            Logger.trace("删除孤立点、边");
-            foreach (var edge in Graph.Instance.Edges.Where(e => e.GetTrainLines().Count() == 0).ToArray())
-            {
-                Graph.Instance.RemoveEdge(edge).ForEach(v => Factory.Factories.Remove(v.GetFactory()!));
-            }
+            // Logger.trace("删除孤立点、边");
+            // foreach (var edge in Graph.Instance.Edges.Where(e => e.GetTrainLines().Count() == 0).ToArray())
+            // {
+            //     Graph.Instance.RemoveEdge(edge).ForEach(v => Factory.Factories.Remove(v.GetFactory()!));
+            // }
             Graph.Instance.AdjustEdges();
             foreach (var line in TrainLine.TrainLines.Where(line => line.Level == TrainLineLevel.MainLine))
             {
@@ -108,7 +108,8 @@ namespace DirectorMoudle
                     Graph.Instance.AdjustEdges(edges[i], edges[i + 1]);
                 }
             }
-
+            var f = Factory.Factories.Where(f => f.ID == 4208).First();
+            FocusOn(f.Position);
             DirectorMoudle.MapRender.Instance?.QueueRedraw();
             BindEverything();
         }
@@ -117,7 +118,7 @@ namespace DirectorMoudle
         {
             Tick += Factory.TickAll;
             Tick10 += FactroyView.Instance!.Refresh;
-            Tick10 += Train.TickAll;
+            Tick += Train.TickAll;
         }
 
         private void FocusOn(Vector2 position)
@@ -130,7 +131,7 @@ namespace DirectorMoudle
             DeltaCount += delta;
             while (DeltaCount > TickLength)
             {
-                Tick!.Invoke();
+                // Tick!.Invoke();
                 TickCount += 1;
                 if (TickCount % 10 == 0)
                     Tick10?.Invoke();

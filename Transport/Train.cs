@@ -23,7 +23,16 @@ namespace TransportMoudle
         private readonly int TrainSpeed = 1;
         private int CurSpeed;
         private List<Goods> Goodses = new List<Goods>();
-        public int GoodsCount => Goodses.Sum(g => g.Item.Number);
+        public int GoodsCount
+        {
+            get
+            {
+                lock (Goodses)
+                {
+                    return Goodses.Sum(g => g.Item.Number);
+                }
+            }
+        }
         private readonly int GoodsCapacity = 1000;
         public int Size
         {
@@ -60,9 +69,12 @@ namespace TransportMoudle
             }
             CurSpeed = TrainSpeed;
             Trains.Add(this);
-            if (TrainTickGroup[ID % 4] is null)
-                TrainTickGroup[ID % 4] = new List<Train>();
-            TrainTickGroup[ID % 4].Add(this);
+            lock (TrainTickGroup)
+            {
+                if (TrainTickGroup[ID % 4] is null)
+                    TrainTickGroup[ID % 4] = new List<Train>();
+                TrainTickGroup[ID % 4].Add(this);
+            }
         }
         private Vertex? LastStop;
         public void Tick()
@@ -92,20 +104,22 @@ namespace TransportMoudle
                 if (vertex == TrainLine.Vertexes.Last())
                     CurSpeed = -TrainSpeed;
                 var factory = vertex.GetFactory()!;
-                // unload goods
-                for (int i = 0; i < Goodses.Count; i++)
+                lock (Goodses)
                 {
-                    if (Goodses[i].Ticket.Arrive(vertex))
+                    // unload goods
+                    for (int i = 0; i < Goodses.Count; i++)
                     {
-                        factory.LoadGoods(Goodses[i], this);
-                        Goodses.RemoveAt(i);
-                        i--;
+                        if (Goodses[i].Ticket.Arrive(vertex))
+                        {
+                            factory.LoadGoods(Goodses[i], this);
+                            Goodses.RemoveAt(i);
+                            i--;
+                        }
                     }
+                    // load goods
+                    var goodses = factory.OutputGoods(this, TrainLine, GoodsCapacity - GoodsCount);
+                    Goodses.AddRange(goodses);
                 }
-                // load goods
-                var goodses = factory.OutputGoods(this, TrainLine, GoodsCapacity - GoodsCount);
-                Goodses.AddRange(goodses);
-                return;
             }
         }
     }

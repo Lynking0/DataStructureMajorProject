@@ -4,7 +4,7 @@
     <Nullable>enable</Nullable>
     <TargetFramework>net6.0</TargetFramework>
     <EnableDynamicLoading>true</EnableDynamicLoading>
-    <DefineConstants>SECURITY;RECIPE_DEBUG;QUADTREE_DEBUG</DefineConstants>
+    <DefineConstants>SECURITY;RECIPE_DEBUG;QUADTREE_DEBUG;FoolishBridges</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <Content Include="Topography\Topography.cs" />
