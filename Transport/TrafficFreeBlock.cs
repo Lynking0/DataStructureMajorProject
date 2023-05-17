@@ -31,13 +31,16 @@ namespace TransportMoudle
                 // 按link生成
                 foreach (var link in vertex.GetLinks())
                 {
+                    var vertexes = new HashSet<Vertex>();
                     var edges = new List<Edge>();
                     foreach (var e in link.EdgeInfos.Select(info => info.Edge).Where(e => e is null ? false : _edges.Contains(e)))
                     {
                         if (e is null)
                             continue;
                         edges.Add(e);
-                        if (ports.Contains(e.A) || ports.Contains(e.B))
+                        vertexes.Add(e.A);
+                        vertexes.Add(e.B);
+                        if (vertexes.Intersect(ports).Count() > 0 && vertexes.Contains(vertex))
                             break;
                     }
                     if (edges is not null && edges.Count > 0)
