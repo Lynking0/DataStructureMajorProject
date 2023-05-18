@@ -71,6 +71,10 @@ namespace IndustryMoudle.Entry
                 Content[type] = number;
             }
         }
+        public bool HasItem(Item item)
+        {
+            return HasItem(item.Type, item.Number);
+        }
         public bool HasItem(ItemType type, int number)
         {
             if (Content.ContainsKey(type))
@@ -79,7 +83,10 @@ namespace IndustryMoudle.Entry
             }
             return false;
         }
-
+        public (int deficit, int actual) RequireItem(Item item)
+        {
+            return RequireItem(item.Type, item.Number);
+        }
         public (int deficit, int actual) RequireItem(ItemType type, int number)
         {
             if (Content.ContainsKey(type))

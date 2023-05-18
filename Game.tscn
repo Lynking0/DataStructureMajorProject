@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://b41f4athcgaas"]
+[gd_scene load_steps=12 format=3 uid="uid://b41f4athcgaas"]
 
 [ext_resource type="Shader" path="res://Topography/Topography.gdshader" id="1_eyknh"]
 [ext_resource type="Script" path="res://Director/Director.cs" id="2_67y13"]
@@ -17,6 +17,8 @@ shader_parameter/windowSize = null
 
 [sub_resource type="LabelSettings" id="LabelSettings_m3dq6"]
 font_size = 24
+
+[sub_resource type="ButtonGroup" id="ButtonGroup_y86vm"]
 
 [node name="Main" type="Control"]
 layout_mode = 3
@@ -65,6 +67,10 @@ script = ExtResource("5_tv3h6")
 [node name="deprecated" type="Node2D" parent="MouseInput/MapRender"]
 visible = false
 script = ExtResource("5_fj2l2")
+
+[node name="TrainLineContainer" type="Node2D" parent="MouseInput/MapRender"]
+
+[node name="TrainContainer" type="Node2D" parent="MouseInput/MapRender"]
 
 [node name="LogicFrame" type="Label" parent="MouseInput"]
 unique_name_in_owner = true
@@ -173,16 +179,54 @@ text = "路三"
 [node name="CheckButton" type="CheckButton" parent="MouseInput/VBoxContainer/HBoxContainer7"]
 layout_mode = 2
 
+[node name="HBoxContainer" type="HBoxContainer" parent="MouseInput"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -40.0
+offset_top = -40.0
+grow_horizontal = 0
+grow_vertical = 0
+
+[node name="CheckButton1" type="CheckButton" parent="MouseInput/HBoxContainer"]
+layout_mode = 2
+button_pressed = true
+button_group = SubResource("ButtonGroup_y86vm")
+text = "1x"
+
+[node name="CheckButton2" type="CheckButton" parent="MouseInput/HBoxContainer"]
+layout_mode = 2
+button_group = SubResource("ButtonGroup_y86vm")
+text = "2x"
+
+[node name="CheckButton4" type="CheckButton" parent="MouseInput/HBoxContainer"]
+layout_mode = 2
+button_group = SubResource("ButtonGroup_y86vm")
+text = "4x"
+
+[node name="CheckButton8" type="CheckButton" parent="MouseInput/HBoxContainer"]
+layout_mode = 2
+button_group = SubResource("ButtonGroup_y86vm")
+text = "8x"
+
+[node name="CheckButton24" type="CheckButton" parent="MouseInput/HBoxContainer"]
+layout_mode = 2
+button_group = SubResource("ButtonGroup_y86vm")
+text = "24x"
+
 [node name="FactroyViewWindow" type="Window" parent="."]
 title = "Factory"
 position = Vector2i(20, 40)
-size = Vector2i(200, 400)
+size = Vector2i(300, 500)
 
 [node name="FactroyView" parent="FactroyViewWindow" instance=ExtResource("7_j73ru")]
 
 [node name="TrainLineViewWindow" type="Window" parent="."]
 title = "TrainLine"
-position = Vector2i(300, 40)
+position = Vector2i(400, 40)
 size = Vector2i(200, 400)
 
 [node name="TrainLineView" parent="TrainLineViewWindow" instance=ExtResource("8_08wlu")]
@@ -193,5 +237,10 @@ size = Vector2i(200, 400)
 [connection signal="toggled" from="MouseInput/VBoxContainer/HBoxContainer5/CheckButton" to="MouseInput/MapRender" method="TrainLine1DisplayChange"]
 [connection signal="toggled" from="MouseInput/VBoxContainer/HBoxContainer6/CheckButton" to="MouseInput/MapRender" method="TrainLine2DisplayChange"]
 [connection signal="toggled" from="MouseInput/VBoxContainer/HBoxContainer7/CheckButton" to="MouseInput/MapRender" method="TrainLine3DisplayChange"]
+[connection signal="toggled" from="MouseInput/HBoxContainer/CheckButton1" to="Director" method="SetGameSpeed" binds= [1]]
+[connection signal="toggled" from="MouseInput/HBoxContainer/CheckButton2" to="Director" method="SetGameSpeed" binds= [2]]
+[connection signal="toggled" from="MouseInput/HBoxContainer/CheckButton4" to="Director" method="SetGameSpeed" binds= [4]]
+[connection signal="toggled" from="MouseInput/HBoxContainer/CheckButton8" to="Director" method="SetGameSpeed" binds= [8]]
+[connection signal="toggled" from="MouseInput/HBoxContainer/CheckButton24" to="Director" method="SetGameSpeed" binds= [24]]
 [connection signal="close_requested" from="FactroyViewWindow" to="FactroyViewWindow" method="hide"]
 [connection signal="close_requested" from="TrainLineViewWindow" to="TrainLineViewWindow" method="hide"]

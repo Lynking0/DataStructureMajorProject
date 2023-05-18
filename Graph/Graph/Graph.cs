@@ -175,7 +175,7 @@ namespace GraphMoudle
                 if (edge.IsBridge)
                     continue;
                 Curve2D temp = edge.GetCurveCopy();
-                edge.RotateCtrlPoint(vertex, MathF.PI);
+                edge.TransformCtrlPoint(vertex, MathF.PI, 2);
                 // edge不是桥，所以只有一段三阶贝塞尔
                 EdgeEvaluator.Instance.MaxEnergy = MaxVertexAltitude;
                 EdgeEvaluator.Instance.A = edge.Curve.GetPointPosition(0);

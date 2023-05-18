@@ -20,16 +20,14 @@ namespace DirectorMoudle
 
         public bool RoadDisplay { get; private set; } = true;
         public bool FactoryDisplay { get; private set; } = true;
-        public bool LinkDisplay { get; private set; } = true;
+        public bool LinkDisplay { get; private set; } = false;
         public bool TrainLine1Display { get; private set; } = true;
-        public bool TrainLine2Display { get; private set; } = false;
-        public bool TrainLine3Display { get; private set; } = false;
+        public bool TrainLine2Display { get; private set; } = true;
+        public bool TrainLine3Display { get; private set; } = true;
 
         private bool MaxEdgeLoadDirty = true;
         public int MaxEdgeLoad { get; private set; } = 0;
         public const int MaxRoadWidth = 6;
-
-        private int LogicFrameCount = 0;
 
         public MapRender()
         {
@@ -84,7 +82,7 @@ namespace DirectorMoudle
             Font = new FontVariation();
             Font.BaseFont = ResourceLoader.Load<Font>("res://Render/PingFang-SC-Regular.ttf");
             GetNode<MapController>("%GameViewportContainer").MapChanged += Update;
-            GetNode<Director>("%Director").Tick += () => { GetNode<Label>("%LogicFrame").Text = "LogicFrame: " + (LogicFrameCount++).ToString(); };
+            GetNode<Director>("%Director").Tick += () => { GetNode<Label>("%LogicFrame").Text = "LogicFrame: " + Director.Instance!.TickCount.ToString(); };
             Update(Vector2.Zero, 1);
 
             FactoryContainer = new Node2D();
@@ -153,12 +151,9 @@ namespace DirectorMoudle
             {
                 render.Clear();
             }
-            if (FactoryDisplay)
-                Factory.Factories.ToList().ForEach(DrawFactor);
-            if (RoadDisplay)
-                Graph.Instance.Edges.ToList().ForEach(AddRoad);
-            if (LinkDisplay)
-                ProduceLink.Links.ForEach(AddLink);
+            Factory.Factories.ToList().ForEach(DrawFactor);
+            Graph.Instance.Edges.ToList().ForEach(AddRoad);
+            ProduceLink.Links.ForEach(AddLink);
             foreach (var render in Renders)
             {
                 render.QueueRedraw();

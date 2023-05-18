@@ -18,8 +18,10 @@ namespace IndustryMoudle.Link
         }
     }
 
-    public struct ProduceLink
+    public partial class ProduceLink
     {
+        private static int IDCount = 0;
+        public int ID = IDCount++;
         public Factory From;
         public Factory To;
         public Item Item;
@@ -32,6 +34,7 @@ namespace IndustryMoudle.Link
         public IReadOnlyList<Vertex> Vertexes => _vertexes;
         private List<EdgeInfo> _edgeInfos;
         public IReadOnlyList<EdgeInfo> EdgeInfos => _edgeInfos;
+        public readonly ProduceLink? For;
 
         public static LoadInfo GetEdgeLoad(Edge edge)
         {
@@ -44,7 +47,7 @@ namespace IndustryMoudle.Link
             return new LoadInfo(forwardLoad, reverseLoad);
         }
 
-        public ProduceLink(Factory from, Factory to, IEnumerable<Vertex> vertexs, IEnumerable<EdgeInfo> edges, Item item, ProduceChain chain)
+        public ProduceLink(Factory from, Factory to, IEnumerable<Vertex> vertexs, IEnumerable<EdgeInfo> edges, Item item, ProduceChain chain, ProduceLink? for_ = null)
         {
             From = from;
             To = to;
@@ -52,6 +55,7 @@ namespace IndustryMoudle.Link
             Chain = chain;
             _vertexes = new List<Vertex>(vertexs);
             _edgeInfos = new List<EdgeInfo>(edges);
+            For = for_;
             foreach (var edgeIfno in edges)
             {
                 if (edgeIfno.Edge == null)

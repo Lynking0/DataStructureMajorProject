@@ -17,7 +17,7 @@ namespace IndustryMoudle
         public Vector2 Position { get => (Vector2)Vertex.Position; }
         public ItemBox Storage = new ItemBox();
         // 工厂产能 固定的
-        public int BaseProduceSpeed = 100 + GD.RandRange(-4, 4);
+        public int BaseProduceSpeed = 10 + GD.RandRange(-4, 4);
         public QuadTree<Factory>.Handle QuadTreeHandle;
 
         private List<ProduceLink> _inputLinks = new List<ProduceLink>();
@@ -31,6 +31,8 @@ namespace IndustryMoudle
         public ItemBox CapacityInput { get => new ItemBox(Recipe.Input) * BaseProduceSpeed; }
         public ItemBox CapacityOutput { get => new ItemBox(Recipe.Output) * BaseProduceSpeed; }
 
+        public int ProduceCount { get; private set; } = 0;
+        public Dictionary<TrainLine, List<Goods>> Platform = new Dictionary<TrainLine, List<Goods>>();
         public ItemBox ActualOutput
         {
             get
@@ -58,20 +60,7 @@ namespace IndustryMoudle
             _outputLinks.Remove(link);
         }
 
-        public IEnumerable<ProduceLink> Links
-        {
-            get
-            {
-                foreach (var link in InputLinks)
-                {
-                    yield return link;
-                }
-                foreach (var link in OutputLinks)
-                {
-                    yield return link;
-                }
-            }
-        }
+        public IEnumerable<ProduceLink> Links => InputLinks.Concat(OutputLinks);
 
         public Factory(Recipe recipe, GraphMoudle.Vertex vertex)
         {
@@ -79,6 +68,9 @@ namespace IndustryMoudle
             Vertex = vertex;
             QuadTreeHandle = FactoriesQuadTree.Insert(this);
             Factories.Add(this);
+            if (FactoryTickGroup[ID % 4] is null)
+                FactoryTickGroup[ID % 4] = new List<Factory>();
+            FactoryTickGroup[ID % 4].Add(this);
             _vertexToFactory[vertex] = this;
             IdealInput = new ItemBox(Recipe.Input) * BaseProduceSpeed;
             IdealOutput = new ItemBox(Recipe.Output) * BaseProduceSpeed;
@@ -87,19 +79,95 @@ namespace IndustryMoudle
         {
             FactoriesQuadTree.Remove(this);
         }
-
+        public List<Goods> OutputGoods(Train train, TrainLine line, int max)
+        {
+            var result = new List<Goods>();
+            var count = 0;
+            lock (Platform)
+            {
+                if (!Platform.ContainsKey(line))
+                    Platform[line] = new List<Goods>();
+                while (count < max && Platform[line].Count > 0)
+                {
+                    if (Platform[line].First().Item.Number + count <= max)
+                    {
+                        var goods = Platform[line].First();
+                        Platform[line].Remove(goods);
+                        count += goods.Item.Number;
+                        result.Add(goods);
+                    }
+                    else
+                        break;
+                }
+            }
+            return result;
+        }
         public void LoadGoods(Goods goods, Train train)
         {
-            Storage.AddItem(goods.Item);
-            goods.EnterFactory(this, train);
+            if (goods.Ticket.Trips.Last().End == Vertex)
+            {
+                lock (Storage)
+                {
+                    Storage.AddItem(goods.Item);
+                    goods.EnterFactory(this, train);
+                }
+            }
+            else
+            {
+                lock (Platform)
+                {
+                    if (Platform.ContainsKey(goods.Ticket.CurTrip.Line))
+                        Platform[goods.Ticket.CurTrip.Line].Add(goods);
+                    else
+                        Platform[goods.Ticket.CurTrip.Line] = new List<Goods>(new[] { goods });
+                }
+            }
         }
 
         private void Produce()
         {
-            foreach (var item in CapacityInput)
-                var (_, actual) = Storage.RequireItem(item.Key, item.Value);
-            foreach (var item in CapacityOutput)
-                Storage.AddItem(item.Key, item.Value);
+            var count = 0;
+            while (count < BaseProduceSpeed)
+            {
+                if (OutputLinks.Count == 0)
+                {
+                    lock (Storage)
+                    {
+                        // 消费
+                        if (!Storage.HasItem("ABCDEF", BaseProduceSpeed))
+                            return;
+                        Storage.RequireItem("ABCDEF", BaseProduceSpeed);
+                    }
+                    count += BaseProduceSpeed;
+                    ProduceCount += BaseProduceSpeed;
+                }
+                else
+                {
+                    foreach (var link in OutputLinks)
+                    {
+                        var num = link.Item.Number;
+                        lock (Storage)
+                        {
+                            foreach (var (t, n) in Recipe.Input)
+                            {
+                                if (!Storage.HasItem(t, n * num))
+                                    return;
+                                Storage.RequireItem(t, n * num);
+                            }
+                        }
+                        count += num;
+                        ProduceCount += num;
+                        var goods = new Goods(link.Item, link);
+                        lock (Platform)
+                        {
+                            if (Platform.ContainsKey(goods.Ticket.CurTrip.Line))
+                                Platform[goods.Ticket.CurTrip.Line].Add(goods);
+                            else
+                                Platform[goods.Ticket.CurTrip.Line] = new List<Goods>(new[] { goods });
+                        }
+                    }
+                }
+            }
         }
         /// <summary>
         /// 获取该工厂每周期的原料需求
@@ -116,15 +184,19 @@ namespace IndustryMoudle
         private int TickCount = 0;
         public void Tick()
         {
+            // 避免整百全部工厂一起生产卡卡
             TickCount++;
-            if (TickCount < 100)
+            if (TickCount < ID % 100 + 100)
                 return;
-            TickCount = 0;
-            foreach (var (type, number) in CapacityInput)
+            TickCount = ID % 100;
+            lock (Storage)
             {
-                if (!Storage.HasItem(type, number))
+                foreach (var (type, number) in CapacityInput)
                 {
-                    return;
+                    if (!Storage.HasItem(type, number))
+                    {
+                        return;
+                    }
                 }
             }
             Produce();

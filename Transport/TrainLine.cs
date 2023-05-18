@@ -1,7 +1,7 @@
 using Godot;
-using GraphMoudle;
 using System.Collections.Generic;
 using System.Linq;
+using GraphMoudle;
 using Shared.Extensions.Curve2DExtensions;
 
 namespace TransportMoudle
@@ -12,7 +12,7 @@ namespace TransportMoudle
         SideLine,
         FootPath,
     }
-    public class TrainLine
+    public partial class TrainLine
     {
         private static int MainLineIDCount = 0;
         private static int SideLineIDCount = 0;
@@ -38,9 +38,9 @@ namespace TransportMoudle
                 return result;
             }
         }
-
+        public Dictionary<Vertex, float> Station = new Dictionary<Vertex, float>();
+        public float TotalLength;
         public Color Color;
-
         public TrainLine(TrainLineLevel level)
         {
             Level = level;
@@ -64,7 +64,6 @@ namespace TransportMoudle
                     throw new System.Exception("Unknown TrainLineLevel");
             }
         }
-
         public void AddEdge(Edge edge)
         {
             _edges.Add(edge);
@@ -75,7 +74,15 @@ namespace TransportMoudle
         }
         public void GenerateCurve()
         {
-            Path.Curve = Path.Curve.Concat(_edges.Select(e => e.Curve).ToArray());
+            var vertexes = _edges.SelectMany(e => new[] { e.A, e.B }).Distinct().ToList();
+            var curves = _edges.Select(e => e.Curve).ToList();
+            for (int i = 0; i < curves.Count; i++)
+            {
+                Station[vertexes[i]] = Path.Curve.GetBakedLength();
+                Path.Curve = Path.Curve.Concat(curves[i]);
+            }
+            Station[vertexes.Last()] = Path.Curve.GetBakedLength();
+            TotalLength = Path.Curve.GetBakedLength();
         }
     }
 }
