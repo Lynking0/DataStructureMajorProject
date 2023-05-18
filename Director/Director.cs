@@ -150,7 +150,7 @@ namespace DirectorMoudle
         {
             MapController!.SetMapPosition(position);
         }
-        int TickCount = 0;
+        public int TickCount = 0;
         public override void _Process(double delta)
         {
             DeltaCount += delta;
