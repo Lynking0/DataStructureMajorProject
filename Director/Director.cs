@@ -108,8 +108,6 @@ namespace DirectorMoudle
                     Graph.Instance.AdjustEdges(edges[i], edges[i + 1]);
                 }
             }
-            var f = Factory.Factories.Where(f => f.ID == 4208).First();
-            FocusOn(f.Position);
             DirectorMoudle.MapRender.Instance?.QueueRedraw();
             BindEverything();
         }
@@ -119,30 +117,9 @@ namespace DirectorMoudle
             Tick += Factory.TickAll;
             Tick10 += FactroyView.Instance!.Refresh;
             Tick += Train.TickAll;
-        }
-
-        private void FocusOn(Vector2 position)
-        {
-            MapController!.SetMapPosition(position);
-        }
-        int TickCount = 0;
-        public override void _Process(double delta)
-        {
-            DeltaCount += delta;
-            while (DeltaCount > TickLength)
+            Tick += () =>
             {
-                Tick!.Invoke();
-                TickCount += 1;
-                if (TickCount % 10 == 0)
-                    Tick10?.Invoke();
-                if (TickCount % 100 == 0)
-                    Tick100?.Invoke();
-                DeltaCount -= TickLength;
-                // GD.Print(Factory.Factories.Where(f => f.ProduceCount == 0).Count());
-                // var a = Train.Trains.GroupBy(t => t.GoodsCount / 10).Select(g => $"[{g.Key},{g.Count()}]");
-                // GD.Print(string.Join(" ", a));
-
-                if (TickCount < 20000)
+                if (TickCount == 100 || TickCount == 3000 || TickCount == 6000 || TickCount == 9000 || TickCount == 12000)
                 {
                     foreach (var line in TrainLine.TrainLines)
                     {
@@ -166,6 +143,29 @@ namespace DirectorMoudle
                         }
                     }
                 }
+            };
+        }
+
+        private void FocusOn(Vector2 position)
+        {
+            MapController!.SetMapPosition(position);
+        }
+        int TickCount = 0;
+        public override void _Process(double delta)
+        {
+            DeltaCount += delta;
+            while (DeltaCount > TickLength)
+            {
+                Tick!.Invoke();
+                TickCount += 1;
+                if (TickCount % 10 == 0)
+                    Tick10?.Invoke();
+                if (TickCount % 100 == 0)
+                    Tick100?.Invoke();
+                DeltaCount -= TickLength;
+                // GD.Print(Factory.Factories.Where(f => f.ProduceCount == 0).Count());
+                // var a = Train.Trains.GroupBy(t => t.GoodsCount / 10).Select(g => $"[{g.Key},{g.Count()}]");
+                // GD.Print(string.Join(" ", a));
             }
             // var t = Train.Trains.Where(t => t.TrainLine.Level == TrainLineLevel.MainLine).First();
             // t.Size = 100;

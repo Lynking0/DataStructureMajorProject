@@ -1,14 +1,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using GraphMoudle;
-using IndustryMoudle.Extensions;
 using TransportMoudle.Extensions;
 
 namespace TransportMoudle
 {
     public partial class TrainLine
     {
-        public static List<Trip> Navigate(IList<Vertex> vertexes)
+        public static List<Trip> Navigate(IList<Vertex> vertexes, bool isLoop = false)
         {
             /// TODO:
             /// 传进的vertexes是之前生产link的时候生成的点集
@@ -31,19 +30,26 @@ namespace TransportMoudle
                     if (lines.Count() == 0)
                     {
                         // 遇到了被删掉的点
+                        if (isLoop)
+                        {
+                            throw new System.Exception("Navigate递归超限");
+                        }
+                        var oldL = vertexes.Count();
                         var reachableVertexes = vertexes.Take(i).ToHashSet();
                         var target = vertexes.Last();
                         var targetNearVertexes = new PriorityQueue<(IEnumerable<Vertex> path, Vertex vertex), float>();
+                        var visitedVertexes = new HashSet<Vertex>();
                         foreach (var e in target.Adjacencies)
                         {
                             var otherEnd = e.GetOtherEnd(target)!;
-                            targetNearVertexes.Enqueue((new Vertex[] { }, otherEnd), e.Length);
+                            targetNearVertexes.Enqueue((new List<Vertex>(), otherEnd), e.Length);
                         }
                         while (targetNearVertexes.Count > 0)
                         {
                             targetNearVertexes.TryDequeue(out var info, out var length);
                             if (info.vertex is null)
                                 break;
+                            visitedVertexes.Add(info.vertex);
                             if (reachableVertexes.Contains(info.vertex))
                             {
                                 // 找到了一个可达的点
@@ -55,7 +61,7 @@ namespace TransportMoudle
                                         break;
                                 }
                                 newPath.AddRange(info.path.Reverse());
-                                return Navigate(newPath);
+                                return Navigate(newPath, true);
                             }
                             else
                             {
@@ -63,9 +69,11 @@ namespace TransportMoudle
                                 foreach (var e in info.vertex.Adjacencies)
                                 {
                                     var otherEnd = e.GetOtherEnd(info.vertex)!;
-                                    targetNearVertexes.Enqueue(
-                                        (info.path.Concat(new[] { info.vertex }), otherEnd),
-                                        length + e.Length);
+                                    if (visitedVertexes.Contains(otherEnd))
+                                        continue;
+                                    var path = new List<Vertex>(info.path);
+                                    path.Add(info.vertex);
+                                    targetNearVertexes.Enqueue((path, otherEnd), length + e.Length);
                                 }
                             }
                         }

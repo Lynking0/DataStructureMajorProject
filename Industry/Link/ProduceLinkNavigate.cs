@@ -13,13 +13,16 @@ namespace IndustryMoudle.Link
         {
             get
             {
-                if (NavigateCache.ContainsKey(this))
+                lock (NavigateCache)
                 {
-                    return NavigateCache[this];
+                    if (NavigateCache.ContainsKey(this))
+                    {
+                        return NavigateCache[this];
+                    }
+                    var result = TrainLine.Navigate(Vertexes.ToList());
+                    NavigateCache[this] = result;
+                    return result;
                 }
-                var result = TrainLine.Navigate(Vertexes.ToList());
-                NavigateCache[this] = result;
-                return result;
             }
         }
     }

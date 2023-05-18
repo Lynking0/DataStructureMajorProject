@@ -106,8 +106,11 @@ namespace IndustryMoudle
         {
             if (goods.Ticket.Trips.Last().End == Vertex)
             {
-                Storage.AddItem(goods.Item);
-                goods.EnterFactory(this, train);
+                lock (Storage)
+                {
+                    Storage.AddItem(goods.Item);
+                    goods.EnterFactory(this, train);
+                }
             }
             else
             {
@@ -128,10 +131,13 @@ namespace IndustryMoudle
             {
                 if (OutputLinks.Count == 0)
                 {
-                    // 消费
-                    if (!Storage.HasItem("ABCDEF", BaseProduceSpeed))
-                        return;
-                    Storage.RequireItem("ABCDEF", BaseProduceSpeed);
+                    lock (Storage)
+                    {
+                        // 消费
+                        if (!Storage.HasItem("ABCDEF", BaseProduceSpeed))
+                            return;
+                        Storage.RequireItem("ABCDEF", BaseProduceSpeed);
+                    }
                     count += BaseProduceSpeed;
                     ProduceCount += BaseProduceSpeed;
                 }
@@ -140,11 +146,14 @@ namespace IndustryMoudle
                     foreach (var link in OutputLinks)
                     {
                         var num = link.Item.Number;
-                        foreach (var (t, n) in Recipe.Input)
+                        lock (Storage)
                         {
-                            if (!Storage.HasItem(t, n * num))
-                                return;
-                            Storage.RequireItem(t, n * num);
+                            foreach (var (t, n) in Recipe.Input)
+                            {
+                                if (!Storage.HasItem(t, n * num))
+                                    return;
+                                Storage.RequireItem(t, n * num);
+                            }
                         }
                         count += num;
                         ProduceCount += num;
@@ -180,11 +189,14 @@ namespace IndustryMoudle
             if (TickCount < ID % 100 + 100)
                 return;
             TickCount = ID % 100;
-            foreach (var (type, number) in CapacityInput)
+            lock (Storage)
             {
-                if (!Storage.HasItem(type, number))
+                foreach (var (type, number) in CapacityInput)
                 {
-                    return;
+                    if (!Storage.HasItem(type, number))
+                    {
+                        return;
+                    }
                 }
             }
             Produce();
