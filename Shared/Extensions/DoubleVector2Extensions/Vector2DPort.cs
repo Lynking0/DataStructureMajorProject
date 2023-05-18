@@ -137,13 +137,14 @@ namespace Shared.Extensions.DoubleVector2Extensions
         public string ToString(string format)
         {
             return $"({X.ToString(format)}, {Y.ToString(format)})";
-        }        /// <summary>
-                 /// Returns this vector's angle with respect to the X axis, or (1, 0) vector, in radians.
-                 ///
-                 /// Equivalent to the result of <see cref="Math.Atan2(double, double)"/> when
-                 /// called with the vector's <see cref="Y"/> and <see cref="X"/> as parameters: <c>Math.Atan2(v.Y, v.X)</c>.
-                 /// </summary>
-                 /// <returns>The angle of this vector, in radians.</returns>
+        }
+        /// <summary>
+        /// Returns this vector's angle with respect to the X axis, or (1, 0) vector, in radians.
+        ///
+        /// Equivalent to the result of <see cref="Math.Atan2(double, double)"/> when
+        /// called with the vector's <see cref="Y"/> and <see cref="X"/> as parameters: <c>Math.Atan2(v.Y, v.X)</c>.
+        /// </summary>
+        /// <returns>The angle of this vector, in radians.</returns>
         public double AngleD()
         {
             return Math.Atan2(this.Y, this.X);
@@ -429,6 +430,19 @@ namespace Shared.Extensions.DoubleVector2Extensions
             return new Vector2D(
                 this.X * cosi - this.Y * sine,
                 this.X * sine + this.Y * cosi);
+        }
+
+        /// <summary>
+        /// Rotates this vector by <paramref name="angle"/> radians.
+        /// </summary>
+        /// <param name="angle">The angle to rotate by, in radians.</param>
+        /// <returns>The rotated vector.</returns>
+        public Vector2D RotatedToD(double angle)
+        {
+            double len = LengthD();
+            return new Vector2D(
+                len * Math.Cos(angle),
+                len * Math.Sin(angle));
         }
 
         /// <summary>

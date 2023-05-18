@@ -187,6 +187,9 @@ size = Vector2i(200, 400)
 
 [node name="TrainLineView" parent="TrainLineViewWindow" instance=ExtResource("8_08wlu")]
 
+[node name="Node2D" type="Node2D" parent="."]
+script = ExtResource("5_fj2l2")
+
 [connection signal="toggled" from="MouseInput/VBoxContainer/HBoxContainer2/CheckButton" to="MouseInput/MapRender" method="RoadDisplayChange"]
 [connection signal="toggled" from="MouseInput/VBoxContainer/HBoxContainer3/CheckButton" to="MouseInput/MapRender" method="FactoryDisplayChange"]
 [connection signal="toggled" from="MouseInput/VBoxContainer/HBoxContainer4/CheckButton" to="MouseInput/MapRender" method="LinkDisplayChange"]

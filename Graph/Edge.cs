@@ -57,6 +57,17 @@ namespace GraphMoudle
                 Curve.SetPointIn(Curve.PointCount - 1, Curve.GetPointIn(Curve.PointCount - 1).Rotated(angle));
             ClearCacheInfo(); // 曲线改变，需清理缓存信息
         }
+        /// <summary>
+        ///   以节点v为中心旋转当前边在节点v的控制点，若v不是当前边的端点，则不做任何操作
+        /// </summary>
+        public void RotateCtrlPointTo(Vertex v, float angle)
+        {
+            if (v == A)
+                Curve.SetPointOut(0, Curve.GetPointOut(0).RotatedTo(angle));
+            if (v == B)
+                Curve.SetPointIn(Curve.PointCount - 1, Curve.GetPointIn(Curve.PointCount - 1).RotatedTo(angle));
+            ClearCacheInfo(); // 曲线改变，需清理缓存信息
+        }
         public Curve2D GetCurveCopy()
         {
             Curve2D curve = new Curve2D();

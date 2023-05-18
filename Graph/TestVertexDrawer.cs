@@ -13,6 +13,11 @@ namespace GraphMoudle
         private Vector2D? ShowPosition = null;
         private Vector2D TempPos;
         private HashSet<Edge>? ShowEdges = null;
+        public override void _Ready()
+        {
+            MoveLocalX(GetWindow().Size.X / 2);
+            MoveLocalY(GetWindow().Size.Y / 2);
+        }
         public override void _Draw()
         {
             foreach (Edge edge in Graph.Instance.Edges)
@@ -30,10 +35,10 @@ namespace GraphMoudle
             }
             foreach (Vertex vertex in Graph.Instance.Vertices)
             {
-                DrawCircle((Vector2)vertex.Position, 2, new Color(0.2f, 0.2f, 0.2f, 1));
-                Vector2D v = vertex.Gradient.OrthogonalD().NormalizedD() * 10;
-                DrawLine((Vector2)(vertex.Position - v), (Vector2)(vertex.Position + v), new Color(0.25f, 0.25f, 0.25f, 1), 1);
-                DrawLine((Vector2)(vertex.Position), (Vector2)(vertex.Position - vertex.Gradient.NormalizedD() * 12), new Color(0.25f, 0.25f, 0.25f, 1), 1);
+                DrawCircle((Vector2)vertex.Position, 4, new Color(0.2f, 0.2f, 0.2f, 1));
+                // Vector2D v = vertex.Gradient.OrthogonalD().NormalizedD() * 10;
+                // DrawLine((Vector2)(vertex.Position - v), (Vector2)(vertex.Position + v), new Color(0.25f, 0.25f, 0.25f, 1), 1);
+                // DrawLine((Vector2)(vertex.Position), (Vector2)(vertex.Position - vertex.Gradient.NormalizedD() * 12), new Color(0.25f, 0.25f, 0.25f, 1), 1);
             }
             Color[] colors = {
                 Colors.Black,

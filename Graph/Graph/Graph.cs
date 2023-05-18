@@ -164,41 +164,31 @@ namespace GraphMoudle
             return result;
         }
         /// <summary>
-        ///   对指定点和该点邻接的若干指定边，对边的方向进行调整，
-        ///   这些边在该点处的控制点方向需一致。
+        ///   检查调整过的边（不能是桥），若不合法，则恢复
         /// </summary>
-        private void _adjustEdges(Vertex vertex, params Edge[] adjEdges)
+        /// <return>是否合法</return>
+        private bool _checkEdge(Edge edge, Curve2D oldCurve)
         {
-            RandomDislocate(adjEdges);
-            foreach (Edge edge in adjEdges)
+            // edge不是桥，所以只有一段三阶贝塞尔
+            EdgeEvaluator.Instance.MaxEnergy = MaxVertexAltitude;
+            EdgeEvaluator.Instance.A = edge.Curve.GetPointPosition(0);
+            EdgeEvaluator.Instance.B = edge.Curve.GetPointPosition(0) + edge.Curve.GetPointOut(0);
+            EdgeEvaluator.Instance.C = edge.Curve.GetPointPosition(1) + edge.Curve.GetPointIn(1);
+            EdgeEvaluator.Instance.D = edge.Curve.GetPointPosition(1);
+            if (EdgeEvaluator.Instance.Annealing().energy >= MaxVertexAltitude)
             {
-                if (edge.IsBridge)
-                    continue;
-                Curve2D temp = edge.GetCurveCopy();
-                edge.RotateCtrlPoint(vertex, MathF.PI);
-                // edge不是桥，所以只有一段三阶贝塞尔
-                EdgeEvaluator.Instance.MaxEnergy = MaxVertexAltitude;
-                EdgeEvaluator.Instance.A = edge.Curve.GetPointPosition(0);
-                EdgeEvaluator.Instance.B = edge.Curve.GetPointPosition(0) + edge.Curve.GetPointOut(0);
-                EdgeEvaluator.Instance.C = edge.Curve.GetPointPosition(1) + edge.Curve.GetPointIn(1);
-                EdgeEvaluator.Instance.D = edge.Curve.GetPointPosition(1);
-                if (EdgeEvaluator.Instance.Annealing().energy >= MaxVertexAltitude)
-                {
-                    edge.SetCurveCopy(temp);
-                    continue;
-                }
-                GISInfoStorer.Remove(edge);
-                if (!GISInfoStorer.CanAdd(edge))
-                {
-                    edge.SetCurveCopy(temp);
-                    GISInfoStorer.Add(edge);
-                }
-                else
-                {
-                    GISInfoStorer.Add(edge);
-                    break;
-                }
+                edge.SetCurveCopy(oldCurve);
+                return false;
             }
+            GISInfoStorer.Remove(edge);
+            if (!GISInfoStorer.CanAdd(edge))
+            {
+                edge.SetCurveCopy(oldCurve);
+                GISInfoStorer.Add(edge);
+                return false;
+            }
+            GISInfoStorer.Add(edge);
+            return true;
         }
         /// <summary>
         ///   根据各个节点情况自觉调整边的方向
@@ -222,7 +212,16 @@ namespace GraphMoudle
                 {
                     Edge[] adjEdges = new Edge[vertex.Adjacencies.Count];
                     vertex.Adjacencies.CopyTo(adjEdges);
-                    _adjustEdges(vertex, adjEdges);
+                    RandomDislocate(adjEdges);
+                    foreach (Edge edge in adjEdges)
+                    {
+                        if (edge.IsBridge)
+                            continue;
+                        Curve2D temp = edge.GetCurveCopy();
+                        edge.RotateCtrlPoint(vertex, MathF.PI);
+                        if (_checkEdge(edge, temp))
+                            break;
+                    }
                 }
             }
         }
@@ -239,7 +238,49 @@ namespace GraphMoudle
             else
                 throw new Exception($"{GetType()}.AdjustEdges(Edge, Edge): Value error!");
             if (Mathf.IsEqualApprox((float)edge1.GetCtrlAngle(vertex)!, (float)edge2.GetCtrlAngle(vertex)!))
-                _adjustEdges(vertex, edge1, edge2);
+            {
+                Curve2D temp1 = edge1.GetCurveCopy(), temp2 = edge2.GetCurveCopy();
+                double angle = ((edge1.GetOtherEnd(vertex)!.Position - vertex.Position) + (edge2.GetOtherEnd(vertex)!.Position - vertex.Position)).AngleD();
+                bool flag1, flag2;
+
+                edge1.RotateCtrlPointTo(vertex, (float)(angle + Math.PI / 2));
+                edge2.RotateCtrlPointTo(vertex, (float)(angle - Math.PI / 2));
+                flag1 = _checkEdge(edge1, temp1);
+                flag2 = _checkEdge(edge2, temp2);
+                if (flag1 && flag2)
+                    return;
+                else if (flag1)
+                {
+                    GISInfoStorer.Remove(edge1);
+                    edge1.SetCurveCopy(temp1);
+                    GISInfoStorer.Add(edge1);
+                }
+                else if (flag2)
+                {
+                    GISInfoStorer.Remove(edge2);
+                    edge2.SetCurveCopy(temp2);
+                    GISInfoStorer.Add(edge2);
+                }
+                
+                edge1.RotateCtrlPointTo(vertex, (float)(angle - Math.PI / 2));
+                edge2.RotateCtrlPointTo(vertex, (float)(angle + Math.PI / 2));
+                flag1 = _checkEdge(edge1, temp1);
+                flag2 = _checkEdge(edge2, temp2);
+                if (flag1 && flag2)
+                    return;
+                else if (flag1)
+                {
+                    GISInfoStorer.Remove(edge1);
+                    edge1.SetCurveCopy(temp1);
+                    GISInfoStorer.Add(edge1);
+                }
+                else if (flag2)
+                {
+                    GISInfoStorer.Remove(edge2);
+                    edge2.SetCurveCopy(temp2);
+                    GISInfoStorer.Add(edge2);
+                }
+            }
         }
     }
 }

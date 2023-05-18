@@ -301,6 +301,32 @@ namespace Shared.Extensions.DoubleVector2Extensions
         }
 
         /// <summary>
+        /// Rotates this vector by <paramref name="angle"/> radians.
+        /// </summary>
+        /// <param name="angle">The angle to rotate by, in radians.</param>
+        /// <returns>The rotated vector.</returns>
+        public static Vector2 RotatedTo(this Vector2 vec, float angle)
+        {
+            float len = vec.Length();
+            return new Vector2(
+                len * Mathf.Cos(angle),
+                len * Mathf.Sin(angle));
+        }
+
+        /// <summary>
+        /// Rotates this vector by <paramref name="angle"/> radians.
+        /// </summary>
+        /// <param name="angle">The angle to rotate by, in radians.</param>
+        /// <returns>The rotated vector.</returns>
+        public static Vector2D RotatedToD(this Vector2 vec, double angle)
+        {
+            double len = vec.LengthD();
+            return new Vector2D(
+                len * Math.Cos(angle),
+                len * Math.Sin(angle));
+        }
+
+        /// <summary>
         /// Returns vec vector with all components rounded to the nearest integer,
         /// with halfway cases rounded towards the nearest multiple of two.
         /// </summary>
