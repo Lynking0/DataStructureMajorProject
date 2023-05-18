@@ -41,8 +41,12 @@ namespace DirectorMoudle
             (Material as ShaderMaterial)!.SetShaderParameter("scale", MapScale);
             EmitSignal(SignalName.MapChanged, MapTransform, MapScale);
         }
-
-        public void SetMapPosition(Vector2 positionDelta)
+        public void SetMapPosition(Vector2 position)
+        {
+            MapTransform = -position * (float)MapScale - WindowSize / 2;
+            UpdateMapShader();
+        }
+        public void SetMapRelativePosition(Vector2 positionDelta)
         {
             MapTransform += positionDelta;
             UpdateMapShader();

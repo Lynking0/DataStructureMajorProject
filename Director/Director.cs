@@ -1,10 +1,14 @@
 using Godot;
 using System;
+using System.Linq;
 using UserControl;
 using TopographyMoudle;
 using IndustryMoudle;
+using IndustryMoudle.Link;
+using IndustryMoudle.Extensions;
 using TransportMoudle;
-using System.Linq;
+using TransportMoudle.Extensions;
+using GraphMoudle;
 
 namespace DirectorMoudle
 {
@@ -21,6 +25,8 @@ namespace DirectorMoudle
 
         public delegate void TickHandler();
         public event TickHandler? Tick;
+        public event TickHandler? Tick10;
+        public event TickHandler? Tick100;
 
         public Director()
         {
@@ -30,31 +36,52 @@ namespace DirectorMoudle
             }
             Instance = this;
         }
-
+        public void SetGameSpeed(bool state, int rate)
+        {
+            if (state)
+                TickLength = 0.024 / rate;
+        }
         public override void _Ready()
         {
-            var seed = 58777ul;
-            GD.Seed(seed);
-            Logger.trace($"随机种子: {seed}");
+            GD.Seed(Constants.Seed);
+            Logger.trace($"随机种子: {Constants.Seed}");
             Logger.trace("Director Ready");
             MapController = GetNode<MapController>("%GameViewportContainer");
             MapRender = GetNode<MapRender>("%MapRender");
             MouselInput = GetNode<MouselInput>("%MouseInput");
 
-            MouselInput.MapMoveTo += MapController!.SetMapPosition;
+            MouselInput.MapMoveTo += MapController!.SetMapRelativePosition;
             MouselInput.MapZoomIn += MapController.MapZoomIn;
             MouselInput.MapZoomOut += MapController.MapZoomOut;
             Logger.trace("Director绑定完成");
             Topography.InitParams();
             Topography.Generate();
             Logger.trace("Graph生成完成");
-            return;
+
             // var factoryInitStopWatch = new System.Diagnostics.Stopwatch();
             // factoryInitStopWatch.Start();
             Industry.BuildFactories();
             Logger.trace("工厂生成完成");
             Industry.BuildFactoryChains();
             Logger.trace("产业链生成完成");
+            var totalDeficit = Factory.TotalDeficit.ToArray();
+            Logger.error($"未配平工厂： {totalDeficit.Count()}");
+            foreach (var (factory, deficit) in totalDeficit)
+            {
+                var def = deficit.Select(item => ((string)item.Key, item.Value));
+                var affectChains = ProduceChain.Chains
+                    .Where(c => c.Links.SelectMany(l => new[] { l.From, l.To }).Contains(factory))
+                    .Select(c => c.ID);
+                Logger.error($"{factory.ID} {string.Join(" ", def)} affect chain {string.Join(" ", affectChains)}");
+            }
+            var cs = ProduceChain.Chains
+                .Where(
+                    c => totalDeficit.Select(item => item.factory)
+                    .Intersect(
+                        c.Links.SelectMany(l => new[] { l.From, l.To }))
+                        .Count() > 0
+                    );
+            Logger.error($"未配平产业链： {cs.Count()}");
             // factoryInitStopWatch.Stop();
             // GD.Print("Factory build in ", factoryInitStopWatch.ElapsedMilliseconds, " ms");
             // Factory.FactoriesQuadTree.Detail();
@@ -66,27 +93,84 @@ namespace DirectorMoudle
             foreach (var line in TrainLine.TrainLines)
             {
                 line.GenerateCurve();
-                GetNode("%MapRender").AddChild(line.Path);
-                new Train(line);
+                GetNode("%MapRender").GetNode("TrainLineContainer").AddChild(line.Path);
             }
+            Logger.trace("删除孤立点、边");
+            foreach (var edge in Graph.Instance.Edges.Where(e => e.GetTrainLines().Count() == 0).ToArray())
+            {
+                Graph.Instance.RemoveEdge(edge).ForEach(v => Factory.Factories.Remove(v.GetFactory()!));
+            }
+            Graph.Instance.AdjustEdges();
+            foreach (var line in TrainLine.TrainLines.Where(line => line.Level == TrainLineLevel.MainLine))
+            {
+                var edges = line.Edges.ToArray();
+                for (int i = 0; i < edges.Length - 1; i++)
+                {
+                    Graph.Instance.AdjustEdges(edges[i], edges[i + 1]);
+                }
+            }
+            DirectorMoudle.MapRender.Instance?.QueueRedraw();
             BindEverything();
         }
 
         private void BindEverything()
         {
-            Factory.Factories.ForEach(f => { Director.Instance!.Tick += f.Tick; });
-            Director.Instance!.Tick += FactroyView.Instance!.Refresh;
-            Train.Trains.ForEach(t => { Director.Instance!.Tick += t.Tick; });
+            Tick += Factory.TickAll;
+            Tick10 += FactroyView.Instance!.Refresh;
+            Tick += Train.TickAll;
+            Tick += () =>
+            {
+                if (TickCount == 100 || TickCount == 3000 || TickCount == 6000 || TickCount == 9000 || TickCount == 12000)
+                {
+                    foreach (var line in TrainLine.TrainLines)
+                    {
+                        if (line.Level == TrainLineLevel.MainLine && (TickCount == 100 || TickCount == 3000 || TickCount == 6000 || TickCount == 9000 || TickCount == 12000))
+                        {
+                            var t = new Train(line);
+                            Tick += t.Tick;
+                            GetNode("%MapRender").GetNode("TrainContainer").AddChild(t);
+                        }
+                        if (line.Level == TrainLineLevel.SideLine && (TickCount == 100 || TickCount == 3000 || TickCount == 6000))
+                        {
+                            var t = new Train(line);
+                            Tick += t.Tick;
+                            GetNode("%MapRender").GetNode("TrainContainer").AddChild(t);
+                        }
+                        if (line.Level == TrainLineLevel.FootPath && TickCount == 100)
+                        {
+                            var t = new Train(line);
+                            Tick += t.Tick;
+                            GetNode("%MapRender").GetNode("TrainContainer").AddChild(t);
+                        }
+                    }
+                }
+            };
         }
 
+        private void FocusOn(Vector2 position)
+        {
+            MapController!.SetMapPosition(position);
+        }
+        public int TickCount = 0;
         public override void _Process(double delta)
         {
             DeltaCount += delta;
             while (DeltaCount > TickLength)
             {
                 Tick!.Invoke();
+                TickCount += 1;
+                if (TickCount % 10 == 0)
+                    Tick10?.Invoke();
+                if (TickCount % 100 == 0)
+                    Tick100?.Invoke();
                 DeltaCount -= TickLength;
+                // GD.Print(Factory.Factories.Where(f => f.ProduceCount == 0).Count());
+                // var a = Train.Trains.GroupBy(t => t.GoodsCount / 10).Select(g => $"[{g.Key},{g.Count()}]");
+                // GD.Print(string.Join(" ", a));
             }
+            // var t = Train.Trains.Where(t => t.TrainLine.Level == TrainLineLevel.MainLine).First();
+            // t.Size = 100;
+            // FocusOn(t.TrainPosition);
         }
     }
 }

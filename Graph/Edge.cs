@@ -49,12 +49,12 @@ namespace GraphMoudle
         /// <summary>
         ///   以节点v为中心旋转当前边在节点v的控制点，若v不是当前边的端点，则不做任何操作
         /// </summary>
-        public void RotateCtrlPoint(Vertex v, float angle)
+        public void TransformCtrlPoint(Vertex v, float angle, float enlarge)
         {
             if (v == A)
-                Curve.SetPointOut(0, Curve.GetPointOut(0).Rotated(angle));
+                Curve.SetPointOut(0, Curve.GetPointOut(0).Rotated(angle) * enlarge);
             if (v == B)
-                Curve.SetPointIn(Curve.PointCount - 1, Curve.GetPointIn(Curve.PointCount - 1).Rotated(angle));
+                Curve.SetPointIn(Curve.PointCount - 1, Curve.GetPointIn(Curve.PointCount - 1).Rotated(angle) * enlarge);
             ClearCacheInfo(); // 曲线改变，需清理缓存信息
         }
         /// <summary>

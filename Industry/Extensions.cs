@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using GraphMoudle;
 using IndustryMoudle.Link;
 
@@ -10,6 +11,10 @@ namespace IndustryMoudle.Extensions
             if (!Factory.VertexToFactory.ContainsKey(vertex))
                 return null;
             return Factory.VertexToFactory[vertex];
+        }
+        public static IEnumerable<ProduceLink> GetLinks(this Vertex vertex)
+        {
+            return vertex.GetFactory()!.Links;
         }
     }
 

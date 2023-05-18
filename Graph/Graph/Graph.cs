@@ -218,7 +218,7 @@ namespace GraphMoudle
                         if (edge.IsBridge)
                             continue;
                         Curve2D temp = edge.GetCurveCopy();
-                        edge.RotateCtrlPoint(vertex, MathF.PI);
+                        edge.TransformCtrlPoint(vertex, MathF.PI, 2);
                         if (_checkEdge(edge, temp))
                             break;
                     }
@@ -261,7 +261,7 @@ namespace GraphMoudle
                     edge2.SetCurveCopy(temp2);
                     GISInfoStorer.Add(edge2);
                 }
-                
+
                 edge1.RotateCtrlPointTo(vertex, (float)(angle - Math.PI / 2));
                 edge2.RotateCtrlPointTo(vertex, (float)(angle + Math.PI / 2));
                 flag1 = _checkEdge(edge1, temp1);
