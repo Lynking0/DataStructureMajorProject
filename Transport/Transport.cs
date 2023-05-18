@@ -142,10 +142,11 @@ namespace TransportMoudle
             Logger.trace("构建主干道");
             // 确定主干道
             var totalEdges = Graph.Instance.Edges
-                                                    .OrderByDescending(e => ProduceLink.GetEdgeLoad(e).TotalLoad)
-                                                    .Where(e => !visitedEdges.Contains(e));
+                                                    .OrderByDescending(e => ProduceLink.GetEdgeLoad(e).TotalLoad);
             foreach (var edge in totalEdges)
             {
+                if (visitedEdges.Contains(edge))
+                    continue;
                 if ((double)visitedEdges.Count() / totalEdges.Count() > MainLineRate)
                     break;
                 BuildMainTrainLine(edge, edge.GetLoadInfo().TotalLoad);
