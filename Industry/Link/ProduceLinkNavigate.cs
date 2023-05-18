@@ -17,7 +17,7 @@ namespace IndustryMoudle.Link
                 {
                     return NavigateCache[this];
                 }
-                var result = TrainLine.Navigate(Vertexes);
+                var result = TrainLine.Navigate(Vertexes.ToList());
                 NavigateCache[this] = result;
                 return result;
             }
