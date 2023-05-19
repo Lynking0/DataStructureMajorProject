@@ -241,44 +241,79 @@ namespace GraphMoudle
             {
                 Curve2D temp1 = edge1.GetCurveCopy(), temp2 = edge2.GetCurveCopy();
                 double angle = ((edge1.GetOtherEnd(vertex)!.Position - vertex.Position) + (edge2.GetOtherEnd(vertex)!.Position - vertex.Position)).AngleD();
-                bool flag1, flag2;
 
-                edge1.RotateCtrlPointTo(vertex, (float)(angle + Math.PI / 2));
-                edge2.RotateCtrlPointTo(vertex, (float)(angle - Math.PI / 2));
-                flag1 = _checkEdge(edge1, temp1);
-                flag2 = _checkEdge(edge2, temp2);
-                if (flag1 && flag2)
-                    return;
-                else if (flag1)
+                Vector2 vec = new Vector2(Mathf.Cos((float)(angle + Math.PI / 2)), Mathf.Sin((float)(angle + Math.PI / 2)));
+                List<(Edge, Curve2D)> temps = new List<(Edge, Curve2D)>();
+                bool flag = true;
+                foreach (Edge edge in vertex.Adjacencies)
                 {
-                    GISInfoStorer.Remove(edge1);
-                    edge1.SetCurveCopy(temp1);
-                    GISInfoStorer.Add(edge1);
-                }
-                else if (flag2)
-                {
-                    GISInfoStorer.Remove(edge2);
-                    edge2.SetCurveCopy(temp2);
-                    GISInfoStorer.Add(edge2);
+                    if (edge.IsBridge)
+                    {
+                        flag = false;
+                        break;
+                    }
+                    if (edge == edge1 || edge == edge2)
+                        continue;
+                    Curve2D temp = edge.GetCurveCopy();
+                    if (Math.Abs((float)edge.GetCtrlAngleTo(vertex, vec)!) < Math.PI / 2)
+                        edge.RotateCtrlPointTo(vertex, (float)(angle + Math.PI / 2));
+                    else
+                        edge.RotateCtrlPointTo(vertex, (float)(angle - Math.PI / 2));
+                    if (!_checkEdge(edge, temp))
+                    {
+                        flag = false;
+                        break;
+                    }
+                    temps.Add((edge, temp));
                 }
 
-                edge1.RotateCtrlPointTo(vertex, (float)(angle - Math.PI / 2));
-                edge2.RotateCtrlPointTo(vertex, (float)(angle + Math.PI / 2));
-                flag1 = _checkEdge(edge1, temp1);
-                flag2 = _checkEdge(edge2, temp2);
-                if (flag1 && flag2)
-                    return;
-                else if (flag1)
+                if (flag)
                 {
-                    GISInfoStorer.Remove(edge1);
-                    edge1.SetCurveCopy(temp1);
-                    GISInfoStorer.Add(edge1);
+                    bool flag1, flag2;
+
+                    edge1.RotateCtrlPointTo(vertex, (float)(angle + Math.PI / 2));
+                    edge2.RotateCtrlPointTo(vertex, (float)(angle - Math.PI / 2));
+                    flag1 = _checkEdge(edge1, temp1);
+                    flag2 = _checkEdge(edge2, temp2);
+                    if (flag1 && flag2)
+                        return;
+                    else if (flag1)
+                    {
+                        GISInfoStorer.Remove(edge1);
+                        edge1.SetCurveCopy(temp1);
+                        GISInfoStorer.Add(edge1);
+                    }
+                    else if (flag2)
+                    {
+                        GISInfoStorer.Remove(edge2);
+                        edge2.SetCurveCopy(temp2);
+                        GISInfoStorer.Add(edge2);
+                    }
+
+                    edge1.RotateCtrlPointTo(vertex, (float)(angle - Math.PI / 2));
+                    edge2.RotateCtrlPointTo(vertex, (float)(angle + Math.PI / 2));
+                    flag1 = _checkEdge(edge1, temp1);
+                    flag2 = _checkEdge(edge2, temp2);
+                    if (flag1 && flag2)
+                        return;
+                    else if (flag1)
+                    {
+                        GISInfoStorer.Remove(edge1);
+                        edge1.SetCurveCopy(temp1);
+                        GISInfoStorer.Add(edge1);
+                    }
+                    else if (flag2)
+                    {
+                        GISInfoStorer.Remove(edge2);
+                        edge2.SetCurveCopy(temp2);
+                        GISInfoStorer.Add(edge2);
+                    }
                 }
-                else if (flag2)
+                foreach ((Edge edge, Curve2D curve) in temps)
                 {
-                    GISInfoStorer.Remove(edge2);
-                    edge2.SetCurveCopy(temp2);
-                    GISInfoStorer.Add(edge2);
+                    GISInfoStorer.Remove(edge);
+                    edge.SetCurveCopy(curve);
+                    GISInfoStorer.Add(edge);
                 }
             }
         }

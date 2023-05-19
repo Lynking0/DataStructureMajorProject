@@ -47,6 +47,17 @@ namespace GraphMoudle
             return null;
         }
         /// <summary>
+        ///   获取当前边在节点v的控制点的方向与某向量的夹角，若v不是当前边的端点，则返回null。
+        /// </summary>
+        public float? GetCtrlAngleTo(Vertex v, Vector2 to)
+        {
+            if (v == A)
+                return Curve.GetPointOut(0).AngleTo(to);
+            if (v == B)
+                return Curve.GetPointIn(Curve.PointCount - 1).AngleTo(to);
+            return null;
+        }
+        /// <summary>
         ///   以节点v为中心旋转当前边在节点v的控制点，若v不是当前边的端点，则不做任何操作
         /// </summary>
         public void TransformCtrlPoint(Vertex v, float angle, float enlarge)
