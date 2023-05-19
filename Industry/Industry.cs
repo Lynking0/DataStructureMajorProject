@@ -367,16 +367,12 @@ namespace IndustryMoudle
 
                 // 定性链路构建完成，开始定量收缩
                 ShirkChain(chain);
-                // break;
             }
 
             var lengths = ProduceLink.Links.Select(l => l.EdgeInfos.Sum(e => e.Edge?.Length ?? 0));
 
-            Logger.trace($"产业链接平均长度 {lengths.Average()}");
-            Logger.trace($"产业链接最小长度 {lengths.Min()}");
-            Logger.trace($"产业链接最大长度 {lengths.Max()}");
             Logger.trace($"生成产业链 {ProduceChain.Chains.Count} 条");
-            Logger.trace($"完整产业链 {ProduceChain.Chains.Where(c => c.Deficit.Empty).Count()} 条");
+            Logger.trace($"产业链接长度 MAX/AVG/MIN {lengths.Max()}/{lengths.Average()}/{lengths.Min()}");
             Logger.trace($"产业链计划消费品产能 {ProduceChain.ConsumeCount}");
         }
     }
