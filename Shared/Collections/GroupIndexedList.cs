@@ -52,24 +52,28 @@ namespace Shared.Collections
             return _list.Contains(item);
         }
 
-        void ICollection<T>.CopyTo(T[] array, int arrayIndex)
+        public void CopyTo(T[] array, int arrayIndex)
         {
-            throw new NotImplementedException();
+            _list.CopyTo(array, arrayIndex);
         }
 
-        IEnumerator<T> IEnumerable<T>.GetEnumerator()
+        public IEnumerator<T> GetEnumerator()
         {
-            throw new NotImplementedException();
+            return _list.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            throw new NotImplementedException();
+            return _list.GetEnumerator();
         }
 
-        bool ICollection<T>.Remove(T item)
+        public bool Remove(T item)
         {
-            throw new NotImplementedException();
+            if (!_list.Remove(item))
+                return false;
+            if (!_key1_group[_key1_extractor(item)].Remove(item))
+                return false;
+            return true;
         }
     }
 }
