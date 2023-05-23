@@ -1,12 +1,29 @@
+using System.Linq;
 using System.Collections.Generic;
 using Shared.Extensions.ICollectionExtensions;
 
 namespace IndustryMoudle.Entry
 {
+    public enum RecipeGroup
+    {
+        Raw,
+        Factory,
+        City,
+    }
     public class Recipe
     {
         public readonly int Time;
-        public readonly string Group;
+        public RecipeGroup Group
+        {
+            get
+            {
+                if (InputTypes.Count() == 0)
+                    return RecipeGroup.Raw;
+                if (OutputTypes.Count() == 0)
+                    return RecipeGroup.City;
+                return RecipeGroup.Factory;
+            }
+        }
         private readonly Dictionary<ItemType, int> _input;
         public readonly Dictionary<ItemType, int> _output;
         public IReadOnlyDictionary<ItemType, int> Input => _input;
@@ -16,7 +33,6 @@ namespace IndustryMoudle.Entry
         public Recipe(in int time, in string group, in Dictionary<ItemType, int> intput, in Dictionary<ItemType, int> output)
         {
             Time = time;
-            Group = group;
             _output = output;
             _input = intput;
         }

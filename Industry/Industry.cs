@@ -58,7 +58,8 @@ namespace IndustryMoudle
             foreach (Vertex vertex in Graph.Instance.Vertices)
             {
                 recipeEnumerator.MoveNext();
-                var factory = new Factory(recipeEnumerator.Current.ToRecipe(), vertex);
+                Recipe? recipe = recipeEnumerator.Current.ToRecipe();
+                var factory = new Factory(recipe, vertex);
                 VertexToFactory[vertex] = factory;
             }
             // foreach (Vertex vertex in Graph.Instance.Vertices)
@@ -199,27 +200,12 @@ namespace IndustryMoudle
             {
                 chain.AddDeficit(curFactory, new Item(number, type));
             }
-            var l = factoryQueue.Count;
-            if (test.ContainsKey(l))
-            {
-                test[l]++;
-            }
-            else
-            {
-                test[l] = 1;
-            }
             return downstream;
         }
 
         // 木桶收缩产业链
         private static void ShirkChain(ProduceChain chain)
         {
-            // 目前只考虑最终工厂为消费工厂
-            if (chain.OutputFactory.Recipe.Group != "consumption")
-            {
-                Logger.error("目前只考虑最终工厂为消费工厂");
-                throw new Exception("目前只考虑最终工厂为消费工厂");
-            }
             var consumerFactory = chain.OutputFactory;
             var consumption = GetActualOutput(consumerFactory);
             if (consumption == 0)
@@ -320,8 +306,7 @@ namespace IndustryMoudle
             }
         }
 
-
-        private static Dictionary<int, int> test = new Dictionary<int, int>();
+        const string consumption = "ABCDEF";
         public static void BuildFactoryChains()
         {
             {
@@ -343,11 +328,11 @@ namespace IndustryMoudle
                 // }
             }
             // 使用浩哥查找
-            foreach (var consumptionFactory in Factory.Factories.Where(f => f.Recipe.Group == "consumption"))
+            foreach (var consumptionFactory in Factory.Factories.Where(f => f.Recipe.Group == RecipeGroup.City))
             {
                 // Build industrial chain
                 var factoryQueue = new Queue<(Factory factory, int outputNumber, ProduceLink link)>();
-                var chain = new ProduceChain("ABCDEF", consumptionFactory.Vertex.ParentBlock, consumptionFactory);
+                var chain = new ProduceChain(consumption, consumptionFactory.Vertex.ParentBlock, consumptionFactory);
                 chain.AddFactory(consumptionFactory);
                 void BFS(Factory factory, int outputNumber, ProduceLink? link = null)
                 {
