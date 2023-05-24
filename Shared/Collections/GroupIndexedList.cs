@@ -20,7 +20,7 @@ namespace Shared.Collections
             AddRange(data);
         }
 
-        public IEnumerable<T> this[T_K1 k] => _key1_group[k];
+        public IReadOnlyList<T> this[T_K1 k] => _key1_group[k];
 
         public int Count => _list.Count;
 
@@ -54,6 +54,11 @@ namespace Shared.Collections
         public bool Contains(T item)
         {
             return _list.Contains(item);
+        }
+        
+        public bool ContainsKey(T_K1 key)
+        {
+            return _key1_group.ContainsKey(key);
         }
 
         public void CopyTo(T[] array, int arrayIndex)
@@ -101,8 +106,8 @@ namespace Shared.Collections
             AddRange(data);
         }
 
-        public IEnumerable<T> this[T_K1 k] => _key1_group[k];
-        public IEnumerable<T> this[T_K2 k] => _key2_group[k];
+        public IReadOnlyList<T> this[T_K1 k] => _key1_group[k];
+        public IReadOnlyList<T> this[T_K2 k] => _key2_group[k];
 
         public int Count => _list.Count;
 
@@ -146,6 +151,15 @@ namespace Shared.Collections
             return _list.Contains(item);
         }
 
+        public bool ContainsKey(T_K1 key)
+        {
+            return _key1_group.ContainsKey(key);
+        }
+
+        public bool ContainsKey(T_K2 key)
+        {
+            return _key2_group.ContainsKey(key);
+        }
         public void CopyTo(T[] array, int arrayIndex)
         {
             _list.CopyTo(array, arrayIndex);
