@@ -88,8 +88,7 @@ namespace DirectorMoudle
                 label.Text = $"{link.ID} {(string)link} out to {link.To.ID} for {link.For?.ID ?? -1}";
                 Links.AddChild(label);
             }
-            foreach (var goods in Factory.Platform.SelectMany(a => a.Value)
-                .GroupBy(a => a.Item.Type))
+            foreach (var goods in Factory.Platform.GroupBy(a => a.Item.Type))
             {
                 var label = new Label();
 

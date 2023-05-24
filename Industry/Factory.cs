@@ -2,6 +2,7 @@ using Godot;
 using System.Collections.Generic;
 using System.Linq;
 using Shared.QuadTree;
+using Shared.Collections;
 using TransportMoudle;
 using IndustryMoudle.Entry;
 using IndustryMoudle.Link;
@@ -32,7 +33,7 @@ namespace IndustryMoudle
         public ItemBox CapacityOutput { get => new ItemBox(Recipe.Output) * BaseProduceSpeed; }
 
         public int ProduceCount { get; private set; } = 0;
-        public Dictionary<TrainLine, List<Goods>> Platform = new Dictionary<TrainLine, List<Goods>>();
+        public GroupIndexedList<Goods, TrainLine> Platform = new GroupIndexedList<Goods, TrainLine>(goods => goods.Ticket.CurTrip.Line);
         public ItemBox ActualOutput
         {
             get
@@ -85,14 +86,12 @@ namespace IndustryMoudle
             var count = 0;
             lock (Platform)
             {
-                if (!Platform.ContainsKey(line))
-                    Platform[line] = new List<Goods>();
-                while (count < max && Platform[line].Count > 0)
+                while (count < max && Platform.ContainsKey(line) && Platform[line].Count > 0)
                 {
                     if (Platform[line].First().Item.Number + count <= max)
                     {
                         var goods = Platform[line].First();
-                        Platform[line].Remove(goods);
+                        Platform.Remove(goods);
                         count += goods.Item.Number;
                         result.Add(goods);
                     }
@@ -116,10 +115,7 @@ namespace IndustryMoudle
             {
                 lock (Platform)
                 {
-                    if (Platform.ContainsKey(goods.Ticket.CurTrip.Line))
-                        Platform[goods.Ticket.CurTrip.Line].Add(goods);
-                    else
-                        Platform[goods.Ticket.CurTrip.Line] = new List<Goods>(new[] { goods });
+                    Platform.Add(goods);
                 }
             }
         }
@@ -160,10 +156,7 @@ namespace IndustryMoudle
                         var goods = new Goods(link.Item, link);
                         lock (Platform)
                         {
-                            if (Platform.ContainsKey(goods.Ticket.CurTrip.Line))
-                                Platform[goods.Ticket.CurTrip.Line].Add(goods);
-                            else
-                                Platform[goods.Ticket.CurTrip.Line] = new List<Goods>(new[] { goods });
+                            Platform.Add(goods);
                         }
                     }
                 }

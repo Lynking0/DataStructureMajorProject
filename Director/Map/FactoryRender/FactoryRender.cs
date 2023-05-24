@@ -167,7 +167,20 @@ namespace DirectorMoudle
             var mapRender = GetParent().GetParent<MapRender>();
             if (mapRender.FactoryDisplay)
             {
-                DrawCircle(Vector2.Zero, 6, Colors.WebGray);
+                Color color = default;
+                switch (Factory.Recipe.Group)
+                {
+                    case IndustryMoudle.Entry.RecipeGroup.Raw:
+                        color = Colors.WebGray;
+                        break;
+                    case IndustryMoudle.Entry.RecipeGroup.Factory:
+                        color = Colors.WebGreen;
+                        break;
+                    case IndustryMoudle.Entry.RecipeGroup.City:
+                        color = Colors.WebMaroon;
+                        break;
+                }
+                DrawCircle(Vector2.Zero, 6, color);
                 DrawString(Font, Vector2.Zero, Factory.Recipe, fontSize: 12);
             }
             if (mapRender.LinkDisplay)
