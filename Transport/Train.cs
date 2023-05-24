@@ -46,13 +46,13 @@ namespace TransportMoudle
                 }
             }
         }
-
+        public Color Color => TrainLine.Color;
         public Train(TrainLine trainLine)
         {
             TrainLine = trainLine;
             for (int i = 0; i < CarriageCount; i++)
             {
-                var carriage = new Carriage();
+                var carriage = new Carriage(this);
                 carriage.ProgressRatio = 0.4f * i;
                 carriage.Loop = true;
                 Path.AddChild(carriage);
