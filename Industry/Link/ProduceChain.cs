@@ -1,3 +1,4 @@
+using Godot;
 using System.Collections.Generic;
 using IndustryMoudle.Entry;
 using System.Linq;
@@ -33,9 +34,7 @@ namespace IndustryMoudle.Link
                             .Sum(link => link.Item.Number), OutputType);
             }
         }
-#if DEBUG
-        public readonly Godot.Color Color;
-#endif
+        public readonly Color Color;
 
         public ProduceChain(ItemType itemType, Block block, Factory outputFactory)
         {
@@ -43,21 +42,20 @@ namespace IndustryMoudle.Link
             Block = block;
             OutputFactory = outputFactory;
             _chains.Add(this);
-#if DEBUG
-            Godot.Color[] colors = {
-                Godot.Colors.Black,
-                Godot.Colors.Blue,
-                Godot.Colors.Brown,
-                Godot.Colors.Gray,
-                Godot.Colors.Green,
-                Godot.Colors.Pink,
-                Godot.Colors.Purple,
-                Godot.Colors.Red,
-                Godot.Colors.Silver,
-                Godot.Colors.White
+
+            Color[] colors = {
+                Colors.Black,
+                Colors.Blue,
+                Colors.Brown,
+                Colors.Gray,
+                Colors.Green,
+                Colors.Pink,
+                Colors.Purple,
+                Colors.Red,
+                Colors.Silver,
+                Colors.White
             };
-            Color = colors[Godot.GD.RandRange(0, colors.Length - 1)];
-#endif
+            Color = colors[GD.RandRange(0, colors.Length - 1)];
         }
         public void Destory()
         {
